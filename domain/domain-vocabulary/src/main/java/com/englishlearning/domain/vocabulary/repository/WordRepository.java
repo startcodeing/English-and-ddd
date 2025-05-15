@@ -26,6 +26,11 @@ public interface WordRepository {
     Optional<Word> findBySpelling(String spelling);
     
     /**
+     * 根据多个拼写查找单词列表
+     */
+    List<Word> findBySpellingIn(List<String> spellings);
+    
+    /**
      * 根据中文意思模糊查询单词
      */
     List<Word> findByChineseMeaningLike(String chineseMeaning);

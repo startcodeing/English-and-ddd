@@ -3,7 +3,6 @@ package com.englishlearning.application.content.mapper;
 import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;

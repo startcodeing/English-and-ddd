@@ -6,37 +6,83 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 单词持久化对象
  */
 @Data
 @Entity
-@Table(name = "t_word")
+@Table(name = "vocabulary_word")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class WordPO {
     
+    /**
+     * 主键ID
+     */
     @Id
     private String id;
     
-    @Column(nullable = false, length = 100)
+    /**
+     * 单词拼写
+     */
+    @Column(nullable = false, unique = true)
     private String spelling;
     
-    @Column(name = "us_phonetic", length = 50)
-    private String usPhonetic;
+    /**
+     * 音标
+     */
+    private String phonetic;
     
-    @Column(name = "uk_phonetic", length = 50)
-    private String ukPhonetic;
+    /**
+     * 发音URL
+     */
+    private String pronunciationUrl;
     
-    @Column(length = 500)
-    private String definition;
+    /**
+     * 中文意思
+     */
+    @Column(nullable = false)
+    private String chineseMeaning;
     
-    @ManyToOne
-    @JoinColumn(name = "part_of_speech_id")
-    private PartOfSpeechPO partOfSpeech;
+    /**
+     * 英文释义
+     */
+    private String englishDefinition;
     
-    @Column(length = 500)
-    private String example;
+    /**
+     * 例句，以JSON数组形式存储
+     */
+    @Column(length = 2000)
+    private String exampleSentences;
+    
+    /**
+     * 词性ID
+     */
+    private String partOfSpeechId;
+    
+    /**
+     * 难度级别（1-5级）
+     */
+    private Integer difficultyLevel;
+    
+    /**
+     * 相关单词，以JSON数组形式存储
+     */
+    @Column(length = 1000)
+    private String relatedWords;
+    
+    /**
+     * 创建时间
+     */
+    @Column(name = "created_at")
+    private Long createdAt;
+    
+    /**
+     * 更新时间
+     */
+    @Column(name = "updated_at")
+    private Long updatedAt;
 } 

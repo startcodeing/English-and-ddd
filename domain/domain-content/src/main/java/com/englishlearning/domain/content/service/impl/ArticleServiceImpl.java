@@ -1,6 +1,9 @@
 package com.englishlearning.domain.content.service.impl;
 
+import com.englishlearning.common.types.Result;
 import com.englishlearning.domain.content.event.ArticleCreatedEvent;
+import com.englishlearning.domain.content.event.ArticleUpdatedEvent;
+import com.englishlearning.domain.content.event.ArticleEventPublisher;
 import com.englishlearning.domain.content.model.entity.Article;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.repository.ArticleRepository;
@@ -8,8 +11,8 @@ import com.englishlearning.domain.content.repository.SentenceRepository;
 import com.englishlearning.domain.content.service.ArticleService;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
-import com.englishlearning.infrastructure.event.content.ArticleEventPublisher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ import java.util.regex.Matcher;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ArticleServiceImpl implements ArticleService {
     
     private final ArticleRepository articleRepository;
@@ -40,8 +44,6 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Article createArticle(Article article) {
         Article savedArticle = articleRepository.save(article);
-        
-        // 发布文章创建事件
         int sentenceCount = (savedArticle.getSentences() != null) ? savedArticle.getSentences().size() : 0;
         eventPublisher.publishArticleCreatedEvent(new ArticleCreatedEvent(
             savedArticle.getId(),
@@ -49,13 +51,19 @@ public class ArticleServiceImpl implements ArticleService {
             savedArticle.getDifficultyLevel(),
             sentenceCount
         ));
-        
         return savedArticle;
     }
     
     @Override
     public Article updateArticle(Article article) {
-        return articleRepository.save(article);
+        Article updatedArticle = articleRepository.save(article);
+        eventPublisher.publishArticleUpdatedEvent(new ArticleUpdatedEvent(
+            updatedArticle.getId(),
+            updatedArticle.getTitle(),
+            updatedArticle.getContent(),
+            updatedArticle.getDifficultyLevel()
+        ));
+        return updatedArticle;
     }
     
     @Override
@@ -216,7 +224,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
     
     @Override
-    public void deleteArticle(String id) {
-        articleRepository.deleteById(id);
+    public void deleteArticle(String articleId) {
+        articleRepository.deleteById(articleId);
+        eventPublisher.publishArticleDeletedEvent(articleId);
     }
 } 

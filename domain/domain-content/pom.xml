@@ -20,5 +20,14 @@
             <groupId>com.englishlearning</groupId>
             <artifactId>domain-vocabulary</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.englishlearning</groupId>
+            <artifactId>domain-content-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
     </dependencies>
 </project> 

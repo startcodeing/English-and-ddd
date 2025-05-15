@@ -37,4 +37,20 @@ public class Result<T> {
         this.message = message;
         this.data = data;
     }
+
+    public static <T> Result<T> success(T data) {
+        return new Result<>(true, "Success", data);
+    }
+
+    public static <T> Result<T> success() {
+        return new Result<>(true, "Success", null);
+    }
+
+    public static <T> Result<T> failure(String message) {
+        return new Result<>(false, message, null);
+    }
+
+    public static <T> Result<T> failure(String message, String errorCode) {
+        return new Result<>(false, message, null, errorCode);
+    }
 } 

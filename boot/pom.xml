@@ -23,6 +23,10 @@
             <groupId>com.englishlearning</groupId>
             <artifactId>domain-vocabulary</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.englishlearning</groupId>
+            <artifactId>domain-content</artifactId>
+        </dependency>
         
         <!-- 应用模块 -->
         <dependency>

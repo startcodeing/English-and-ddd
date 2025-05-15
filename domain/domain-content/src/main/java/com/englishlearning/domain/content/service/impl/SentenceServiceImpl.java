@@ -1,12 +1,13 @@
 package com.englishlearning.domain.content.service.impl;
 
 import com.englishlearning.domain.content.event.SentenceCreatedEvent;
+import com.englishlearning.domain.content.event.SentenceUpdatedEvent;
+import com.englishlearning.domain.content.event.SentenceEventPublisher;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
 import com.englishlearning.domain.content.service.SentenceService;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
-import com.englishlearning.infrastructure.event.content.SentenceEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class SentenceServiceImpl implements SentenceService {
         
         // 发布句子创建事件
         eventPublisher.publishSentenceCreatedEvent(new SentenceCreatedEvent(
-            savedSentence.getId(),
+            savedSentence.getArticleId(),
             savedSentence.getEnglishContent(),
             savedSentence.getChineseMeaning()
         ));
@@ -43,7 +44,14 @@ public class SentenceServiceImpl implements SentenceService {
     
     @Override
     public Sentence updateSentence(Sentence sentence) {
-        return sentenceRepository.save(sentence);
+        Sentence updatedSentence = sentenceRepository.save(sentence);
+        eventPublisher.publishSentenceUpdatedEvent(new SentenceUpdatedEvent(
+            updatedSentence.getId(),
+            updatedSentence.getEnglishContent(),
+            updatedSentence.getChineseMeaning(),
+            updatedSentence.getArticleId()
+        ));
+        return updatedSentence;
     }
     
     @Override

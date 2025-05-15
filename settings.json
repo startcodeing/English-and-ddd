@@ -1,0 +1,9 @@
+{
+  "window.commandCenter": true,
+  "maven.executable.path": "C:\\Users\\wenpeng\\Environment\\apache-maven-3.9.9\\bin\\mvn",
+  "spring-boot.ls.java.home": "C:\\Users\\wenpeng\\Environment\\jdk-17.0.14+7",
+  "java.jdt.ls.java.home": "C:\\Users\\wenpeng\\Environment\\jdk-17.0.14+7",
+  "maven.terminal.useJavaHome": true,
+  "maven.terminal.favorites": [
+  ]
+} 
