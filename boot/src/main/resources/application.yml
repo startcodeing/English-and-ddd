@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   h2:
     console:
       enabled: true
@@ -33,4 +34,7 @@ management:
 logging:
   level:
     com.englishlearning: info
-    org.springframework: warn 
+    org.springframework: warn
+axon:
+  axonserver:
+    enabled: false

@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * 英语学习平台启动类
  */
 @SpringBootApplication
-@ComponentScan(basePackages = "com.englishlearning")
 @EntityScan(basePackages = "com.englishlearning.infrastructure.db.po")
 @EnableJpaRepositories(basePackages = "com.englishlearning.infrastructure.db.repository")
 public class EnglishLearningApplication {
