@@ -1,7 +1,0 @@
-com\englishlearning\domain\content\model\Article.class
-com\englishlearning\domain\content\model\Article$ArticleBuilder.class
-com\englishlearning\domain\content\model\Sentence$SentenceBuilder.class
-com\englishlearning\domain\content\event\ArticleEventPublisher.class
-com\englishlearning\domain\content\event\SentenceEventPublisher.class
-com\englishlearning\domain\content\model\Sentence.class
-com\englishlearning\domain\content\service\ArticleService.class

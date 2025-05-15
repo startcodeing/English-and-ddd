@@ -1,0 +1,12 @@
+/application/application-content/target/
+/application/application-vocabulary/target/
+/boot/target/
+/common/target/
+/domain/domain-content/target/
+/domain/domain-content-api/target/
+/domain/domain-vocabulary/target/
+/infrastructure/infrastructure-db/target/
+/infrastructure/infrastructure-event/target/
+/interfaces/interfaces-content/target/
+/.idea/
+/interfaces/interfaces-api/target/
