@@ -45,7 +45,6 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
 
             // 保存到仓储
             PartOfSpeech savedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
-
             // 转换为DTO并返回
             return Result.success(convertToDTO(savedPartOfSpeech));
         } catch (Exception e) {
@@ -58,7 +57,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
         try {
             // 查找要更新的词性
             Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            if (!optionalPartOfSpeech.isPresent()) {
+            if (optionalPartOfSpeech.isEmpty()) {
                 return Result.failure("未找到指定ID的词性");
             }
 
@@ -90,12 +89,10 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
         try {
             // 查找词性
             Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            if (!optionalPartOfSpeech.isPresent()) {
-                return Result.failure("未找到指定ID的词性");
-            }
+            return optionalPartOfSpeech.map(partOfSpeech -> Result.success(convertToDTO(partOfSpeech)))
+                    .orElseGet(() -> Result.failure("未找到指定ID的词性"));
 
             // 转换为DTO并返回
-            return Result.success(convertToDTO(optionalPartOfSpeech.get()));
         } catch (Exception e) {
             return Result.failure("获取词性失败: " + e.getMessage());
         }
@@ -123,7 +120,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
         try {
             // 检查词性是否存在
             Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            if (!optionalPartOfSpeech.isPresent()) {
+            if (optionalPartOfSpeech.isEmpty()) {
                 return Result.failure("未找到指定ID的词性");
             }
 

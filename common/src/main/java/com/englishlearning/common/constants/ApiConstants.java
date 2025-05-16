@@ -34,7 +34,8 @@ public class ApiConstants {
      * 写作练习模块
      */
     public static final String WRITING_API = API_PREFIX + "/writing";
-    
+
+
     private ApiConstants() {
         // 防止实例化
     }
