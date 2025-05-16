@@ -2,6 +2,7 @@ package com.englishlearning.infrastructure.db.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * 词性持久化对象
  */
-@Data
+@Getter
 @Entity
 @Table(name = "part_of_speech")
 @NoArgsConstructor

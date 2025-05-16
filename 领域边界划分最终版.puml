@@ -1,0 +1,182 @@
+@startuml 英语学习平台领域模型边界图
+
+' 使用不同的颜色标识不同的上下文
+!define VocabularyContext #FFDDDD
+!define ContentContext #DDFFDD
+!define LearningContext #DDDDFF
+
+' 设置样式
+skinparam package {
+    BackgroundColor<<VocabularyContext>> VocabularyContext
+    BackgroundColor<<ContentContext>> ContentContext
+    BackgroundColor<<LearningContext>> LearningContext
+    BorderColor black
+    FontColor black
+}
+
+skinparam class {
+    BackgroundColor white
+    BorderColor black
+    ArrowColor black
+}
+
+' 词汇管理上下文
+package "词汇管理上下文" <<VocabularyContext>> {
+    ' 单词聚合
+    package "单词聚合" {
+        class Word {
+            - id: String
+            - spelling: String
+            - pronunciation: String
+            - chineseMeaning: String
+        }
+        
+        Word "*" -- "*" Word: 同义词/反义词 >
+    }
+    
+    ' 词性聚合
+    package "词性聚合" {
+        class PartOfSpeech {
+            - id: String
+            - englishName: String
+            - chineseName: String
+            - description: String
+        }
+    }
+    
+    ' 单词本聚合
+    package "单词本聚合" {
+        class WordBook {
+            - id: String
+            - name: String
+            - description: String
+        }
+        
+        class WordBookItem {
+            - id: String
+            - wordBookId: String
+            - wordId: String
+            - addedDate: LocalDateTime
+            - note: String
+        }
+        
+        WordBook "1" *-- "*" WordBookItem: 包含 >
+        WordBookItem ..> Word: 引用 >
+    }
+    
+    ' 仓储接口
+    interface WordRepository
+    interface WordBookRepository
+    interface WordBookItemRepository
+    interface PartOfSpeechRepository
+    
+    WordRepository ..> Word: 管理 >
+    WordBookRepository ..> WordBook: 管理 >
+    WordBookItemRepository ..> WordBookItem: 管理 >
+    PartOfSpeechRepository ..> PartOfSpeech: 管理 >
+    
+    ' 单词与词性的关系改为引用关系
+    Word ..> PartOfSpeech: 引用 >
+}
+
+' 内容管理上下文
+package "内容管理上下文" <<ContentContext>> {
+    ' 句子聚合
+    package "句子聚合" {
+        class Sentence {
+            - id: String
+            - englishContent: String
+            - chineseMeaning: String
+            - grammarAnalysis: String
+            - articleId: String
+        }
+        
+        class SentenceVariant {
+            - id: String
+            - content: String
+            - type: String
+        }
+        
+        Sentence "1" *-- "*" SentenceVariant: 变体 >
+    }
+    
+    ' 文章聚合
+    package "文章聚合" {
+        class Article {
+            - id: String
+            - title: String
+            - content: String
+            - source: String
+            - author: String
+            - publishDate: LocalDateTime
+        }
+        
+        Article "1" o-- "*" Sentence: 包含 >
+    }
+    
+    ' 仓储接口
+    interface SentenceRepository
+    interface ArticleRepository
+    
+    SentenceRepository ..> Sentence: 管理 >
+    ArticleRepository ..> Article: 管理 >
+}
+
+' 学习行为上下文 (事件溯源部分)
+package "学习行为上下文" <<LearningContext>> {
+    ' 单词学习聚合
+    package "单词学习聚合" {
+        class WordLearningStatus {
+            - wordId: String
+            - userId: String
+            - status: LearningStatus
+            - lastReviewDate: LocalDateTime
+        }
+        
+        enum LearningStatus {
+            UNFAMILIAR
+            FAMILIAR
+            MASTERED
+        }
+        
+        WordLearningStatus -- LearningStatus
+    }
+    
+    ' 听写测试聚合
+    package "听写测试聚合" {
+        class DictationTest {
+            - id: String
+            - userId: String
+            - startTime: LocalDateTime
+            - endTime: LocalDateTime
+            - score: Integer
+        }
+        
+        class DictationItem {
+            - id: String
+            - wordId: String
+            - userInput: String
+            - isCorrect: Boolean
+        }
+        
+        DictationTest "1" *-- "*" DictationItem: 包含 >
+    }
+    
+    ' 写作练习聚合
+    package "写作练习聚合" {
+        class WritingExercise {
+            - id: String
+            - userId: String
+            - content: String
+            - evaluation: String
+            - submissionTime: LocalDateTime
+        }
+    }
+}
+
+' 上下文之间的关系
+WordLearningStatus ..> Word: 引用 >
+DictationItem ..> Word: 引用 >
+Sentence ..> Word: 引用 >
+
+@enduml

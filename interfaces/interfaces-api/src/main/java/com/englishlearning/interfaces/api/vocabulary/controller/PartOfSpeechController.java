@@ -27,7 +27,7 @@ public class PartOfSpeechController {
      */
     @PostMapping
     public Result<PartOfSpeechDTO> createPartOfSpeech(@Valid @RequestBody PartOfSpeechDTO dto) {
-        return partOfSpeechService.createPartOfSpeech(dto);
+        return Result.success(partOfSpeechService.createPartOfSpeech(dto));
     }
     
     /**
@@ -35,7 +35,7 @@ public class PartOfSpeechController {
      */
     @PutMapping("/{id}")
     public Result<PartOfSpeechDTO> updatePartOfSpeech(@PathVariable String id, @Valid @RequestBody PartOfSpeechDTO dto) {
-        return partOfSpeechService.updatePartOfSpeech(id, dto);
+        return Result.success(partOfSpeechService.updatePartOfSpeech(id, dto));
     }
     
     /**
@@ -43,7 +43,7 @@ public class PartOfSpeechController {
      */
     @GetMapping("/{id}")
     public Result<PartOfSpeechDTO> getPartOfSpeech(@PathVariable String id) {
-        return partOfSpeechService.getPartOfSpeech(id);
+        return Result.success(partOfSpeechService.getPartOfSpeech(id));
     }
     
     /**
@@ -51,7 +51,7 @@ public class PartOfSpeechController {
      */
     @GetMapping
     public Result<List<PartOfSpeechDTO>> getAllPartOfSpeech() {
-        return partOfSpeechService.getAllPartOfSpeech();
+        return Result.success(partOfSpeechService.getAllPartOfSpeech());
     }
     
     /**
@@ -59,6 +59,7 @@ public class PartOfSpeechController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> deletePartOfSpeech(@PathVariable String id) {
-        return partOfSpeechService.deletePartOfSpeech(id);
+        partOfSpeechService.deletePartOfSpeech(id);
+        return Result.success();
     }
 } 

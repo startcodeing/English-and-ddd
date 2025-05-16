@@ -1,15 +1,18 @@
 package com.englishlearning.application.vocabulary.service;
 
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
-import com.englishlearning.common.types.Result;
+import com.englishlearning.domain.vocabulary.command.CreatePartOfSpeechCommand;
+import com.englishlearning.domain.vocabulary.command.DeletePartOfSpeechCommand;
+import com.englishlearning.domain.vocabulary.command.PartOfSpeechCommandHandler;
+import com.englishlearning.domain.vocabulary.command.UpdatePartOfSpeechCommand;
 import com.englishlearning.domain.vocabulary.model.entity.PartOfSpeech;
 import com.englishlearning.domain.vocabulary.repository.PartOfSpeechRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -18,118 +21,88 @@ import java.util.stream.Collectors;
 @Service
 public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicationService {
 
+
+    private final PartOfSpeechCommandHandler partOfSpeechCommandHandler;
     private final PartOfSpeechRepository partOfSpeechRepository;
 
     @Autowired
-    public PartOfSpeechApplicationServiceImpl(PartOfSpeechRepository partOfSpeechRepository) {
+    public PartOfSpeechApplicationServiceImpl(PartOfSpeechCommandHandler partOfSpeechCommandHandler,
+                                              PartOfSpeechRepository partOfSpeechRepository) {
+        this.partOfSpeechCommandHandler = partOfSpeechCommandHandler;
         this.partOfSpeechRepository = partOfSpeechRepository;
     }
 
+    @Transactional
     @Override
-    public Result<PartOfSpeechDTO> createPartOfSpeech(PartOfSpeechDTO dto) {
+    public PartOfSpeechDTO createPartOfSpeech(PartOfSpeechDTO dto) {
         try {
-            // 检查是否已存在相同英文名称的词性
-            Optional<PartOfSpeech> existingPartOfSpeech = partOfSpeechRepository.findByEnglishName(dto.getEnglishName());
-            if (existingPartOfSpeech.isPresent()) {
-                return Result.failure("已存在相同英文名称的词性");
-            }
-
-            // 创建新的词性实体
-            PartOfSpeech partOfSpeech = PartOfSpeech.builder()
-                    .id(UUID.randomUUID().toString())
+            CreatePartOfSpeechCommand addCommand = CreatePartOfSpeechCommand.builder()
                     .englishName(dto.getEnglishName())
                     .chineseMeaning(dto.getChineseMeaning())
                     .usageSummary(dto.getUsageSummary())
                     .commonPhrases(dto.getCommonPhrases())
                     .build();
-
-            // 保存到仓储
-            PartOfSpeech savedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
-            // 转换为DTO并返回
-            return Result.success(convertToDTO(savedPartOfSpeech));
+            PartOfSpeech savedPartOfSpeech = partOfSpeechCommandHandler.handle(addCommand);
+            return convertToDTO(savedPartOfSpeech);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
-            return Result.failure("创建词性失败: " + e.getMessage());
+            throw new RuntimeException("创建词性失败: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    @Override
+    public PartOfSpeechDTO updatePartOfSpeech(String id, PartOfSpeechDTO dto) {
+        try {
+            UpdatePartOfSpeechCommand updateCommand = UpdatePartOfSpeechCommand.builder()
+                    .englishName(dto.getEnglishName())
+                    .chineseMeaning(dto.getChineseMeaning())
+                    .usageSummary(dto.getUsageSummary())
+                    .commonPhrases(dto.getCommonPhrases())
+                    .id(id)
+                    .build();
+            PartOfSpeech updatedPartOfSpeech = partOfSpeechCommandHandler.handle(updateCommand);
+            return convertToDTO(updatedPartOfSpeech);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("更新词性失败: " + e.getMessage());
         }
     }
 
     @Override
-    public Result<PartOfSpeechDTO> updatePartOfSpeech(String id, PartOfSpeechDTO dto) {
+    public PartOfSpeechDTO getPartOfSpeech(String id) {
         try {
-            // 查找要更新的词性
             Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            if (optionalPartOfSpeech.isEmpty()) {
-                return Result.failure("未找到指定ID的词性");
-            }
-
-            // 检查是否存在相同英文名称但ID不同的词性
-            Optional<PartOfSpeech> existingPartOfSpeech = partOfSpeechRepository.findByEnglishName(dto.getEnglishName());
-            if (existingPartOfSpeech.isPresent() && !existingPartOfSpeech.get().getId().equals(id)) {
-                return Result.failure("已存在相同英文名称的词性");
-            }
-
-            // 更新词性实体
-            PartOfSpeech partOfSpeech = optionalPartOfSpeech.get();
-            partOfSpeech.setEnglishName(dto.getEnglishName());
-            partOfSpeech.setChineseMeaning(dto.getChineseMeaning());
-            partOfSpeech.setUsageSummary(dto.getUsageSummary());
-            partOfSpeech.setCommonPhrases(dto.getCommonPhrases());
-
-            // 保存到仓储
-            PartOfSpeech updatedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
-
-            // 转换为DTO并返回
-            return Result.success(convertToDTO(updatedPartOfSpeech));
+            return optionalPartOfSpeech.map(this::convertToDTO).orElse(null);
         } catch (Exception e) {
-            return Result.failure("更新词性失败: " + e.getMessage());
+            throw new RuntimeException("获取词性失败: " + e.getMessage());
         }
     }
 
     @Override
-    public Result<PartOfSpeechDTO> getPartOfSpeech(String id) {
+    public List<PartOfSpeechDTO> getAllPartOfSpeech() {
         try {
-            // 查找词性
-            Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            return optionalPartOfSpeech.map(partOfSpeech -> Result.success(convertToDTO(partOfSpeech)))
-                    .orElseGet(() -> Result.failure("未找到指定ID的词性"));
-
-            // 转换为DTO并返回
-        } catch (Exception e) {
-            return Result.failure("获取词性失败: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public Result<List<PartOfSpeechDTO>> getAllPartOfSpeech() {
-        try {
-            // 获取所有词性
             List<PartOfSpeech> partOfSpeeches = partOfSpeechRepository.findAll();
-
-            // 转换为DTO列表并返回
-            List<PartOfSpeechDTO> dtoList = partOfSpeeches.stream()
+            return partOfSpeeches.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
-
-            return Result.success(dtoList);
         } catch (Exception e) {
-            return Result.failure("获取所有词性失败: " + e.getMessage());
+            throw new RuntimeException("获取所有词性失败: " + e.getMessage());
         }
     }
 
+    @Transactional
     @Override
-    public Result<Void> deletePartOfSpeech(String id) {
+    public void deletePartOfSpeech(String id) {
         try {
-            // 检查词性是否存在
-            Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            if (optionalPartOfSpeech.isEmpty()) {
-                return Result.failure("未找到指定ID的词性");
-            }
-
-            // 删除词性
-            partOfSpeechRepository.deleteById(id);
-
-            return Result.success();
+            DeletePartOfSpeechCommand deleteCommand = DeletePartOfSpeechCommand.builder()
+                    .id(id)
+                    .build();
+            partOfSpeechCommandHandler.handle(deleteCommand);
         } catch (Exception e) {
-            return Result.failure("删除词性失败: " + e.getMessage());
+          throw new RuntimeException("删除词性失败: " + e.getMessage());
         }
     }
 
@@ -141,8 +114,8 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
                 .id(partOfSpeech.getId())
                 .englishName(partOfSpeech.getEnglishName())
                 .chineseMeaning(partOfSpeech.getChineseMeaning())
-                .usageSummary(partOfSpeech.getUsageSummary())
-                .commonPhrases(partOfSpeech.getCommonPhrases())
+                .usageSummary(partOfSpeech.getUsageSummaryContent())
+                .commonPhrases(partOfSpeech.getCommonPhrasesList())
                 .build();
     }
 }

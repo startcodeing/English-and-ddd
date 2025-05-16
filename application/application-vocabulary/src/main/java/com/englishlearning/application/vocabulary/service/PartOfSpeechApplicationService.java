@@ -13,25 +13,25 @@ public interface PartOfSpeechApplicationService {
     /**
      * 创建词性
      */
-    Result<PartOfSpeechDTO> createPartOfSpeech(PartOfSpeechDTO dto);
+    PartOfSpeechDTO createPartOfSpeech(PartOfSpeechDTO dto);
     
     /**
      * 更新词性
      */
-    Result<PartOfSpeechDTO> updatePartOfSpeech(String id, PartOfSpeechDTO dto);
+    PartOfSpeechDTO updatePartOfSpeech(String id, PartOfSpeechDTO dto);
     
     /**
      * 获取词性详情
      */
-    Result<PartOfSpeechDTO> getPartOfSpeech(String id);
+    PartOfSpeechDTO getPartOfSpeech(String id);
     
     /**
      * 获取所有词性
      */
-    Result<List<PartOfSpeechDTO>> getAllPartOfSpeech();
+    List<PartOfSpeechDTO> getAllPartOfSpeech();
     
     /**
      * 删除词性
      */
-    Result<Void> deletePartOfSpeech(String id);
+    void deletePartOfSpeech(String id);
 } 

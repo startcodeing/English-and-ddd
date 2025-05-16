@@ -1,0 +1,169 @@
+@startuml
+title 英语学习系统 - DDD 聚合命令与关系建模
+top to bottom direction
+
+!define ENTITY(x) class x << (E,#FFAAAA) >>
+!define VALUE_OBJECT(x) class x << (V,#AAFFAA) >>
+!define AGGREGATE(x) class x << (A,#AAAFFF) >>
+!define COMMAND(x) class x << (C,#FFD700) >>
+
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' ===============================
+package "词性管理 PartOfSpeechContext" {
+  AGGREGATE(PartOfSpeech)
+  VALUE_OBJECT(UsageSummary)
+  VALUE_OBJECT(CommonPhrases)
+
+  COMMAND(CreatePartOfSpeech)
+  COMMAND(UpdatePartOfSpeech)
+  COMMAND(DeletePartOfSpeech)
+
+  PartOfSpeech --> UsageSummary
+  PartOfSpeech --> CommonPhrases
+
+  PartOfSpeech <- CreatePartOfSpeech
+  PartOfSpeech <- UpdatePartOfSpeech
+  PartOfSpeech <- DeletePartOfSpeech
+}
+
+' ===============================
+package "单词管理 WordContext" {
+  AGGREGATE(Word)
+  VALUE_OBJECT(Pronunciation)
+  VALUE_OBJECT(Definition)
+  VALUE_OBJECT(ExampleSentence)
+
+  COMMAND(CreateWord)
+  COMMAND(UpdateWord)
+  COMMAND(DeleteWord)
+
+  Word --> Pronunciation
+  Word --> Definition
+  Word --> ExampleSentence
+  Word --> PartOfSpeech : uses (by ID)
+
+  Word <- CreateWord
+  Word <- UpdateWord
+  Word <- DeleteWord
+}
+
+' ===============================
+package "单词本管理 WordBookContext" {
+  AGGREGATE(WordBook)
+  VALUE_OBJECT(CustomWord)
+  VALUE_OBJECT(WordRef)
+
+  COMMAND(CreateWordBook)
+  COMMAND(AddWordToWordBook)
+  COMMAND(AddCustomWord)
+  COMMAND(RemoveWordFromWordBook)
+  COMMAND(DeleteWordBook)
+
+  WordBook --> CustomWord
+  WordBook --> WordRef
+
+  WordBook <- CreateWordBook
+  WordBook <- AddWordToWordBook
+  WordBook <- AddCustomWord
+  WordBook <- RemoveWordFromWordBook
+  WordBook <- DeleteWordBook
+}
+
+' ===============================
+package "句子管理 SentenceContext" {
+  AGGREGATE(Sentence)
+  VALUE_OBJECT(GrammarAnalysis)
+  VALUE_OBJECT(VariantForm)
+  VALUE_OBJECT(UnknownWordRef)
+
+  COMMAND(CreateSentence)
+  COMMAND(UpdateSentence)
+  COMMAND(DeleteSentence)
+
+  Sentence --> GrammarAnalysis
+  Sentence --> VariantForm
+  Sentence --> UnknownWordRef
+  Sentence --> Word : contains (by ID)
+
+  Sentence <- CreateSentence
+  Sentence <- UpdateSentence
+  Sentence <- DeleteSentence
+}
+
+' ===============================
+package "文章管理 ArticleContext" {
+  AGGREGATE(Article)
+  VALUE_OBJECT(SentenceRef)
+  VALUE_OBJECT(UnknownWordRef)
+
+  COMMAND(CreateArticle)
+  COMMAND(UpdateArticle)
+  COMMAND(DeleteArticle)
+
+  Article --> SentenceRef
+  Article --> UnknownWordRef
+
+  Article <- CreateArticle
+  Article <- UpdateArticle
+  Article <- DeleteArticle
+}
+
+' ===============================
+package "听写模块 DictationContext" {
+  AGGREGATE(DictationSession)
+  VALUE_OBJECT(DictationResult)
+  VALUE_OBJECT(DictationTarget)
+  VALUE_OBJECT(DictationReport)
+
+  COMMAND(StartDictation)
+  COMMAND(SaveDictationResult)
+  COMMAND(GenerateDictationReport)
+
+  DictationSession --> DictationTarget
+  DictationSession --> DictationResult
+  DictationSession --> DictationReport
+
+  DictationSession <- StartDictation
+  DictationSession <- SaveDictationResult
+  DictationSession <- GenerateDictationReport
+}
+
+' ===============================
+package "写作模块 WritingContext" {
+  AGGREGATE(WritingTask)
+  VALUE_OBJECT(Content)
+  VALUE_OBJECT(Statistics)
+
+  COMMAND(CreateWritingTask)
+  COMMAND(UpdateWritingContent)
+  COMMAND(FinishWritingTask)
+
+  WritingTask --> Content
+  WritingTask --> Statistics
+
+  WritingTask <- CreateWritingTask
+  WritingTask <- UpdateWritingContent
+  WritingTask <- FinishWritingTask
+}
+
+' ===============================
+package "综合测试模块 AssessmentContext" {
+  AGGREGATE(AssessmentSession)
+  VALUE_OBJECT(SourceSelection)
+  VALUE_OBJECT(ResultReport)
+
+  COMMAND(StartAssessment)
+  COMMAND(SubmitAssessmentResult)
+  COMMAND(GenerateAssessmentReport)
+
+  AssessmentSession --> SourceSelection
+  AssessmentSession --> ResultReport
+
+  AssessmentSession <- StartAssessment
+  AssessmentSession <- SubmitAssessmentResult
+  AssessmentSession <- GenerateAssessmentReport
+}
+
+@enduml

@@ -44,7 +44,7 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
             return Optional.empty();
         }
     }
-    
+
     /**
      * 根据英文名称查找词性
      */
