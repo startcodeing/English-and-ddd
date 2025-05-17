@@ -27,7 +27,7 @@ public class WordBookController {
      */
     @PostMapping
     public Result<WordBookDTO> createWordBook(@Valid @RequestBody WordBookDTO dto) {
-        return wordBookService.createWordBook(dto);
+        return Result.success(wordBookService.createWordBook(dto));
     }
     
     /**
@@ -35,7 +35,7 @@ public class WordBookController {
      */
     @PutMapping("/{id}")
     public Result<WordBookDTO> updateWordBook(@PathVariable String id, @Valid @RequestBody WordBookDTO dto) {
-        return wordBookService.updateWordBook(id, dto);
+        return Result.success(wordBookService.updateWordBook(id, dto));
     }
     
     /**
@@ -43,7 +43,7 @@ public class WordBookController {
      */
     @GetMapping("/{id}")
     public Result<WordBookDTO> getWordBook(@PathVariable String id) {
-        return wordBookService.getWordBook(id);
+        return Result.success(wordBookService.getWordBook(id));
     }
     
     /**
@@ -51,7 +51,7 @@ public class WordBookController {
      */
     @GetMapping("/name/{name}")
     public Result<WordBookDTO> getWordBookByName(@PathVariable String name) {
-        return wordBookService.getWordBookByName(name);
+        return Result.success(wordBookService.getWordBookByName(name));
     }
     
     /**
@@ -59,7 +59,7 @@ public class WordBookController {
      */
     @GetMapping
     public Result<List<WordBookDTO>> getAllWordBooks() {
-        return wordBookService.getAllWordBooks();
+        return Result.success(wordBookService.getAllWordBooks());
     }
     
     /**
@@ -67,7 +67,8 @@ public class WordBookController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> deleteWordBook(@PathVariable String id) {
-        return wordBookService.deleteWordBook(id);
+        wordBookService.deleteWordBook(id);
+        return Result.success();
     }
     
     /**
@@ -75,7 +76,8 @@ public class WordBookController {
      */
     @PostMapping("/{id}/words")
     public Result<Void> addWordToWordBook(@PathVariable String id, @RequestBody List<String> wordIds) {
-        return wordBookService.addWordsToWordBook(id, wordIds);
+        wordBookService.addWordsToWordBook(id, wordIds);
+        return Result.success();
     }
     
     /**
@@ -83,7 +85,8 @@ public class WordBookController {
      */
     @DeleteMapping("/{id}/words/{wordId}")
     public Result<Void> removeWordFromWordBook(@PathVariable String id, @PathVariable String wordId) {
-        return wordBookService.removeWordFromWordBook(id, wordId);
+        wordBookService.removeWordFromWordBook(id, wordId);
+        return Result.success();
     }
     
     /**
@@ -91,6 +94,6 @@ public class WordBookController {
      */
     @GetMapping("/{id}/words")
     public Result<List<WordBookDTO>> getWordsInWordBook(@PathVariable String id) {
-        return wordBookService.getWordsInWordBook(id);
+        return Result.success(wordBookService.getWordsInWordBook(id));
     }
 }

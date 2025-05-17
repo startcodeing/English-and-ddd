@@ -99,10 +99,10 @@ public class ArticleController {
     /**
      * 从文章中移除句子
      */
-    @DeleteMapping("/{id}/sentences/{sentenceId}")
-    public Result<ArticleDTO> removeSentence(@PathVariable String id, @PathVariable String sentenceId) {
-        return Result.success(articleService.removeSentence(id, sentenceId));
-    }
+//    @DeleteMapping("/{id}/sentences/{sentenceId}")
+//    public Result<ArticleDTO> removeSentence(@PathVariable String id, @PathVariable String sentenceId) {
+//        return Result.success(articleService.removeSentence(id, sentenceId));
+//    }
     
     /**
      * 为文章添加陌生单词
@@ -115,28 +115,28 @@ public class ArticleController {
     /**
      * 移除文章的陌生单词
      */
-    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
-    public Result<ArticleDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
-        return Result.success(articleService.removeUnfamiliarWord(id, wordId));
-    }
+//    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
+//    public Result<ArticleDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
+//        return Result.success(articleService.removeUnfamiliarWord(id, wordId));
+//    }
     
     /**
      * 从文章内容中提取句子
      */
-    @GetMapping("/{id}/extract-sentences")
-    public Result<List<SentenceDTO>> extractSentences(@PathVariable String id) {
-        return Result.success(articleService.extractSentences(id));
-    }
+//    @GetMapping("/{id}/extract-sentences")
+//    public Result<List<SentenceDTO>> extractSentences(@PathVariable String id) {
+//        return Result.success(articleService.extractSentences(id));
+//    }
     
     /**
      * 从文章内容中识别陌生单词
      */
-    @PostMapping("/{id}/identify-unfamiliar-words")
-    public Result<List<WordDTO>> identifyUnfamiliarWords(
-        @PathVariable String id, 
-        @RequestBody List<String> knownWordIds) {
-        return Result.success(articleService.identifyUnfamiliarWords(id, knownWordIds));
-    }
+//    @PostMapping("/{id}/identify-unfamiliar-words")
+//    public Result<List<WordDTO>> identifyUnfamiliarWords(
+//        @PathVariable String id,
+//        @RequestBody List<String> knownWordIds) {
+//        return Result.success(articleService.identifyUnfamiliarWords(id, knownWordIds));
+//    }
     
     /**
      * 删除文章

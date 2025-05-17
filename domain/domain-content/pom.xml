@@ -20,14 +20,10 @@
             <groupId>com.englishlearning</groupId>
             <artifactId>domain-vocabulary</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.englishlearning</groupId>
-            <artifactId>domain-content-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- 移除对domain-content-api的依赖，因为该模块将被删除 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
     </dependencies>
-</project> 
+</project>

@@ -1,0 +1,71 @@
+package com.englishlearning.domain.vocabulary.command;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+/**
+ * 更新单词命令
+ * 封装更新单词所需的参数
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateWordCommand {
+    
+    /**
+     * 单词ID
+     */
+    private String id;
+    
+    /**
+     * 拼写
+     */
+    private String spelling;
+    
+    /**
+     * 词性ID
+     */
+    private String partOfSpeechId;
+    
+    /**
+     * 发音
+     */
+    private String pronunciation;
+    
+    /**
+     * 中文意思
+     */
+    private String chineseMeaning;
+    
+    /**
+     * 例句列表
+     */
+    private List<String> exampleSentences;
+    
+    /**
+     * 验证命令
+     * @throws IllegalArgumentException 如果参数无效
+     */
+    public void validate() {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("单词ID不能为空");
+        }
+        
+        if (spelling == null || spelling.trim().isEmpty()) {
+            throw new IllegalArgumentException("单词拼写不能为空");
+        }
+        
+        if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词性ID不能为空");
+        }
+        
+        if (chineseMeaning == null || chineseMeaning.trim().isEmpty()) {
+            throw new IllegalArgumentException("单词中文意思不能为空");
+        }
+    }
+}

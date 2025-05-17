@@ -130,7 +130,6 @@ public class SentenceServiceImpl implements SentenceService {
         
         // 简单实现，实际项目中可能会调用NLP服务或其他分析工具
         String grammarAnalysis = "此句为" + determineStructure(sentence.getEnglishContent());
-        
         sentence.setGrammarAnalysis(grammarAnalysis);
         sentenceRepository.save(sentence);
         

@@ -14,7 +14,6 @@
 
     <modules>
         <module>domain-vocabulary</module>
-        <module>domain-content-api</module>
         <module>domain-content</module>
         <!-- 其他领域模块将在后续添加 -->
     </modules>
@@ -25,4 +24,4 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
-</project> 
+</project>

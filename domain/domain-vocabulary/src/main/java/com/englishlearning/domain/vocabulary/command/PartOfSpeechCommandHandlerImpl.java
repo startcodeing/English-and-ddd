@@ -9,7 +9,7 @@ import java.util.Optional;
 
 /**
  * 词性命令处理器实现类
- * 实现处理各种词性相关命令的方法
+ * 实现处理各种词性相关命令和词性的查询
  */
 @Service
 @RequiredArgsConstructor

@@ -27,7 +27,7 @@ public class WordController {
      */
     @PostMapping
     public Result<WordDTO> createWord(@Valid @RequestBody WordDTO dto) {
-        return wordService.createWord(dto);
+        return Result.success(wordService.createWord(dto));
     }
     
     /**
@@ -35,7 +35,7 @@ public class WordController {
      */
     @PutMapping("/{id}")
     public Result<WordDTO> updateWord(@PathVariable String id, @Valid @RequestBody WordDTO dto) {
-        return wordService.updateWord(id, dto);
+        return Result.success(wordService.updateWord(id, dto));
     }
     
     /**
@@ -43,7 +43,7 @@ public class WordController {
      */
     @GetMapping("/{id}")
     public Result<WordDTO> getWord(@PathVariable String id) {
-        return wordService.getWord(id);
+        return Result.success(wordService.getWord(id));
     }
     
     /**
@@ -51,7 +51,7 @@ public class WordController {
      */
     @GetMapping("/spelling/{spelling}")
     public Result<WordDTO> getWordBySpelling(@PathVariable String spelling) {
-        return wordService.getWordBySpelling(spelling);
+        return Result.success(wordService.getWordBySpelling(spelling));
     }
     
     /**
@@ -59,7 +59,7 @@ public class WordController {
      */
     @GetMapping("/search")
     public Result<List<WordDTO>> searchWordsByMeaning(@RequestParam String meaning) {
-        return wordService.searchWordsByMeaning(meaning);
+        return Result.success(wordService.searchWordsByMeaning(meaning));
     }
     
     /**
@@ -67,7 +67,7 @@ public class WordController {
      */
     @GetMapping("/part-of-speech/{partOfSpeechId}")
     public Result<List<WordDTO>> getWordsByPartOfSpeech(@PathVariable String partOfSpeechId) {
-        return wordService.getWordsByPartOfSpeech(partOfSpeechId);
+        return Result.success(wordService.getWordsByPartOfSpeech(partOfSpeechId));
     }
     
     /**
@@ -75,7 +75,7 @@ public class WordController {
      */
     @GetMapping
     public Result<List<WordDTO>> getAllWords() {
-        return wordService.getAllWords();
+        return Result.success(wordService.getAllWords());
     }
     
     /**
@@ -83,6 +83,7 @@ public class WordController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> deleteWord(@PathVariable String id) {
-        return wordService.deleteWord(id);
+        wordService.deleteWord(id);
+        return Result.success();
     }
 }

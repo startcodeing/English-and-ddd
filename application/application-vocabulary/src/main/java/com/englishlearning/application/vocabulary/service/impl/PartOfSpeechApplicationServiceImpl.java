@@ -1,6 +1,7 @@
-package com.englishlearning.application.vocabulary.service;
+package com.englishlearning.application.vocabulary.service.impl;
 
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
+import com.englishlearning.application.vocabulary.service.PartOfSpeechApplicationService;
 import com.englishlearning.domain.vocabulary.command.CreatePartOfSpeechCommand;
 import com.englishlearning.domain.vocabulary.command.DeletePartOfSpeechCommand;
 import com.englishlearning.domain.vocabulary.command.PartOfSpeechCommandHandler;
@@ -53,14 +54,14 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
 
     @Transactional
     @Override
-    public PartOfSpeechDTO updatePartOfSpeech(String id, PartOfSpeechDTO dto) {
+    public PartOfSpeechDTO updatePartOfSpeech(PartOfSpeechDTO dto) {
         try {
             UpdatePartOfSpeechCommand updateCommand = UpdatePartOfSpeechCommand.builder()
                     .englishName(dto.getEnglishName())
                     .chineseMeaning(dto.getChineseMeaning())
                     .usageSummary(dto.getUsageSummary())
                     .commonPhrases(dto.getCommonPhrases())
-                    .id(id)
+                    .id(dto.getId())
                     .build();
             PartOfSpeech updatedPartOfSpeech = partOfSpeechCommandHandler.handle(updateCommand);
             return convertToDTO(updatedPartOfSpeech);

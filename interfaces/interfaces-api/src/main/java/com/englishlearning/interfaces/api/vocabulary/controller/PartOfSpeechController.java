@@ -34,8 +34,8 @@ public class PartOfSpeechController {
      * 更新词性
      */
     @PutMapping("/{id}")
-    public Result<PartOfSpeechDTO> updatePartOfSpeech(@PathVariable String id, @Valid @RequestBody PartOfSpeechDTO dto) {
-        return Result.success(partOfSpeechService.updatePartOfSpeech(id, dto));
+    public Result<PartOfSpeechDTO> updatePartOfSpeech(@Valid @RequestBody PartOfSpeechDTO dto) {
+        return Result.success(partOfSpeechService.updatePartOfSpeech(dto));
     }
     
     /**

@@ -91,18 +91,18 @@ public class SentenceController {
     /**
      * 移除句子的陌生单词
      */
-    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
-    public Result<SentenceDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
-        return Result.success(sentenceService.removeUnfamiliarWord(id, wordId));
-    }
+//    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
+//    public Result<SentenceDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
+//        return Result.success(sentenceService.removeUnfamiliarWord(id, wordId));
+//    }
     
     /**
      * 分析句子结构
      */
-    @GetMapping("/{id}/grammar-analysis")
-    public Result<String> analyzeSentenceGrammar(@PathVariable String id) {
-        return Result.success(sentenceService.analyzeSentenceGrammar(id));
-    }
+//    @GetMapping("/{id}/grammar-analysis")
+//    public Result<String> analyzeSentenceGrammar(@PathVariable String id) {
+//        return Result.success(sentenceService.analyzeSentenceGrammar(id));
+//    }
     
     /**
      * 删除句子
