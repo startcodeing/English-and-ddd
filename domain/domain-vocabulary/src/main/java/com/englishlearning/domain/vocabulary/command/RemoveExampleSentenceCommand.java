@@ -21,6 +21,11 @@ public class RemoveExampleSentenceCommand {
     private String wordId;
     
     /**
+     * 词性ID
+     */
+    private String partOfSpeechId;
+    
+    /**
      * 例句内容
      */
     private String sentence;
@@ -32,6 +37,10 @@ public class RemoveExampleSentenceCommand {
     public void validate() {
         if (wordId == null || wordId.trim().isEmpty()) {
             throw new IllegalArgumentException("单词ID不能为空");
+        }
+        
+        if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词性ID不能为空");
         }
         
         if (sentence == null || sentence.trim().isEmpty()) {

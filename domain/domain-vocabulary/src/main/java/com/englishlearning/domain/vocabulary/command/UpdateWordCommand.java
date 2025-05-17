@@ -21,6 +21,11 @@ public class UpdateWordCommand {
      * 单词ID
      */
     private String id;
+
+    /**
+     * 难度级别（1-5级）
+     */
+    private Integer difficultyLevel;
     
     /**
      * 拼写
@@ -46,6 +51,16 @@ public class UpdateWordCommand {
      * 例句列表
      */
     private List<String> exampleSentences;
+
+    /**
+     * 同义词列表
+     */
+    private List<String> synonymIds;
+
+    /**
+     * 反义词列表
+     */
+    private List<String> antonymIds;
     
     /**
      * 验证命令

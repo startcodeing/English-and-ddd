@@ -1,40 +1,37 @@
 package com.englishlearning.infrastructure.db.mapper;
 
-import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
-import com.englishlearning.infrastructure.db.po.WordPO;
 import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 /**
- * 单词实体与PO转换器
+ * 单词词义实体与PO转换器
  */
-@Mapper(componentModel = "spring", uses = {WordMeaningPoMapper.class})
-public interface WordPoMapper{
+@Mapper(componentModel = "spring")
+public interface WordMeaningPoMapper {
     
-    WordPoMapper INSTANCE = Mappers.getMapper(WordPoMapper.class);
+    WordMeaningPoMapper INSTANCE = Mappers.getMapper(WordMeaningPoMapper.class);
     
     /**
      * 将领域实体转换为PO
      */
-    WordPO toPo(Word entity);
+    WordMeaningPO toPo(WordMeaning entity);
     
     /**
      * 将PO转换为领域实体
      */
-    Word toEntity(WordPO po);
+    WordMeaning toEntity(WordMeaningPO po);
     
     /**
      * 批量将领域实体转换为PO
      */
-    List<WordPO> toPoList(List<Word> entityList);
+    List<WordMeaningPO> toPoList(List<WordMeaning> entityList);
     
     /**
      * 批量将PO转换为领域实体
      */
-    List<Word> toEntityList(List<WordPO> poList);
+    List<WordMeaning> toEntityList(List<WordMeaningPO> poList);
 }

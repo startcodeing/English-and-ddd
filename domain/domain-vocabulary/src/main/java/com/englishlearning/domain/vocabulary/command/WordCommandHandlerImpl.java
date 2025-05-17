@@ -1,13 +1,16 @@
 package com.englishlearning.domain.vocabulary.command;
 
-import com.englishlearning.domain.vocabulary.model.entity.PartOfSpeech;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
+import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import com.englishlearning.domain.vocabulary.repository.PartOfSpeechRepository;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * 单词命令处理器实现类
@@ -27,18 +30,27 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      */
     @Override
     public Word handle(CreateWordCommand createCommand) {
+        createCommand.validate();
+        
+        // 检查单词是否已存在
         Optional<Word> existWord = wordRepository.findBySpelling(createCommand.getSpelling());
         if (existWord.isPresent()) {
-            throw new RuntimeException("Word already exists");
+            throw new IllegalArgumentException("单词已存在: " + createCommand.getSpelling());
         }
         
-        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(createCommand.getPartOfSpeechId())
-                .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + createCommand.getPartOfSpeechId()));
+        // 创建单词实体
+        Word word = Word.builder()
+                .id(UUID.randomUUID().toString())
+                .spelling(createCommand.getSpelling())
+                .pronunciation(createCommand.getPronunciation())
+                .difficultyLevel(createCommand.getDifficultyLevel())
+                .meanings(new ArrayList<>())
+                .build();
         
-        Word word = Word.builder().build();
+        // 执行创建逻辑
         word.create(createCommand);
-        word.setPartOfSpeech(partOfSpeech);
         
+        // 保存并返回
         return wordRepository.save(word);
     }
     
@@ -49,17 +61,48 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      */
     @Override
     public Word handle(UpdateWordCommand command) {
-        // 获取实体
+        command.validate();
+        
+        // 获取单词实体
         Word word = wordRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
         
-        // 获取词性
-        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(command.getPartOfSpeechId())
-                .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + command.getPartOfSpeechId()));
-        
         // 执行更新逻辑
         word.update(command);
-        word.setPartOfSpeech(partOfSpeech);
+        
+        // 保存并返回
+        return wordRepository.save(word);
+    }
+    
+    @Override
+    public Word handle(AddWordMeaningCommand command) {
+        command.validate();
+        
+        // 获取单词实体
+        Word word = wordRepository.findById(command.getWordId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+        
+        // 检查是否已存在相同词性的词义
+        Optional<WordMeaning> existingMeaning = word.findMeaningByPartOfSpeech(command.getPartOfSpeechId());
+        if (existingMeaning.isPresent()) {
+            throw new IllegalArgumentException("该单词已存在词性为" + command.getPartOfSpeechId() + "的词义");
+        }
+        
+        // 创建新词义
+        WordMeaning meaning = WordMeaning.builder()
+                .id(UUID.randomUUID().toString())
+                .partOfSpeechId(command.getPartOfSpeechId())
+                .chineseMeaning(command.getChineseMeaning())
+                .exampleSentences(CollectionUtils.isEmpty(command.getExampleSentences()) ?
+                        new ArrayList<>() : command.getExampleSentences())
+                .synonymIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
+                        new ArrayList<>() : command.getSynonymIds())
+                .antonymIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
+                        new ArrayList<>() : command.getAntonymIds())
+                .build();
+        
+        // 添加词义
+        word.addMeaning(meaning);
         
         // 保存并返回
         return wordRepository.save(word);
@@ -74,72 +117,82 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         command.validate();
         wordRepository.deleteById(command.getId());
     }
-    
+
+    @Override
+    public Word handle(AddExampleSentenceCommand command) {
+        return null;
+    }
+
+    @Override
+    public Word handle(RemoveExampleSentenceCommand command) {
+        return null;
+    }
+
     /**
      * 添加同义词
-     * @param wordId 单词ID
-     * @param synonymId 同义词ID
-     * @return 更新后的单词实体
      */
     @Override
-    public Word addSynonym(String wordId, String synonymId) {
+    public Word addSynonym(String wordId, String partOfSpeechId, String synonymId) {
+        // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
         
+        // 获取同义词实体
         Word synonym = wordRepository.findById(synonymId)
                 .orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymId));
         
-        word.addSynonym(synonym);
+        // 添加同义词并保存
+        word.addSynonym(partOfSpeechId, synonym);
         return wordRepository.save(word);
     }
     
     /**
      * 添加反义词
-     * @param wordId 单词ID
-     * @param antonymId 反义词ID
-     * @return 更新后的单词实体
      */
     @Override
-    public Word addAntonym(String wordId, String antonymId) {
+    public Word addAntonym(String wordId, String partOfSpeechId, String antonymId) {
+        // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
         
+        // 获取反义词实体
         Word antonym = wordRepository.findById(antonymId)
                 .orElseThrow(() -> new IllegalArgumentException("反义词不存在: " + antonymId));
         
-        word.addAntonym(antonym);
+        // 添加反义词并保存
+        word.addAntonym(partOfSpeechId, antonym);
         return wordRepository.save(word);
     }
     
     /**
-     * 处理添加例句命令
-     * @param command 添加例句命令
-     * @return 更新后的单词实体
+     * 添加例句
      */
     @Override
-    public Word handle(AddExampleSentenceCommand command) {
+    public Word addExampleSentence(AddExampleSentenceCommand command) {
         command.validate();
         
+        // 获取单词实体
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         
-        word.addExampleSentence(command.getSentence());
+        // 添加例句并保存
+        word.addExampleSentence(command.getPartOfSpeechId(), command.getSentence());
         return wordRepository.save(word);
     }
     
     /**
-     * 处理移除例句命令
-     * @param command 移除例句命令
-     * @return 更新后的单词实体
+     * 移除例句
      */
     @Override
-    public Word handle(RemoveExampleSentenceCommand command) {
+    public Word removeExampleSentence(RemoveExampleSentenceCommand command) {
         command.validate();
         
+        // 获取单词实体
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         
-        word.removeExampleSentence(command.getSentence());
+        // 移除例句并保存
+        word.removeExampleSentence(command.getPartOfSpeechId(), command.getSentence());
         return wordRepository.save(word);
     }
 }

@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>interfaces-api</module>
+        <module>interfaces-vocabulary</module>
         <module>interfaces-content</module>
         <!-- 更多接口模块将在后续添加 -->
     </modules>

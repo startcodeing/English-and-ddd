@@ -7,10 +7,14 @@ spring:
   application:
     name: english-learning-platform
   datasource:
-    url: jdbc:h2:mem:englishdb
+    #内存数据库，服务停止数据会丢失
+    #url: jdbc:h2:mem:englishdb
     driver-class-name: org.h2.Driver
     username: sa
-    password: 
+    password:
+    #DB_CLOSE_ON_EXIT=FALSE：防止 JVM 退出时关闭数据库（默认关闭时会 flush 清除缓存）；
+    #AUTO_SERVER=TRUE：允许多个进程连接同一个数据库文件（如多个测试实例）。
+    url: jdbc:h2:file:./data/englishLearnPlatform.db
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:

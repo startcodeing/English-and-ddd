@@ -111,7 +111,7 @@
             <!-- 接口模块 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
-                <artifactId>interfaces-api</artifactId>
+                <artifactId>interfaces-vocabulary</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

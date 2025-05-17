@@ -47,7 +47,7 @@
         <!-- 接口模块 -->
         <dependency>
             <groupId>com.englishlearning</groupId>
-            <artifactId>interfaces-api</artifactId>
+            <artifactId>interfaces-vocabulary</artifactId>
         </dependency>
         
         <!-- Spring Boot 依赖 -->
@@ -64,6 +64,10 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
     </dependencies>
 

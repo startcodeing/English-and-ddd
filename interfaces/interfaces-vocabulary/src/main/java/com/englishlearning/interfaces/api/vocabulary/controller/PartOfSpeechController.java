@@ -33,7 +33,7 @@ public class PartOfSpeechController {
     /**
      * 更新词性
      */
-    @PutMapping("/{id}")
+    @PutMapping()
     public Result<PartOfSpeechDTO> updatePartOfSpeech(@Valid @RequestBody PartOfSpeechDTO dto) {
         return Result.success(partOfSpeechService.updatePartOfSpeech(dto));
     }
