@@ -9,36 +9,36 @@ import com.englishlearning.domain.vocabulary.model.entity.PartOfSpeech;
 public interface PartOfSpeechCommandHandler {
     
     /**
-     * 处理创建词性命令
+     * 创建词性
      * @param command 创建词性命令
      * @return 创建的词性实体
      */
-    PartOfSpeech handle(CreatePartOfSpeechCommand command);
+    PartOfSpeech createPartOfSpeech(CreatePartOfSpeechCommand command);
     
     /**
-     * 处理更新词性命令
+     * 更新词性
      * @param command 更新词性命令
      * @return 更新后的词性实体
      */
-    PartOfSpeech handle(UpdatePartOfSpeechCommand command);
+    PartOfSpeech updatePartOfSpeech(UpdatePartOfSpeechCommand command);
     
     /**
-     * 处理删除词性命令
+     * 删除词性
      * @param command 删除词性命令
      */
-    void handle(DeletePartOfSpeechCommand command);
+    void deletePartOfSpeech(DeletePartOfSpeechCommand command);
     
     /**
-     * 处理更新词性用法总结命令
+     * 更新词性用法总结
      * @param command 更新词性用法总结命令
      * @return 更新后的词性实体
      */
-    PartOfSpeech handle(UpdatePartOfSpeechUsageSummaryCommand command);
+    PartOfSpeech updatePartOfSpeechUsageSummary(UpdatePartOfSpeechUsageSummaryCommand command);
     
     /**
-     * 处理更新词性常用短语命令
+     * 更新词性常用短语
      * @param command 更新词性常用短语命令
      * @return 更新后的词性实体
      */
-    PartOfSpeech handle(UpdatePartOfSpeechCommonPhrasesCommand command);
+    PartOfSpeech updatePartOfSpeechCommonPhrases(UpdatePartOfSpeechCommonPhrasesCommand command);
 }

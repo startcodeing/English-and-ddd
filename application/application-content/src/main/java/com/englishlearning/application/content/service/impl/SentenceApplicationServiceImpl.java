@@ -50,7 +50,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                     .build();
             
             // 通过命令处理器执行命令
-            Sentence savedSentence = sentenceCommandHandler.handle(command);
+            Sentence savedSentence = sentenceCommandHandler.createSentence(command);
             // 转换为DTO并返回
             return sentenceMapper.toDTO(savedSentence);
         } catch (IllegalArgumentException e) {
@@ -76,7 +76,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                     .build();
             
             // 通过命令处理器执行命令
-            Sentence updatedSentence = sentenceCommandHandler.handle(command);
+            Sentence updatedSentence = sentenceCommandHandler.updateSentence(command);
             
             // 转换为DTO并返回
             return sentenceMapper.toDTO(updatedSentence);
@@ -184,7 +184,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                     .build();
             
             // 通过命令处理器执行命令
-            sentenceCommandHandler.handle(command);
+            sentenceCommandHandler.deleteSentence(command);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {

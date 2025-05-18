@@ -12,20 +12,20 @@ public interface ArticleCommandHandler {
      * @param command 创建文章命令
      * @return 创建的文章实体
      */
-    Article handle(CreateArticleCommand command);
+    Article createArticle(CreateArticleCommand command);
     
     /**
      * 处理更新文章命令
      * @param command 更新文章命令
      * @return 更新后的文章实体
      */
-    Article handle(UpdateArticleCommand command);
+    Article updateArticle(UpdateArticleCommand command);
     
     /**
      * 处理删除文章命令
      * @param command 删除文章命令
      */
-    void handle(DeleteArticleCommand command);
+    void deleteArticle(DeleteArticleCommand command);
     
     /**
      * 处理添加句子到文章命令

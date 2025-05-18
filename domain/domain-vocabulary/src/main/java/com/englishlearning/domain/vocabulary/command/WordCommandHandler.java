@@ -12,27 +12,27 @@ public interface WordCommandHandler {
      * @param command 创建单词命令
      * @return 创建的单词实体
      */
-    Word handle(CreateWordCommand command);
+    Word createWord(CreateWordCommand command);
     
     /**
      * 处理更新单词命令
      * @param command 更新单词命令
      * @return 更新后的单词实体
      */
-    Word handle(UpdateWordCommand command);
+    Word updateWord(UpdateWordCommand command);
     
     /**
      * 处理添加单词词义命令
      * @param command 添加单词词义命令
      * @return 更新后的单词实体
      */
-    Word handle(AddWordMeaningCommand command);
+    Word addWordMeaning(AddWordMeaningCommand command);
     
     /**
      * 处理删除单词命令
      * @param command 删除单词命令
      */
-    void handle(DeleteWordCommand command);
+    void deleteWord(DeleteWordCommand command);
     
     /**
      * 处理添加例句命令

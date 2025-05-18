@@ -26,7 +26,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     private final WordCommandHandler wordCommandHandler;
 
     @Autowired
-    public WordApplicationServiceImpl(WordRepository wordRepository, 
+    public WordApplicationServiceImpl(WordRepository wordRepository,
                                       WordMapper wordMapper,
                                       WordCommandHandler wordCommandHandler) {
         this.wordRepository = wordRepository;
@@ -46,10 +46,10 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                     .partOfSpeechId(dto.getPartOfSpeech() != null ? dto.getPartOfSpeech().getId() : null)
                     .exampleSentences(dto.getPartOfSpeech().getCommonPhrases())
                     .build();
-            
+
             // 通过命令处理器执行命令
-            Word savedWord = wordCommandHandler.handle(command);
-            
+            Word savedWord = wordCommandHandler.createWord(command);
+
             // 转换为DTO并返回
             return wordMapper.toDTO(savedWord);
         } catch (IllegalArgumentException e) {
@@ -72,9 +72,9 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                     .partOfSpeechId(dto.getPartOfSpeech() != null ? dto.getPartOfSpeech().getId() : null)
                     .exampleSentences(dto.getPartOfSpeech().getCommonPhrases())
                     .build();
-            
+
             // 通过命令处理器执行命令
-            Word updatedWord = wordCommandHandler.handle(command);
+            Word updatedWord = wordCommandHandler.updateWord(command);
             // 转换为DTO并返回
             return wordMapper.toDTO(updatedWord);
         } catch (IllegalArgumentException e) {
@@ -154,7 +154,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                     .id(id)
                     .build();
             // 通过命令处理器执行命令
-            wordCommandHandler.handle(command);
+            wordCommandHandler.deleteWord(command);
         } catch (Exception e) {
             throw new RuntimeException("删除单词失败: " + e.getMessage());
         }

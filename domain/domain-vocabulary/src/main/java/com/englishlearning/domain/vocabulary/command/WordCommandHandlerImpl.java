@@ -29,7 +29,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      * @return 创建的单词实体
      */
     @Override
-    public Word handle(CreateWordCommand createCommand) {
+    public Word createWord(CreateWordCommand createCommand) {
         createCommand.validate();
         
         // 检查单词是否已存在
@@ -60,7 +60,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      * @return 更新后的单词实体
      */
     @Override
-    public Word handle(UpdateWordCommand command) {
+    public Word updateWord(UpdateWordCommand command) {
         command.validate();
         
         // 获取单词实体
@@ -75,7 +75,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
     }
     
     @Override
-    public Word handle(AddWordMeaningCommand command) {
+    public Word addWordMeaning(AddWordMeaningCommand command) {
         command.validate();
         
         // 获取单词实体
@@ -113,7 +113,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      * @param command 删除单词命令
      */
     @Override
-    public void handle(DeleteWordCommand command) {
+    public void deleteWord(DeleteWordCommand command) {
         command.validate();
         wordRepository.deleteById(command.getId());
     }

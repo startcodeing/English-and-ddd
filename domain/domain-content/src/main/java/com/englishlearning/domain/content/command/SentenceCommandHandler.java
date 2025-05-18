@@ -13,20 +13,20 @@ public interface SentenceCommandHandler {
      * @param command 创建句子命令
      * @return 创建的句子实体
      */
-    Sentence handle(CreateSentenceCommand command);
+    Sentence createSentence(CreateSentenceCommand command);
     
     /**
      * 处理更新句子命令
      * @param command 更新句子命令
      * @return 更新后的句子实体
      */
-    Sentence handle(UpdateSentenceCommand command);
+    Sentence updateSentence(UpdateSentenceCommand command);
     
     /**
      * 处理删除句子命令
      * @param command 删除句子命令
      */
-    void handle(DeleteSentenceCommand command);
+    void deleteSentence(DeleteSentenceCommand command);
     
     /**
      * 添加变体

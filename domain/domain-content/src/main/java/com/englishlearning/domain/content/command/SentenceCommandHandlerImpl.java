@@ -35,7 +35,7 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
      * @return 创建的句子实体
      */
     @Override
-    public Sentence handle(CreateSentenceCommand command) {
+    public Sentence createSentence(CreateSentenceCommand command) {
         command.validate();
         
         // 验证文章是否存在
@@ -71,7 +71,7 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
      * @return 更新后的句子实体
      */
     @Override
-    public Sentence handle(UpdateSentenceCommand command) {
+    public Sentence updateSentence(UpdateSentenceCommand command) {
         command.validate();
         
         // 获取句子实体
@@ -105,7 +105,7 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
      * @param command 删除句子命令
      */
     @Override
-    public void handle(DeleteSentenceCommand command) {
+    public void deleteSentence(DeleteSentenceCommand command) {
         command.validate();
         
         // 验证句子是否存在

@@ -28,10 +28,19 @@ package "词汇管理上下文" <<VocabularyContext>> {
             - id: String
             - spelling: String
             - pronunciation: String
-            - chineseMeaning: String
         }
         
-        Word "*" -- "*" Word: 同义词/反义词 >
+        class WordMeaning {
+            - id: String
+            - partOfSpeechId: String
+            - chineseMeaning: String
+            - synonymIds: List<String>
+            - antonymIds: List<String>
+            - exampleSentences: List<String>
+        }
+        
+        Word "1" *-- "*" WordMeaning: 包含 >
+        WordMeaning "*" -- "*" WordMeaning: 同义词/反义词 >
     }
     
     ' 词性聚合
@@ -75,8 +84,8 @@ package "词汇管理上下文" <<VocabularyContext>> {
     WordBookItemRepository ..> WordBookItem: 管理 >
     PartOfSpeechRepository ..> PartOfSpeech: 管理 >
     
-    ' 单词与词性的关系改为引用关系
-    Word ..> PartOfSpeech: 引用 >
+    ' 词义与词性的关系为引用关系
+    WordMeaning ..> PartOfSpeech: 引用 >
 }
 
 ' 内容管理上下文

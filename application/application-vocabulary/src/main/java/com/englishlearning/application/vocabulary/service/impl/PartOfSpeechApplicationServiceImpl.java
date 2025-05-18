@@ -43,7 +43,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
                     .usageSummary(dto.getUsageSummary())
                     .commonPhrases(dto.getCommonPhrases())
                     .build();
-            PartOfSpeech savedPartOfSpeech = partOfSpeechCommandHandler.handle(addCommand);
+            PartOfSpeech savedPartOfSpeech = partOfSpeechCommandHandler.createPartOfSpeech(addCommand);
             return convertToDTO(savedPartOfSpeech);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -63,7 +63,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
                     .commonPhrases(dto.getCommonPhrases())
                     .id(dto.getId())
                     .build();
-            PartOfSpeech updatedPartOfSpeech = partOfSpeechCommandHandler.handle(updateCommand);
+            PartOfSpeech updatedPartOfSpeech = partOfSpeechCommandHandler.updatePartOfSpeech(updateCommand);
             return convertToDTO(updatedPartOfSpeech);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -101,7 +101,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
             DeletePartOfSpeechCommand deleteCommand = DeletePartOfSpeechCommand.builder()
                     .id(id)
                     .build();
-            partOfSpeechCommandHandler.handle(deleteCommand);
+            partOfSpeechCommandHandler.deletePartOfSpeech(deleteCommand);
         } catch (Exception e) {
           throw new RuntimeException("删除词性失败: " + e.getMessage());
         }

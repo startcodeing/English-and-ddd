@@ -18,12 +18,12 @@ public class PartOfSpeechCommandHandlerImpl implements PartOfSpeechCommandHandle
     private final PartOfSpeechRepository partOfSpeechRepository;
     
     /**
-     * 处理创建词性命令
+     * 创建词性
      * @param createCommand 创建词性命令
      * @return 创建的词性实体
      */
     @Override
-    public PartOfSpeech handle(CreatePartOfSpeechCommand createCommand) {
+    public PartOfSpeech createPartOfSpeech(CreatePartOfSpeechCommand createCommand) {
         Optional<PartOfSpeech> existPartOfSpeech = partOfSpeechRepository.findByEnglishName(createCommand.getEnglishName());
         if (existPartOfSpeech.isPresent()) {
             throw new RuntimeException("Part of speech already exists");
@@ -34,12 +34,12 @@ public class PartOfSpeechCommandHandlerImpl implements PartOfSpeechCommandHandle
     }
     
     /**
-     * 处理更新词性命令
+     * 更新词性
      * @param command 更新词性命令
      * @return 更新后的词性实体
      */
     @Override
-    public PartOfSpeech handle(UpdatePartOfSpeechCommand command) {
+    public PartOfSpeech updatePartOfSpeech(UpdatePartOfSpeechCommand command) {
         // 获取实体
         PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + command.getId()));
@@ -50,22 +50,22 @@ public class PartOfSpeechCommandHandlerImpl implements PartOfSpeechCommandHandle
     }
     
     /**
-     * 处理删除词性命令
+     * 删除词性
      * @param command 删除词性命令
      */
     @Override
-    public void handle(DeletePartOfSpeechCommand command) {
+    public void deletePartOfSpeech(DeletePartOfSpeechCommand command) {
         command.validate();
         partOfSpeechRepository.deleteById(command.getId());
     }
     
     /**
-     * 处理更新词性用法总结命令
+     * 更新词性用法总结
      * @param command 更新词性用法总结命令
      * @return 更新后的词性实体
      */
     @Override
-    public PartOfSpeech handle(UpdatePartOfSpeechUsageSummaryCommand command) {
+    public PartOfSpeech updatePartOfSpeechUsageSummary(UpdatePartOfSpeechUsageSummaryCommand command) {
         // 验证命令
         command.validate();
         // 获取实体
@@ -78,12 +78,12 @@ public class PartOfSpeechCommandHandlerImpl implements PartOfSpeechCommandHandle
     }
     
     /**
-     * 处理更新词性常用短语命令
+     * 更新词性常用短语
      * @param command 更新词性常用短语命令
      * @return 更新后的词性实体
      */
     @Override
-    public PartOfSpeech handle(UpdatePartOfSpeechCommonPhrasesCommand command) {
+    public PartOfSpeech updatePartOfSpeechCommonPhrases(UpdatePartOfSpeechCommonPhrasesCommand command) {
         // 验证命令
         command.validate();
         

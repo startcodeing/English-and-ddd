@@ -27,7 +27,7 @@ public class ArticleCommandHandlerImpl implements ArticleCommandHandler {
     private final ArticleEventPublisher eventPublisher;
     
     @Override
-    public Article handle(CreateArticleCommand command) {
+    public Article createArticle(CreateArticleCommand command) {
         command.validate();
         
         Article article = Article.builder().build();
@@ -47,7 +47,7 @@ public class ArticleCommandHandlerImpl implements ArticleCommandHandler {
     }
     
     @Override
-    public Article handle(UpdateArticleCommand command) {
+    public Article updateArticle(UpdateArticleCommand command) {
         command.validate();
         
         // 获取实体
@@ -72,7 +72,7 @@ public class ArticleCommandHandlerImpl implements ArticleCommandHandler {
     }
     
     @Override
-    public void handle(DeleteArticleCommand command) {
+    public void deleteArticle(DeleteArticleCommand command) {
         command.validate();
         
         // 检查文章是否存在

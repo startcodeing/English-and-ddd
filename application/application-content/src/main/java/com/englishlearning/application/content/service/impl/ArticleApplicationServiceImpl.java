@@ -52,7 +52,7 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                     .build();
             
             // 通过命令处理器执行命令
-            Article savedArticle = articleCommandHandler.handle(command);
+            Article savedArticle = articleCommandHandler.createArticle(command);
             return articleMapper.toDTO(savedArticle);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -80,7 +80,7 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                     .build();
             
             // 通过命令处理器执行命令
-            Article updatedArticle = articleCommandHandler.handle(command);
+            Article updatedArticle = articleCommandHandler.updateArticle(command);
             return articleMapper.toDTO(updatedArticle);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -205,7 +205,7 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                     .build();
             
             // 通过命令处理器执行命令
-            articleCommandHandler.handle(command);
+            articleCommandHandler.deleteArticle(command);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
