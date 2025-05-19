@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,35 +34,15 @@ public class UpdateWordCommand {
     private String spelling;
     
     /**
-     * 词性ID
-     */
-    private String partOfSpeechId;
-    
-    /**
      * 发音
      */
     private String pronunciation;
     
     /**
-     * 中文意思
+     * 词义列表（不同词性下的含义、同义词、反义词和例句）
      */
-    private String chineseMeaning;
-    
-    /**
-     * 例句列表
-     */
-    private List<String> exampleSentences;
+    private List<WordMeaningCommand> wordMeanings;
 
-    /**
-     * 同义词列表
-     */
-    private List<String> synonymIds;
-
-    /**
-     * 反义词列表
-     */
-    private List<String> antonymIds;
-    
     /**
      * 验证命令
      * @throws IllegalArgumentException 如果参数无效
@@ -74,13 +55,10 @@ public class UpdateWordCommand {
         if (spelling == null || spelling.trim().isEmpty()) {
             throw new IllegalArgumentException("单词拼写不能为空");
         }
-        
-        if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty()) {
-            throw new IllegalArgumentException("词性ID不能为空");
-        }
-        
-        if (chineseMeaning == null || chineseMeaning.trim().isEmpty()) {
-            throw new IllegalArgumentException("单词中文意思不能为空");
+
+        // 验证每个词义
+        for (WordMeaningCommand meaning : wordMeanings) {
+            meaning.validate();
         }
     }
 }

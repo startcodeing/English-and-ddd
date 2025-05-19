@@ -27,7 +27,7 @@ public class WordMeaningPO {
     /**
      * 单词ID
      */
-    @Column(nullable = false)
+    @Column(name = "word_id", nullable = false)
     private String wordId;
     
     /**

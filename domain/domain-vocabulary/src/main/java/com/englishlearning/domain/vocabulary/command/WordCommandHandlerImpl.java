@@ -39,16 +39,10 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         }
         
         // 创建单词实体
-        Word word = Word.builder()
-                .id(UUID.randomUUID().toString())
-                .spelling(createCommand.getSpelling())
-                .pronunciation(createCommand.getPronunciation())
-                .difficultyLevel(createCommand.getDifficultyLevel())
-                .meanings(new ArrayList<>())
-                .build();
-        
-        // 执行创建逻辑
+        Word word = new Word();
+        word.setId(UUID.randomUUID().toString());
         word.create(createCommand);
+
         
         // 保存并返回
         return wordRepository.save(word);
@@ -67,12 +61,12 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word word = wordRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
         
-        // 执行更新逻辑
+        // 使用实体的update方法更新单词
         word.update(command);
         
         // 保存并返回
         return wordRepository.save(word);
-    }
+      }
     
     @Override
     public Word addWordMeaning(AddWordMeaningCommand command) {
@@ -120,12 +114,40 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
 
     @Override
     public Word handle(AddExampleSentenceCommand command) {
-        return null;
+        command.validate();
+        
+        // 获取单词实体
+        Word word = wordRepository.findById(command.getWordId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+        
+        // 如果提供了词义ID，则使用词义ID添加例句
+        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
+            word.addExampleSentence(command.getWordMeaningId(), command.getSentence());
+        } else {
+            // 兼容旧版本，使用词性ID查找词义
+            word.addExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        }
+        
+        return wordRepository.save(word);
     }
 
     @Override
     public Word handle(RemoveExampleSentenceCommand command) {
-        return null;
+        command.validate();
+        
+        // 获取单词实体
+        Word word = wordRepository.findById(command.getWordId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+        
+        // 如果提供了词义ID，则使用词义ID移除例句
+        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
+            word.removeExampleSentence(command.getWordMeaningId(), command.getSentence());
+        } else {
+            // 兼容旧版本，使用词性ID移除例句
+            word.removeExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        }
+        
+        return wordRepository.save(word);
     }
 
     /**
@@ -141,8 +163,15 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word synonym = wordRepository.findById(synonymId)
                 .orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymId));
         
-        // 添加同义词并保存
-        word.addSynonym(partOfSpeechId, synonym);
+        // 查找对应词性的词义
+        Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
+        if (meaningOpt.isPresent()) {
+            // 添加同义词并保存
+            word.addSynonym(meaningOpt.get().getId(), synonym);
+        } else {
+            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+        }
+        
         return wordRepository.save(word);
     }
     
@@ -159,8 +188,15 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word antonym = wordRepository.findById(antonymId)
                 .orElseThrow(() -> new IllegalArgumentException("反义词不存在: " + antonymId));
         
-        // 添加反义词并保存
-        word.addAntonym(partOfSpeechId, antonym);
+        // 查找对应词性的词义
+        Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
+        if (meaningOpt.isPresent()) {
+            // 添加反义词并保存
+            word.addAntonym(meaningOpt.get().getId(), antonym);
+        } else {
+            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+        }
+        
         return wordRepository.save(word);
     }
     
@@ -175,8 +211,24 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         
-        // 添加例句并保存
-        word.addExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        // 如果提供了词义ID，则直接查找词义
+        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
+            // 查找指定词义
+            Optional<WordMeaning> meaningOpt = word.getMeanings().stream()
+                    .filter(m -> m.getId().equals(command.getWordMeaningId()))
+                    .findFirst();
+            
+            if (meaningOpt.isPresent()) {
+                // 添加例句到指定词义
+                meaningOpt.get().addExampleSentence(command.getSentence());
+            } else {
+                throw new IllegalArgumentException("词义不存在: " + command.getWordMeaningId());
+            }
+        } else {
+            // 兼容旧版本，使用词性ID查找词义
+            word.addExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        }
+        
         return wordRepository.save(word);
     }
     
@@ -191,8 +243,14 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         
-        // 移除例句并保存
-        word.removeExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        // 如果提供了词义ID，则使用词义ID移除例句
+        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
+            word.removeExampleSentence(command.getWordMeaningId(), command.getSentence());
+        } else {
+            // 兼容旧版本，使用词性ID移除例句
+            word.removeExampleSentence(command.getPartOfSpeechId(), command.getSentence());
+        }
+        
         return wordRepository.save(word);
     }
 }

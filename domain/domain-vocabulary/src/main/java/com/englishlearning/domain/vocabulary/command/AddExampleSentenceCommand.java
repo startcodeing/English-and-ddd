@@ -20,8 +20,15 @@ public class AddExampleSentenceCommand {
     private String wordId;
     
     /**
-     * 词性ID
+     * 词义ID
      */
+    private String wordMeaningId;
+    
+    /**
+     * 词性ID（兼容旧版本）
+     * @deprecated 使用wordMeaningId替代
+     */
+    @Deprecated
     private String partOfSpeechId;
     
     /**
@@ -37,8 +44,10 @@ public class AddExampleSentenceCommand {
             throw new IllegalArgumentException("单词ID不能为空");
         }
         
-        if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty()) {
-            throw new IllegalArgumentException("词性ID不能为空");
+        // 检查词义ID或词性ID至少有一个不为空
+        if ((wordMeaningId == null || wordMeaningId.trim().isEmpty()) && 
+            (partOfSpeechId == null || partOfSpeechId.trim().isEmpty())) {
+            throw new IllegalArgumentException("词义ID和词性ID不能同时为空");
         }
         
         if (sentence == null || sentence.trim().isEmpty()) {

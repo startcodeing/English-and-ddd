@@ -2,6 +2,7 @@ package com.englishlearning.domain.vocabulary.model.entity;
 
 import com.englishlearning.domain.vocabulary.command.CreateWordCommand;
 import com.englishlearning.domain.vocabulary.command.UpdateWordCommand;
+import com.englishlearning.domain.vocabulary.command.WordMeaningCommand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,20 +63,22 @@ public class Word {
             this.meanings = new ArrayList<>();
         }
         
-        // 创建词义
-        WordMeaning meaning = WordMeaning.builder()
-                .id(UUID.randomUUID().toString())
-                .partOfSpeechId(createCommand.getPartOfSpeechId())
-                .chineseMeaning(createCommand.getChineseMeaning())
-                .exampleSentences(CollectionUtils.isEmpty(createCommand.getExampleSentences()) ?
-                        new ArrayList<>() : createCommand.getExampleSentences())
-                .synonymIds(CollectionUtils.isEmpty(createCommand.getSynonymIds()) ?
-                        new ArrayList<>() : createCommand.getSynonymIds())
-                .antonymIds(CollectionUtils.isEmpty(createCommand.getAntonymIds()) ?
-                        new ArrayList<>() : createCommand.getAntonymIds())
-                .build();
-        
-        this.meanings.add(meaning);
+        // 处理多个词义
+        for (WordMeaningCommand meaningCommand : createCommand.getWordMeanings()) {
+            WordMeaning meaning = WordMeaning.builder()
+                    .id(UUID.randomUUID().toString())
+                    .partOfSpeechId(meaningCommand.getPartOfSpeechId())
+                    .chineseMeaning(meaningCommand.getChineseMeaning())
+                    .exampleSentences(CollectionUtils.isEmpty(meaningCommand.getExampleSentences()) ?
+                            new ArrayList<>() : meaningCommand.getExampleSentences())
+                    .synonymIds(CollectionUtils.isEmpty(meaningCommand.getSynonymIds()) ?
+                            new ArrayList<>() : meaningCommand.getSynonymIds())
+                    .antonymIds(CollectionUtils.isEmpty(meaningCommand.getAntonymIds()) ?
+                            new ArrayList<>() : meaningCommand.getAntonymIds())
+                    .build();
+            
+            this.meanings.add(meaning);
+        }
     }
     
     /**
@@ -102,111 +105,181 @@ public class Word {
         this.difficultyLevel = updateCommand.getDifficultyLevel();
         this.pronunciation = updateCommand.getPronunciation();
         
-        // 查找对应词性的词义
-        Optional<WordMeaning> existingMeaning = findMeaningByPartOfSpeech(updateCommand.getPartOfSpeechId());
+        // 确保词义列表已初始化
+        if (this.meanings == null) {
+            this.meanings = new ArrayList<>();
+        }
         
-        if (existingMeaning.isPresent()) {
-            // 更新已有词义
-            WordMeaning meaning = existingMeaning.get();
-            meaning.setChineseMeaning(updateCommand.getChineseMeaning());
-            meaning.updateExampleSentences(updateCommand.getExampleSentences());
-            meaning.updateSynonymIds(updateCommand.getSynonymIds());
-            meaning.updateAntonymIds(updateCommand.getAntonymIds());
-        } else {
-            // 创建新词义
-            WordMeaning meaning = WordMeaning.builder()
-                    .id(UUID.randomUUID().toString())
-                    .partOfSpeechId(updateCommand.getPartOfSpeechId())
-                    .chineseMeaning(updateCommand.getChineseMeaning())
-                    .exampleSentences(CollectionUtils.isEmpty(updateCommand.getExampleSentences()) ?
-                            new ArrayList<>() : updateCommand.getExampleSentences())
-                    .synonymIds(CollectionUtils.isEmpty(updateCommand.getSynonymIds()) ?
-                            new ArrayList<>() : updateCommand.getSynonymIds())
-                    .antonymIds(CollectionUtils.isEmpty(updateCommand.getAntonymIds()) ?
-                            new ArrayList<>() : updateCommand.getAntonymIds())
-                    .build();
+        // 处理多个词义
+        for (WordMeaningCommand meaningCommand : updateCommand.getWordMeanings()) {
+            // 查找对应词性的词义（兼容旧版本）
+            Optional<WordMeaning> existingMeaning = findMeaningByPartOfSpeech(meaningCommand.getPartOfSpeechId());
             
-            if (this.meanings == null) {
-                this.meanings = new ArrayList<>();
+            if (existingMeaning.isPresent()) {
+                // 更新已有词义
+                WordMeaning meaning = existingMeaning.get();
+                meaning.setChineseMeaning(meaningCommand.getChineseMeaning());
+                meaning.updateExampleSentences(meaningCommand.getExampleSentences());
+                meaning.updateSynonymIds(meaningCommand.getSynonymIds());
+                meaning.updateAntonymIds(meaningCommand.getAntonymIds());
+            } else {
+                // 创建新词义
+                WordMeaning meaning = WordMeaning.builder()
+                        .id(UUID.randomUUID().toString())
+                        .partOfSpeechId(meaningCommand.getPartOfSpeechId())
+                        .chineseMeaning(meaningCommand.getChineseMeaning())
+                        .exampleSentences(CollectionUtils.isEmpty(meaningCommand.getExampleSentences()) ?
+                                new ArrayList<>() : meaningCommand.getExampleSentences())
+                        .synonymIds(CollectionUtils.isEmpty(meaningCommand.getSynonymIds()) ?
+                                new ArrayList<>() : meaningCommand.getSynonymIds())
+                        .antonymIds(CollectionUtils.isEmpty(meaningCommand.getAntonymIds()) ?
+                                new ArrayList<>() : meaningCommand.getAntonymIds())
+                        .build();
+                
+                this.meanings.add(meaning);
             }
-            
-            this.meanings.add(meaning);
         }
     }
+
     
     /**
-     * 添加同义词到指定词性的词义中
+     * 添加同义词到指定词义ID的词义中
      */
-    public void addSynonym(String partOfSpeechId, Word synonym) {
+    public void addSynonym(String wordMeaningId, Word synonym) {
         if (synonym == null || this.getId().equals(synonym.getId())) {
             return;
         }
         
-        Optional<WordMeaning> meaningOpt = findMeaningByPartOfSpeech(partOfSpeechId);
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词义ID不能为空");
+        }
+        
+        if (this.meanings == null || this.meanings.isEmpty()) {
+            throw new IllegalArgumentException("单词没有词义");
+        }
+        
+        // 查找对应ID的词义
+        Optional<WordMeaning> meaningOpt = this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+                
         if (meaningOpt.isPresent()) {
             meaningOpt.get().addSynonym(synonym);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到ID为" + wordMeaningId + "的词义");
         }
     }
+
     
     /**
-     * 添加反义词到指定词性的词义中
+     * 添加反义词到指定词义ID的词义中
      */
-    public void addAntonym(String partOfSpeechId, Word antonym) {
+    public void addAntonym(String wordMeaningId, Word antonym) {
         if (antonym == null || this.getId().equals(antonym.getId())) {
             return;
         }
         
-        Optional<WordMeaning> meaningOpt = findMeaningByPartOfSpeech(partOfSpeechId);
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词义ID不能为空");
+        }
+        
+        if (this.meanings == null || this.meanings.isEmpty()) {
+            throw new IllegalArgumentException("单词没有词义");
+        }
+        
+        // 查找对应ID的词义
+        Optional<WordMeaning> meaningOpt = this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+                
         if (meaningOpt.isPresent()) {
             meaningOpt.get().addAntonym(antonym);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到ID为" + wordMeaningId + "的词义");
         }
     }
+
     
     /**
-     * 添加例句到指定词性的词义中
+     * 添加例句到指定词义ID的词义中
      */
-    public void addExampleSentence(String partOfSpeechId, String sentence) {
+    public void addExampleSentence(String wordMeaningId, String sentence) {
         if (sentence == null || sentence.trim().isEmpty()) {
             return;
         }
         
-        Optional<WordMeaning> meaningOpt = findMeaningByPartOfSpeech(partOfSpeechId);
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词义ID不能为空");
+        }
+        
+        if (this.meanings == null || this.meanings.isEmpty()) {
+            throw new IllegalArgumentException("单词没有词义");
+        }
+        
+        // 查找对应ID的词义
+        Optional<WordMeaning> meaningOpt = this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+                
         if (meaningOpt.isPresent()) {
             meaningOpt.get().addExampleSentence(sentence);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到ID为" + wordMeaningId + "的词义");
         }
     }
+
     
     /**
-     * 移除指定词性词义中的例句
+     * 移除指定词义ID的词义中的例句
      */
-    public void removeExampleSentence(String partOfSpeechId, String sentence) {
+    public void removeExampleSentence(String wordMeaningId, String sentence) {
         if (sentence == null || sentence.trim().isEmpty()) {
             return;
         }
         
-        Optional<WordMeaning> meaningOpt = findMeaningByPartOfSpeech(partOfSpeechId);
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词义ID不能为空");
+        }
+        
+        if (this.meanings == null || this.meanings.isEmpty()) {
+            throw new IllegalArgumentException("单词没有词义");
+        }
+        
+        // 查找对应ID的词义
+        Optional<WordMeaning> meaningOpt = this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+                
         if (meaningOpt.isPresent()) {
             meaningOpt.get().removeExampleSentence(sentence);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到ID为" + wordMeaningId + "的词义");
         }
     }
     
+
+    
     /**
-     * 更新指定词性词义的例句列表
+     * 更新指定词义ID的词义的例句列表
      */
-    public void updateExampleSentences(String partOfSpeechId, List<String> sentences) {
-        Optional<WordMeaning> meaningOpt = findMeaningByPartOfSpeech(partOfSpeechId);
+    public void updateExampleSentences(String wordMeaningId, List<String> sentences) {
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty()) {
+            throw new IllegalArgumentException("词义ID不能为空");
+        }
+        
+        if (this.meanings == null || this.meanings.isEmpty()) {
+            throw new IllegalArgumentException("单词没有词义");
+        }
+        
+        // 查找对应ID的词义
+        Optional<WordMeaning> meaningOpt = this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+                
         if (meaningOpt.isPresent()) {
             meaningOpt.get().updateExampleSentences(sentences);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到ID为" + wordMeaningId + "的词义");
         }
     }
     
@@ -235,7 +308,9 @@ public class Word {
     
     /**
      * 根据词性查找词义
+     * @deprecated 使用findMeaningById(String wordMeaningId)替代
      */
+    @Deprecated
     public Optional<WordMeaning> findMeaningByPartOfSpeech(String partOfSpeechId) {
         if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty() || this.meanings == null) {
             return Optional.empty();
@@ -247,13 +322,27 @@ public class Word {
     }
     
     /**
-     * 移除指定词性的词义
+     * 根据词义ID查找词义
      */
-    public void removeMeaning(String partOfSpeechId) {
-        if (partOfSpeechId == null || partOfSpeechId.trim().isEmpty() || this.meanings == null) {
+    public Optional<WordMeaning> findMeaningById(String wordMeaningId) {
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty() || this.meanings == null) {
+            return Optional.empty();
+        }
+        
+        return this.meanings.stream()
+                .filter(m -> m.getId().equals(wordMeaningId))
+                .findFirst();
+    }
+
+    
+    /**
+     * 移除指定ID的词义
+     */
+    public void removeMeaning(String wordMeaningId) {
+        if (wordMeaningId == null || wordMeaningId.trim().isEmpty() || this.meanings == null) {
             return;
         }
         
-        this.meanings.removeIf(m -> m.getPartOfSpeechId().equals(partOfSpeechId));
+        this.meanings.removeIf(m -> m.getId().equals(wordMeaningId));
     }
 }
