@@ -1,9 +1,14 @@
 package com.englishlearning.application.vocabulary.service.impl;
 
 import com.englishlearning.application.vocabulary.dto.WordBookDTO;
+import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.service.WordBookApplicationService;
-import com.englishlearning.domain.vocabulary.command.*;
+import com.englishlearning.domain.vocabulary.command.AddWordToWordBookCommand;
+import com.englishlearning.domain.vocabulary.command.CreateWordBookCommand;
+import com.englishlearning.domain.vocabulary.command.DeleteWordBookCommand;
+import com.englishlearning.domain.vocabulary.command.RemoveWordFromWordBookCommand;
+import com.englishlearning.domain.vocabulary.command.UpdateWordBookCommand;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordBook;
 import com.englishlearning.domain.vocabulary.repository.WordBookRepository;
@@ -12,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,21 +24,22 @@ import java.util.stream.Collectors;
 
 /**
  * 单词本应用服务实现类
+ * 整合了命令处理器的功能，直接与仓储交互
  */
 @Service
 public class WordBookApplicationServiceImpl implements WordBookApplicationService {
 
     private final WordBookRepository wordBookRepository;
     private final WordMapper wordMapper;
-    private final WordBookCommandHandler wordBookCommandHandler;
+    private final WordRepository wordRepository;
 
     @Autowired
     public WordBookApplicationServiceImpl(WordBookRepository wordBookRepository, 
                                          WordMapper wordMapper,
-                                         WordBookCommandHandler wordBookCommandHandler) {
+                                         WordRepository wordRepository) {
         this.wordBookRepository = wordBookRepository;
         this.wordMapper = wordMapper;
-        this.wordBookCommandHandler = wordBookCommandHandler;
+        this.wordRepository = wordRepository;
     }
 
     @Transactional
@@ -47,10 +52,21 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                     .description(dto.getDescription())
                     .build();
             
-            // 通过命令处理器执行命令
-            WordBook savedWordBook = wordBookCommandHandler.handle(command);
+            // 验证命令
+            command.validate();
             
-            // 转换为DTO并返回
+            // 检查是否已存在相同名称的单词本
+            Optional<WordBook> existWordBook = wordBookRepository.findByName(command.getName());
+            if (existWordBook.isPresent()) {
+                throw new RuntimeException("单词本已存在");
+            }
+            
+            // 创建单词本实体并执行领域逻辑
+            WordBook wordBook = WordBook.builder().build();
+            wordBook.create(command);
+            
+            // 保存并返回
+            WordBook savedWordBook = wordBookRepository.save(wordBook);
             return convertToDTO(savedWordBook);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -70,9 +86,24 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                     .description(dto.getDescription())
                     .build();
             
-            // 通过命令处理器执行命令
-            WordBook updatedWordBook = wordBookCommandHandler.handle(command);
+            // 验证命令
+            command.validate();
             
+            // 获取实体
+            WordBook wordBook = wordBookRepository.findById(command.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + command.getId()));
+            
+            // 检查名称是否已被其他单词本使用
+            Optional<WordBook> existWordBook = wordBookRepository.findByName(command.getName());
+            if (existWordBook.isPresent() && !existWordBook.get().getId().equals(command.getId())) {
+                throw new RuntimeException("单词本名称已被使用");
+            }
+            
+            // 执行更新逻辑
+            wordBook.update(command);
+            
+            // 保存并返回
+            WordBook updatedWordBook = wordBookRepository.save(wordBook);
             return convertToDTO(updatedWordBook);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -127,8 +158,15 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                     .id(id)
                     .build();
             
-            // 通过命令处理器执行命令
-            wordBookCommandHandler.handle(command);
+            // 验证命令
+            command.validate();
+            
+            // 检查单词本是否存在
+            wordBookRepository.findById(command.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + command.getId()));
+            
+            // 直接删除
+            wordBookRepository.deleteById(command.getId());
         } catch (Exception e) {
             throw new RuntimeException("删除单词本失败: " + e.getMessage());
         }
@@ -138,6 +176,10 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
     @Override
     public void addWordsToWordBook(String wordBookId, List<String> wordIds) {
         try {
+            // 获取单词本
+            WordBook wordBook = wordBookRepository.findById(wordBookId)
+                    .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + wordBookId));
+            
             for (String wordId : wordIds) {
                 // 创建命令对象
                 AddWordToWordBookCommand command = AddWordToWordBookCommand.builder()
@@ -145,9 +187,19 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                         .wordId(wordId)
                         .build();
                 
-                // 通过命令处理器执行命令
-                wordBookCommandHandler.handle(command);
+                // 验证命令
+                command.validate();
+                
+                // 获取单词
+                Word word = wordRepository.findById(command.getWordId())
+                        .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+                
+                // 添加单词到单词本
+                wordBook.addWord(word);
             }
+            
+            // 保存单词本
+            wordBookRepository.save(wordBook);
         } catch (Exception e) {
             throw new RuntimeException("向单词本添加单词失败: " + e.getMessage());
         }
@@ -163,8 +215,23 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                     .wordId(wordId)
                     .build();
             
-            // 通过命令处理器执行命令
-            wordBookCommandHandler.handle(command);
+            // 验证命令
+            command.validate();
+            
+            // 获取单词本
+            WordBook wordBook = wordBookRepository.findById(command.getWordBookId())
+                    .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + command.getWordBookId()));
+            
+            // 检查单词是否存在
+            if (!wordBook.containsWord(command.getWordId())) {
+                throw new IllegalArgumentException("单词本中不存在该单词: " + command.getWordId());
+            }
+            
+            // 从单词本移除单词
+            wordBook.removeWord(command.getWordId());
+            
+            // 保存单词本
+            wordBookRepository.save(wordBook);
         } catch (Exception e) {
             throw new RuntimeException("从单词本移除单词失败: " + e.getMessage());
         }

@@ -30,21 +30,16 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
      */
     @Override
     public Word createWord(CreateWordCommand createCommand) {
-        createCommand.validate();
-        
         // 检查单词是否已存在
         Optional<Word> existWord = wordRepository.findBySpelling(createCommand.getSpelling());
         if (existWord.isPresent()) {
             throw new IllegalArgumentException("单词已存在: " + createCommand.getSpelling());
         }
-        
         // 创建单词实体
-        Word word = new Word();
-        word.setId(UUID.randomUUID().toString());
+        Word word = Word.builder()
+                .id(UUID.randomUUID().toString())
+                .build();
         word.create(createCommand);
-
-        
-        // 保存并返回
         return wordRepository.save(word);
     }
     
