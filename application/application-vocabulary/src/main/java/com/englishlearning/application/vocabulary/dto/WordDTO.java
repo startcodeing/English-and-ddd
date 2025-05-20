@@ -20,8 +20,6 @@ public class WordDTO {
     private String spelling;
     private String pronunciation;
     private Integer difficultyLevel;
-    private String chineseMeaning;
-    private String partOfSpeechId;
     
     /**
      * 词义列表（不同词性下的含义、同义词、反义词和例句）

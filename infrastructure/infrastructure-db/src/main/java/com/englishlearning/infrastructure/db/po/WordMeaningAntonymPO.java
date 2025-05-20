@@ -31,7 +31,7 @@ public class WordMeaningAntonymPO {
     @Embeddable
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class WordMeaningAntonymId {
+    public static class WordMeaningAntonymId implements java.io.Serializable{
         
         @Column(name = "meaning_id")
         private String meaningId;

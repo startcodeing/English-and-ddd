@@ -31,6 +31,20 @@ import java.util.UUID;
  */
 @Service
 public class WordApplicationServiceImpl implements WordApplicationService {
+
+    
+    private final WordRepository wordRepository;
+    private final WordMapper wordMapper;
+    private final PartOfSpeechRepository partOfSpeechRepository;
+
+    @Autowired
+    public WordApplicationServiceImpl(WordRepository wordRepository,
+                                      WordMapper wordMapper,
+                                      PartOfSpeechRepository partOfSpeechRepository) {
+        this.wordRepository = wordRepository;
+        this.wordMapper = wordMapper;
+        this.partOfSpeechRepository = partOfSpeechRepository;
+    }
     
     // 添加额外的方法，实现原来在WordCommandHandler中的功能
     
@@ -199,18 +213,6 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         return removeExampleSentence(command);
     }
 
-    private final WordRepository wordRepository;
-    private final WordMapper wordMapper;
-    private final PartOfSpeechRepository partOfSpeechRepository;
-
-    @Autowired
-    public WordApplicationServiceImpl(WordRepository wordRepository,
-                                      WordMapper wordMapper,
-                                      PartOfSpeechRepository partOfSpeechRepository) {
-        this.wordRepository = wordRepository;
-        this.wordMapper = wordMapper;
-        this.partOfSpeechRepository = partOfSpeechRepository;
-    }
 
     @Transactional
     @Override

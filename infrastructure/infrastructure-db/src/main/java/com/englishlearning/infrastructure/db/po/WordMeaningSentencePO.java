@@ -31,7 +31,7 @@ public class WordMeaningSentencePO {
     @Embeddable
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class WordMeaningSentenceId {
+    public static class WordMeaningSentenceId implements java.io.Serializable{
         
         @Column(name = "meaning_id")
         private String meaningId;

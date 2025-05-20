@@ -22,6 +22,11 @@ public class WordMeaning {
      * ID
      */
     private String id;
+
+    /**
+     * 单词ID
+     */
+    private String wordId;
     
     /**
      * 词性ID

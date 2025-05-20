@@ -31,7 +31,7 @@ public class WordMeaningSynonymPO {
     @Embeddable
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class WordMeaningSynonymId {
+    public static class WordMeaningSynonymId implements java.io.Serializable{
         
         @Column(name = "meaning_id")
         private String meaningId;
