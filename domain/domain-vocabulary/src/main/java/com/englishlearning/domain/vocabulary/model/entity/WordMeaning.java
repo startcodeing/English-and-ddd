@@ -136,4 +136,37 @@ public class WordMeaning {
     public void updateAntonymIds(List<String> antonymIds) {
         this.antonymIds = antonymIds != null ? new ArrayList<>(antonymIds) : new ArrayList<>();
     }
+    
+    /**
+     * 例句ID列表
+     */
+    private List<String> exampleSentenceIds;
+    
+    /**
+     * 添加例句ID
+     */
+    public void addExampleSentenceId(String sentenceId) {
+        if (sentenceId == null || sentenceId.trim().isEmpty()) {
+            return;
+        }
+        
+        if (this.exampleSentenceIds == null) {
+            this.exampleSentenceIds = new ArrayList<>();
+        }
+        
+        if (!this.exampleSentenceIds.contains(sentenceId)) {
+            this.exampleSentenceIds.add(sentenceId);
+        }
+    }
+    
+    /**
+     * 移除例句ID
+     */
+    public void removeExampleSentenceId(String sentenceId) {
+        if (sentenceId == null || sentenceId.trim().isEmpty() || this.exampleSentenceIds == null) {
+            return;
+        }
+        
+        this.exampleSentenceIds.remove(sentenceId);
+    }
 }

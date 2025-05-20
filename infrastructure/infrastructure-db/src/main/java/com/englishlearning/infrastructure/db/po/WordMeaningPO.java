@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 /**
@@ -43,22 +45,25 @@ public class WordMeaningPO {
     private String chineseMeaning;
     
     /**
-     * 例句，以JSON数组形式存储
+     * 例句关联，通过关联表实现
      */
-    @Column(length = 2000)
-    private String exampleSentences;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    private List<WordMeaningSentencePO> exampleSentences;
     
     /**
-     * 同义词，以JSON数组形式存储
+     * 同义词关联，通过关联表实现
      */
-    @Column(length = 1000)
-    private String synonymIds;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    private List<WordMeaningSynonymPO> synonyms;
     
     /**
-     * 反义词，以JSON数组形式存储
+     * 反义词关联，通过关联表实现
      */
-    @Column(length = 1000)
-    private String antonymIds;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    private List<WordMeaningAntonymPO> antonyms;
     
     /**
      * 创建时间
