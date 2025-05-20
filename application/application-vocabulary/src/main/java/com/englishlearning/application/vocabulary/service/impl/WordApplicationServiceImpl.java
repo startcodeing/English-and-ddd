@@ -45,19 +45,14 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         this.wordMapper = wordMapper;
         this.partOfSpeechRepository = partOfSpeechRepository;
     }
-    
-    // 添加额外的方法，实现原来在WordCommandHandler中的功能
-    
+        
     /**
      * 添加单词词义
      * @param command 添加单词词义命令
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addWordMeaning(AddWordMeaningCommand command) {
-        command.validate();
-        
-        // 获取单词实体
+    public Word addWordMeaning(AddWordMeaningCommand command) {        
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         
@@ -66,23 +61,20 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (existingMeaning.isPresent()) {
             throw new IllegalArgumentException("该单词已存在词性为" + command.getPartOfSpeechId() + "的词义");
         }
-        
         // 创建新词义
         WordMeaning meaning = WordMeaning.builder()
                 .id(UUID.randomUUID().toString())
                 .partOfSpeechId(command.getPartOfSpeechId())
                 .chineseMeaning(command.getChineseMeaning())
-                .exampleSentences(CollectionUtils.isEmpty(command.getExampleSentences()) ?
+                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentences())?
                         new ArrayList<>() : command.getExampleSentences())
-                .synonymIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
+                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
                         new ArrayList<>() : command.getSynonymIds())
-                .antonymIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
+                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
                         new ArrayList<>() : command.getAntonymIds())
                 .build();
-        
         // 添加词义
         word.addMeaning(meaning);
-        
         // 保存并返回
         return wordRepository.save(word);
     }
@@ -143,22 +135,22 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addSynonym(String wordId, String partOfSpeechId, String synonymId) {
+    public Word addSynonym(String wordId, String wordMeaningId, String synonymWordId,String synonymWordMeaningId) {
         // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
         
-        // 获取同义词实体
-        Word synonym = wordRepository.findById(synonymId)
-                .orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymId));
+        // 校验添加的同义词是否存在
+        Word synonymWord = wordRepository.findById(synonymWordId).orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymWordId));
+        synonymWord.findMeaningByMeaningId(synonymWordMeaningId).orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymWordMeaningId));
         
         // 查找对应词性的词义
-        Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
+        Optional<WordMeaning> meaningOpt = word.findMeaningByMeaningId(wordMeaningId);
         if (meaningOpt.isPresent()) {
             // 添加同义词并保存
-            word.addSynonym(meaningOpt.get().getId(), synonym);
+            word.addSynonym(meaningOpt.get().getId(), synonymWordMeaningId);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
         
         return wordRepository.save(word);
@@ -172,45 +164,26 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addAntonym(String wordId, String partOfSpeechId, String antonymId) {
+    public Word addAntonym(String wordId, String wordMeaningId,String antonymWordId,String antonymMeaningId) {
         // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
         
         // 获取反义词实体
-        Word antonym = wordRepository.findById(antonymId)
-                .orElseThrow(() -> new IllegalArgumentException("反义词不存在: " + antonymId));
+        Word antonymWord = wordRepository.findById(antonymWordId)
+                .orElseThrow(() -> new IllegalArgumentException("反义词不存在: " + antonymWordId));
+        antonymWord.findMeaningByMeaningId(antonymMeaningId).orElseThrow(() -> new IllegalArgumentException("反义词WordMeaning不存在: " + antonymMeaningId));
         
         // 查找对应词性的词义
-        Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
+        Optional<WordMeaning> meaningOpt = word.findMeaningByMeaningId(wordMeaningId);
         if (meaningOpt.isPresent()) {
             // 添加反义词并保存
-            word.addAntonym(meaningOpt.get().getId(), antonym);
+            word.addAntonym(meaningOpt.get().getId(), antonymMeaningId);
         } else {
-            throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
+            throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
         
         return wordRepository.save(word);
-    }
-    
-    /**
-     * 处理添加例句命令
-     * @param command 添加例句命令
-     * @return 更新后的单词实体
-     */
-    @Transactional
-    public Word handle(AddExampleSentenceCommand command) {
-        return addExampleSentence(command);
-    }
-    
-    /**
-     * 处理移除例句命令
-     * @param command 移除例句命令
-     * @return 更新后的单词实体
-     */
-    @Transactional
-    public Word handle(RemoveExampleSentenceCommand command) {
-        return removeExampleSentence(command);
     }
 
 
@@ -247,7 +220,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
             Word word = Word.builder()
                     .id(UUID.randomUUID().toString())
                     .build();
-            word.create(command);
+            word.createWordBasic(command);
             
             // 保存并返回
             Word savedWord = wordRepository.save(word);
@@ -293,7 +266,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                     .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
             
             // 使用实体的update方法更新单词
-            word.update(command);
+            word.updateWordBasic(command);
             
             // 保存并返回
             Word updatedWord = wordRepository.save(word);

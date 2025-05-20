@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 单词词义实体
@@ -41,106 +42,12 @@ public class WordMeaning {
     /**
      * 同义词列表
      */
-    private List<String> synonymIds;
+    private List<String> synonymWordMeaningIds;
     
     /**
      * 反义词列表
      */
-    private List<String> antonymIds;
-    
-    /**
-     * 例句列表
-     */
-    private List<String> exampleSentences;
-    
-    /**
-     * 添加同义词
-     */
-    public void addSynonym(Word synonym) {
-        if (synonym == null) {
-            return;
-        }
-        
-        if (this.synonymIds == null) {
-            this.synonymIds = new ArrayList<>();
-        }
-        
-        boolean exists = this.synonymIds.stream()
-                .anyMatch(s -> s.equals(synonym.getId()));
-        
-        if (!exists) {
-            this.synonymIds.add(synonym.getId());
-        }
-    }
-    
-    /**
-     * 添加反义词
-     */
-    public void addAntonym(Word antonym) {
-        if (antonym == null) {
-            return;
-        }
-        
-        if (this.antonymIds == null) {
-            this.antonymIds = new ArrayList<>();
-        }
-        
-        boolean exists = this.antonymIds.stream()
-                .anyMatch(id -> id.equals(antonym.getId()));
-        
-        if (!exists) {
-            this.antonymIds.add(antonym.getId());
-        }
-    }
-    
-    /**
-     * 添加例句
-     */
-    public void addExampleSentence(String sentence) {
-        if (sentence == null || sentence.trim().isEmpty()) {
-            return;
-        }
-        
-        if (this.exampleSentences == null) {
-            this.exampleSentences = new ArrayList<>();
-        }
-        
-        if (!this.exampleSentences.contains(sentence)) {
-            this.exampleSentences.add(sentence);
-        }
-    }
-    
-    /**
-     * 移除例句
-     */
-    public void removeExampleSentence(String sentence) {
-        if (sentence == null || sentence.trim().isEmpty() || this.exampleSentences == null) {
-            return;
-        }
-        
-        this.exampleSentences.remove(sentence);
-    }
-    
-    /**
-     * 更新例句列表
-     */
-    public void updateExampleSentences(List<String> sentences) {
-        this.exampleSentences = sentences != null ? new ArrayList<>(sentences) : new ArrayList<>();
-    }
-    
-    /**
-     * 更新同义词列表
-     */
-    public void updateSynonymIds(List<String> synonymIds) {
-        this.synonymIds = synonymIds != null ? new ArrayList<>(synonymIds) : new ArrayList<>();
-    }
-    
-    /**
-     * 更新反义词列表
-     */
-    public void updateAntonymIds(List<String> antonymIds) {
-        this.antonymIds = antonymIds != null ? new ArrayList<>(antonymIds) : new ArrayList<>();
-    }
+    private List<String> antonymWordMeaningIds;
     
     /**
      * 例句ID列表
@@ -148,30 +55,87 @@ public class WordMeaning {
     private List<String> exampleSentenceIds;
     
     /**
-     * 添加例句ID
+     * 添加同义词
      */
-    public void addExampleSentenceId(String sentenceId) {
-        if (sentenceId == null || sentenceId.trim().isEmpty()) {
+    public void addSynonym(String synonymMeaningId) {
+        if (synonymMeaningId == null) {
+            return;
+        }
+        if (this.id.equals(synonymMeaningId)) {
+            return;
+        }
+        
+        if (this.synonymWordMeaningIds == null) {
+            this.synonymWordMeaningIds = new ArrayList<>();
+        }
+
+        if (!this.synonymWordMeaningIds.contains(synonymMeaningId)) {
+            this.synonymWordMeaningIds.add(synonymMeaningId);
+        }
+    }
+    
+    /**
+     * 添加反义词
+     */
+    public void addAntonym(String antonymMeaingId) {
+        if (antonymMeaingId == null) {
+            return;
+        }
+        if (this.id.equals(antonymMeaingId)) {
+            return;
+        }
+        if (this.antonymWordMeaningIds == null) {
+            this.antonymWordMeaningIds = new ArrayList<>();
+        }
+        if (!this.antonymWordMeaningIds.contains(antonymMeaingId)) {
+            this.antonymWordMeaningIds.add(antonymMeaingId);
+        }
+    }
+    
+    /**
+     * 添加例句
+     */
+    public void addExampleSentence(String sentenceId) {
+        if (Objects.isNull(sentenceId)) {
             return;
         }
         
         if (this.exampleSentenceIds == null) {
             this.exampleSentenceIds = new ArrayList<>();
         }
-        
         if (!this.exampleSentenceIds.contains(sentenceId)) {
-            this.exampleSentenceIds.add(sentenceId);
+            this.exampleSentenceIds.add(sentenceId);   
         }
     }
     
     /**
-     * 移除例句ID
+     * 移除例句
      */
-    public void removeExampleSentenceId(String sentenceId) {
-        if (sentenceId == null || sentenceId.trim().isEmpty() || this.exampleSentenceIds == null) {
+    public void removeExampleSentence(String sentenceId) {
+        if (Objects.isNull(sentenceId)) {
             return;
         }
-        
         this.exampleSentenceIds.remove(sentenceId);
+    }
+    
+    /**
+     * 移除同义词
+     */
+    public void removeSynonym(String synonymMeaningId) {
+        if (Objects.isNull(synonymMeaningId)) {
+            return;
+        }
+    
+        this.synonymWordMeaningIds.remove(synonymMeaningId);
+    }
+
+    /**
+     * 移除反义词
+     */
+    public void removeAntonym(String antonymId) {
+        if (Objects.isNull(antonymId)) {
+            return;
+        }
+        antonymWordMeaningIds.remove(antonymId);
     }
 }
