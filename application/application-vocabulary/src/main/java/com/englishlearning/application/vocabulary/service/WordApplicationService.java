@@ -17,7 +17,7 @@ public interface WordApplicationService {
     /**
      * 更新单词
      */
-    WordDTO updateWord(String id, WordDTO dto);
+    WordDTO updateWord(WordDTO dto);
     
     /**
      * 获取单词详情

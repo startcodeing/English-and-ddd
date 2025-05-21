@@ -47,10 +47,11 @@ public class Word {
      */
     private List<WordMeaning> meanings;
 
+    
     /**
      * 创建新的单词
      */
-    public void createWordBasic(CreateWordCommand createCommand) {
+    public void createWord(CreateWordCommand createCommand) {
         createCommand.validate();
         this.spelling = createCommand.getSpelling();
         this.difficultyLevel = createCommand.getDifficultyLevel();
@@ -58,23 +59,9 @@ public class Word {
     }
     
     /**
-     * 使用现有ID创建单词（用于从存储中重建实体）
-     */
-    public static Word reconstitute(String id, Integer difficultyLevel, String spelling,
-                                   String pronunciation, List<WordMeaning> meanings) {
-        return new Word(
-                id,
-                difficultyLevel,
-                spelling,
-                pronunciation,
-                meanings != null ? new ArrayList<>(meanings) : new ArrayList<>()
-        );
-    }
-    
-    /**
      * 更新单词信息
      */
-    public void updateWordBasic(UpdateWordCommand updateCommand) {
+    public void updateWord(UpdateWordCommand updateCommand) {
         updateCommand.validate();
         this.id = updateCommand.getId();
         this.spelling = updateCommand.getSpelling();
@@ -150,7 +137,6 @@ public class Word {
      * 添加例句到指定词义ID的词义中
      */
     public void addExampleSentence(String wordMeaningId, String sentenceId) {
-       
         this.assertMeaningExists(wordMeaningId);
         
         WordMeaning targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId).get();
@@ -180,6 +166,21 @@ public class Word {
         if (target.isPresent()) {
             target.get().removeExampleSentence(sentenceId);
         }
+    }
+
+        
+    /**
+     * 使用现有ID创建单词（用于从存储中重建实体）
+     */
+    public static Word reconstitute(String id, Integer difficultyLevel, String spelling,
+                                   String pronunciation, List<WordMeaning> meanings) {
+        return new Word(
+                id,
+                difficultyLevel,
+                spelling,
+                pronunciation,
+                meanings != null ? new ArrayList<>(meanings) : new ArrayList<>()
+        );
     }
 
     

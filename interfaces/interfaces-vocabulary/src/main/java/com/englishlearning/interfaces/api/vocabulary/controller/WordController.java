@@ -33,9 +33,9 @@ public class WordController {
     /**
      * 更新单词
      */
-    @PutMapping("/{id}")
-    public Result<WordDTO> updateWord(@PathVariable String id, @Valid @RequestBody WordDTO dto) {
-        return Result.success(wordService.updateWord(id, dto));
+    @PutMapping()
+    public Result<WordDTO> updateWord(@Valid @RequestBody WordDTO dto) {
+        return Result.success(wordService.updateWord(dto));
     }
     
     /**

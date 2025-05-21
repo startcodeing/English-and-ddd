@@ -27,17 +27,17 @@ public interface WordMeaningPoMapper {
     /**
      * 将领域实体转换为PO
      */
-    @Mapping(target = "exampleSentences", source = "exampleSentences", qualifiedByName = "toSentencePOs")
-    @Mapping(target = "synonyms", source = "synonymIds", qualifiedByName = "toSynonymPOs")
-    @Mapping(target = "antonyms", source = "antonymIds", qualifiedByName = "toAntonymPOs")
+    @Mapping(target = "exampleSentences", source = "exampleSentenceIds", qualifiedByName = "toSentencePOs")
+    @Mapping(target = "synonyms", source = "synonymWordMeaningIds", qualifiedByName = "toSynonymPOs")
+    @Mapping(target = "antonyms", source = "antonymWordMeaningIds", qualifiedByName = "toAntonymPOs")
     WordMeaningPO toPo(WordMeaning entity);
     
     /**
      * 将PO转换为领域实体
      */
-    @Mapping(target = "exampleSentences", source = "exampleSentences", qualifiedByName = "toSentenceIds")
-    @Mapping(target = "synonymIds", source = "synonyms", qualifiedByName = "toSynonymIds")
-    @Mapping(target = "antonymIds", source = "antonyms", qualifiedByName = "toAntonymIds")
+    @Mapping(target = "exampleSentenceIds", source = "exampleSentences", qualifiedByName = "toSentenceIds")
+    @Mapping(target = "synonymWordMeaningIds", source = "synonyms", qualifiedByName = "toSynonymIds")
+    @Mapping(target = "antonymWordMeaningIds", source = "antonyms", qualifiedByName = "toAntonymIds")
     WordMeaning toEntity(WordMeaningPO po);
     
     /**

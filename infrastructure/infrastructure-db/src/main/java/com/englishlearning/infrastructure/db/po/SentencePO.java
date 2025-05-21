@@ -32,15 +32,15 @@ public class SentencePO {
     @Column(name = "grammar_analysis", length = 1000)
     private String grammarAnalysis;
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "sentence_id")
-    private List<SentenceVariantPO> variants = new ArrayList<>();
+    // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JoinColumn(name = "sentence_id")
+    // private List<SentenceVariantPO> variants = new ArrayList<>();
     
-    @ManyToMany
-    @JoinTable(
-        name = "t_sentence_unfamiliar_word",
-        joinColumns = @JoinColumn(name = "sentence_id"),
-        inverseJoinColumns = @JoinColumn(name = "word_id")
-    )
-    private List<WordPO> unfamiliarWords = new ArrayList<>();
+    // @ManyToMany
+    // @JoinTable(
+    //     name = "t_sentence_unfamiliar_word",
+    //     joinColumns = @JoinColumn(name = "sentence_id"),
+    //     inverseJoinColumns = @JoinColumn(name = "word_id")
+    // )
+    // private List<WordPO> unfamiliarWords = new ArrayList<>();
 } 

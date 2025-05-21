@@ -1,5 +1,7 @@
 package com.englishlearning.domain.vocabulary.command;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,15 +28,14 @@ public class AddExampleSentenceCommand {
     
     /**
      * 词性ID（兼容旧版本）
-     * @deprecated 使用wordMeaningId替代
+     * 使用wordMeaningId替代
      */
-    @Deprecated
     private String partOfSpeechId;
     
     /**
      * 例句内容
      */
-    private String sentence;
+    private List<String> sentence;
     
     /**
      * 验证命令
@@ -45,12 +46,11 @@ public class AddExampleSentenceCommand {
         }
         
         // 检查词义ID或词性ID至少有一个不为空
-        if ((wordMeaningId == null || wordMeaningId.trim().isEmpty()) && 
-            (partOfSpeechId == null || partOfSpeechId.trim().isEmpty())) {
+        if ((wordMeaningId == null || wordMeaningId.trim().isEmpty())) {
             throw new IllegalArgumentException("词义ID和词性ID不能同时为空");
         }
         
-        if (sentence == null || sentence.trim().isEmpty()) {
+        if (sentence == null || sentence.isEmpty()) {
             throw new IllegalArgumentException("例句内容不能为空");
         }
     }

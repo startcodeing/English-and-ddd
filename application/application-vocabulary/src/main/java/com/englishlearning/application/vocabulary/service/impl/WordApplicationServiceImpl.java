@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
+
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,18 +89,13 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     @Transactional
     public Word addExampleSentence(AddExampleSentenceCommand command) {
         command.validate();
-        
         // 获取单词实体
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+
+        WordMeaning wordMeaning = word.findMeaningByMeaningId(command.getWordMeaningId())
+               .orElseThrow(() -> new IllegalArgumentException("WordMeaning不存在: " + command.getWordMeaningId()));
         
-        // 如果提供了词义ID，则使用词义ID添加例句
-        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
-            word.addExampleSentence(command.getWordMeaningId(), command.getSentence());
-        } else {
-            // 兼容旧版本，使用词性ID查找词义
-            word.addExampleSentence(command.getPartOfSpeechId(), command.getSentence());
-        }
         
         return wordRepository.save(word);
     }
@@ -196,33 +193,16 @@ public class WordApplicationServiceImpl implements WordApplicationService {
             if (existWord.isPresent()) {
                 throw new IllegalArgumentException("单词已存在: " + dto.getSpelling());
             }
-            
-            List<WordMeaningCommand> meaningCommands = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(dto.getWordMeanings())){
-                meaningCommands = dto.getWordMeanings().stream().map(meaningDTO -> WordMeaningCommand.builder()
-                        .partOfSpeechId(meaningDTO.getPartOfSpeech() != null ? meaningDTO.getPartOfSpeech().getId() : null)
-                        .chineseMeaning(meaningDTO.getChineseMeaning())
-                        .exampleSentences(meaningDTO.getExampleSentences())
-                        .synonymIds(meaningDTO.getSynonymIds())
-                        .antonymIds(meaningDTO.getAntonymIds())
-                        .build()).toList();
-            }
-            
             // 创建命令对象
             CreateWordCommand command = CreateWordCommand.builder()
                     .spelling(dto.getSpelling())
                     .pronunciation(dto.getPronunciation())
                     .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
-                    .wordMeanings(meaningCommands)
-                    .build();
-            
-            // 创建单词实体
+                    .build();            
             Word word = Word.builder()
                     .id(UUID.randomUUID().toString())
                     .build();
-            word.createWordBasic(command);
-            
-            // 保存并返回
+            word.createWord(command);            
             Word savedWord = wordRepository.save(word);
             return wordMapper.toDTO(savedWord);
         } catch (IllegalArgumentException e) {
@@ -234,41 +214,20 @@ public class WordApplicationServiceImpl implements WordApplicationService {
 
     @Transactional
     @Override
-    public WordDTO updateWord(String id, WordDTO dto) {
+    public WordDTO updateWord(WordDTO dto) {
         try {
-            // 准备词义列表
-            List<WordMeaningCommand> meaningCommands = new ArrayList<>();
-            // 如果有新版本的词义列表，则使用它
-            for (WordMeaningDTO meaningDTO : dto.getWordMeanings()) {
-                WordMeaningCommand meaningCommand = WordMeaningCommand.builder()
-                        .partOfSpeechId(meaningDTO.getPartOfSpeech() != null ? meaningDTO.getPartOfSpeech().getId() : null)
-                        .chineseMeaning(meaningDTO.getChineseMeaning())
-                        .exampleSentences(meaningDTO.getExampleSentences())
-                        .synonymIds(meaningDTO.getSynonymIds())
-                        .antonymIds(meaningDTO.getAntonymIds())
-                        .build();
-                meaningCommands.add(meaningCommand);
-            }
             // 创建命令对象
             UpdateWordCommand command = UpdateWordCommand.builder()
-                    .id(id)
+                    .id(dto.getId())
                     .spelling(dto.getSpelling())
                     .pronunciation(dto.getPronunciation())
                     .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
-                    .wordMeanings(meaningCommands)
                     .build();
-
-            // 验证命令
             command.validate();
-            
-            // 获取单词实体
             Word word = wordRepository.findById(command.getId())
                     .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
             
-            // 使用实体的update方法更新单词
-            word.updateWordBasic(command);
-            
-            // 保存并返回
+            word.updateWord(command);
             Word updatedWord = wordRepository.save(word);
             return wordMapper.toDTO(updatedWord);
         } catch (IllegalArgumentException e) {
@@ -341,10 +300,8 @@ public class WordApplicationServiceImpl implements WordApplicationService {
             DeleteWordCommand command = DeleteWordCommand.builder()
                     .id(id)
                     .build();
-
             // 验证命令
             command.validate();
-            
             // 直接删除
             wordRepository.deleteById(command.getId());
         } catch (IllegalArgumentException e) {

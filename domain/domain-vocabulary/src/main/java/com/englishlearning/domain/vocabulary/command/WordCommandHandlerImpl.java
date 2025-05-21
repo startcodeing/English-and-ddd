@@ -39,7 +39,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Word word = Word.builder()
                 .id(UUID.randomUUID().toString())
                 .build();
-        word.createWordBasic(createCommand);
+        word.createWord(createCommand);
         return wordRepository.save(word);
     }
     
@@ -57,7 +57,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
         
         // 使用实体的update方法更新单词
-        word.updateWordBasic(command);
+        word.updateWord(command);
         
         // 保存并返回
         return wordRepository.save(word);
