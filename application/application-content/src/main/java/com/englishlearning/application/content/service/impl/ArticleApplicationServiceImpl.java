@@ -7,32 +7,40 @@ import com.englishlearning.application.content.mapper.SentenceMapper;
 import com.englishlearning.application.content.service.ArticleApplicationService;
 import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
-import com.englishlearning.domain.content.command.ArticleCommandHandler;
 import com.englishlearning.domain.content.command.CreateArticleCommand;
 import com.englishlearning.domain.content.command.DeleteArticleCommand;
 import com.englishlearning.domain.content.command.UpdateArticleCommand;
 import com.englishlearning.domain.content.model.entity.Article;
+import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.repository.ArticleRepository;
+import com.englishlearning.domain.content.repository.SentenceRepository;
+import com.englishlearning.domain.content.service.ArticleService;
+import com.englishlearning.domain.vocabulary.model.entity.Word;
+import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * 文章应用服务实现类
- * 使用命令处理器模式与领域层交互
+ * 直接使用领域服务与领域层交互
  */
 @Service
 @RequiredArgsConstructor
 public class ArticleApplicationServiceImpl implements ArticleApplicationService {
     
     private final ArticleRepository articleRepository;
-    private final ArticleCommandHandler articleCommandHandler;
+    private final SentenceRepository sentenceRepository;
+    private final WordRepository wordRepository;
+    private final ArticleService articleService;
     private final ArticleMapper articleMapper;
     private final SentenceMapper sentenceMapper;
+    private final WordMapper wordMapper;
 
     /**
      * 创建文章
@@ -51,8 +59,16 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                     .difficultyLevel(articleDTO.getDifficultyLevel())
                     .build();
             
-            // 通过命令处理器执行命令
-            Article savedArticle = articleCommandHandler.createArticle(command);
+            // 创建文章实体
+            Article article = Article.builder()
+                    .id(UUID.randomUUID().toString())
+                    .build();
+            
+            // 执行创建逻辑
+            article.create(command);
+            
+            // 通过领域服务保存
+            Article savedArticle = articleService.createArticle(article);
             return articleMapper.toDTO(savedArticle);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -79,8 +95,15 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                     .difficultyLevel(articleDTO.getDifficultyLevel())
                     .build();
             
-            // 通过命令处理器执行命令
-            Article updatedArticle = articleCommandHandler.updateArticle(command);
+            // 查找现有文章
+            Article article = articleRepository.findById(command.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + command.getId()));
+            
+            // 执行更新逻辑
+            article.update(command);
+            
+            // 通过领域服务保存
+            Article updatedArticle = articleService.updateArticle(article);
             return articleMapper.toDTO(updatedArticle);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
@@ -155,11 +178,11 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Override
     public ArticleDTO addSentence(String articleId, SentenceDTO sentenceDTO) {
         try {
-            // 通过命令处理器执行命令
-            Article updatedArticle = articleCommandHandler.addSentenceToArticle(
-                    articleId,
-                    sentenceMapper.toEntity(sentenceDTO).getArticleId()
-            );
+            // 查找句子实体
+            Sentence sentence = sentenceMapper.toEntity(sentenceDTO);
+            
+            // 通过领域服务添加句子
+            Article updatedArticle = articleService.addSentence(articleId, sentence);
             
             // 转换为DTO并返回
             return articleMapper.toDTO(updatedArticle);
@@ -177,11 +200,12 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Override
     public ArticleDTO addUnfamiliarWord(String articleId, WordDTO wordDTO) {
         try {
-            // 通过命令处理器执行命令
-            Article updatedArticle = articleCommandHandler.addWordToArticle(
-                    articleId,
-                    wordDTO.getId()
-            );
+            // 查找单词实体
+            Word word = wordRepository.findById(wordDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
+            
+            // 通过领域服务添加陌生单词
+            Article updatedArticle = articleService.addUnfamiliarWord(articleId, word);
             
             // 转换为DTO并返回
             return articleMapper.toDTO(updatedArticle);
@@ -199,13 +223,8 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Override
     public void deleteArticle(String id) {
         try {
-            // 创建命令对象
-            DeleteArticleCommand command = DeleteArticleCommand.builder()
-                    .id(id)
-                    .build();
-            
-            // 通过命令处理器执行命令
-            articleCommandHandler.deleteArticle(command);
+            // 通过领域服务删除文章
+            articleService.deleteArticle(id);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {

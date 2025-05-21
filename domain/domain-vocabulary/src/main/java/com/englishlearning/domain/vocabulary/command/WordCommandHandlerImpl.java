@@ -82,11 +82,11 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
                 .id(UUID.randomUUID().toString())
                 .partOfSpeechId(command.getPartOfSpeechId())
                 .chineseMeaning(command.getChineseMeaning())
-                .exampleSentences(CollectionUtils.isEmpty(command.getExampleSentences()) ?
+                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentences()) ?
                         new ArrayList<>() : command.getExampleSentences())
-                .synonymIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
+                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
                         new ArrayList<>() : command.getSynonymIds())
-                .antonymIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
+                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
                         new ArrayList<>() : command.getAntonymIds())
                 .build();
         
@@ -162,7 +162,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
         if (meaningOpt.isPresent()) {
             // 添加同义词并保存
-            word.addSynonym(meaningOpt.get().getId(), synonym);
+            word.addSynonym(meaningOpt.get().getId(), synonymId);
         } else {
             throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
         }
@@ -187,7 +187,7 @@ public class WordCommandHandlerImpl implements WordCommandHandler {
         Optional<WordMeaning> meaningOpt = word.findMeaningByPartOfSpeech(partOfSpeechId);
         if (meaningOpt.isPresent()) {
             // 添加反义词并保存
-            word.addAntonym(meaningOpt.get().getId(), antonym);
+            word.addAntonym(meaningOpt.get().getId(), antonymId);
         } else {
             throw new IllegalArgumentException("找不到词性为" + partOfSpeechId + "的词义");
         }

@@ -9,28 +9,33 @@ import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.domain.content.command.CreateSentenceCommand;
 import com.englishlearning.domain.content.command.DeleteSentenceCommand;
-import com.englishlearning.domain.content.command.SentenceCommandHandler;
 import com.englishlearning.domain.content.command.UpdateSentenceCommand;
 import com.englishlearning.domain.content.model.entity.Sentence;
+import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
+import com.englishlearning.domain.content.service.SentenceService;
+import com.englishlearning.domain.vocabulary.model.entity.Word;
+import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * 句子应用服务实现类
- * 使用命令处理器模式与领域层交互
+ * 直接使用领域服务与领域层交互
  */
 @Service
 @RequiredArgsConstructor
 public class SentenceApplicationServiceImpl implements SentenceApplicationService {
     
     private final SentenceRepository sentenceRepository;
-    private final SentenceCommandHandler sentenceCommandHandler;
+    private final SentenceService sentenceService;
+    private final WordRepository wordRepository;
     private final SentenceMapper sentenceMapper;
     private final SentenceVariantMapper variantMapper;
     private final WordMapper wordMapper;
@@ -49,8 +54,17 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                     .grammarAnalysis(sentenceDTO.getGrammarAnalysis())
                     .build();
             
-            // 通过命令处理器执行命令
-            Sentence savedSentence = sentenceCommandHandler.createSentence(command);
+            // 创建句子实体
+            Sentence sentence = Sentence.builder()
+                    .id(UUID.randomUUID().toString())
+                    .build();
+            
+            // 执行创建逻辑
+            sentence.create(command);
+            
+            // 通过领域服务保存
+            Sentence savedSentence = sentenceService.createSentence(sentence);
+            
             // 转换为DTO并返回
             return sentenceMapper.toDTO(savedSentence);
         } catch (IllegalArgumentException e) {
@@ -75,8 +89,15 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                     .grammarAnalysis(sentenceDTO.getGrammarAnalysis())
                     .build();
             
-            // 通过命令处理器执行命令
-            Sentence updatedSentence = sentenceCommandHandler.updateSentence(command);
+            // 查找现有句子
+            Sentence sentence = sentenceRepository.findById(command.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + command.getId()));
+            
+            // 执行更新逻辑
+            sentence.update(command);
+            
+            // 通过领域服务保存
+            Sentence updatedSentence = sentenceService.updateSentence(sentence);
             
             // 转换为DTO并返回
             return sentenceMapper.toDTO(updatedSentence);
@@ -133,12 +154,14 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Override
     public SentenceDTO addVariant(String sentenceId, SentenceVariantDTO variantDTO) {
         try {
-            // 通过命令处理器执行命令
-            Sentence updatedSentence = sentenceCommandHandler.addVariant(
-                    sentenceId,
-                    variantDTO.getType(),
-                    variantDTO.getContent()
-            );
+            // 创建变体实体
+            SentenceVariant variant = SentenceVariant.builder()
+                    .type(variantDTO.getType())
+                    .content(variantDTO.getContent())
+                    .build();
+            
+            // 通过领域服务添加变体
+            Sentence updatedSentence = sentenceService.addVariant(sentenceId, variant);
             
             // 转换为DTO并返回
             return sentenceMapper.toDTO(updatedSentence);
@@ -156,11 +179,12 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Override
     public SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO) {
         try {
-            // 通过命令处理器执行命令
-            Sentence updatedSentence = sentenceCommandHandler.addUnfamiliarWord(
-                    sentenceId,
-                    wordDTO.getId()
-            );
+            // 查找单词实体
+            Word word = wordRepository.findById(wordDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
+            
+            // 通过领域服务添加陌生单词
+            Sentence updatedSentence = sentenceService.addUnfamiliarWord(sentenceId, word);
             
             // 转换为DTO并返回
             return sentenceMapper.toDTO(updatedSentence);
@@ -178,13 +202,8 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Override
     public void deleteSentence(String id) {
         try {
-            // 创建命令对象
-            DeleteSentenceCommand command = DeleteSentenceCommand.builder()
-                    .id(id)
-                    .build();
-            
-            // 通过命令处理器执行命令
-            sentenceCommandHandler.deleteSentence(command);
+            // 通过领域服务删除句子
+            sentenceService.deleteSentence(id);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
