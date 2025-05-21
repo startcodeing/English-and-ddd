@@ -29,7 +29,6 @@ public class RemoveExampleSentenceCommand {
      * 词性ID（兼容旧版本）
      * @deprecated 使用wordMeaningId替代
      */
-    @Deprecated
     private String partOfSpeechId;
     
     /**

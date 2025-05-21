@@ -1,27 +1,22 @@
 package com.englishlearning.application.vocabulary.service.impl;
 
+import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
+import com.englishlearning.application.vocabulary.dto.DeleteWordMeaningSentenceDTO;
 import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
+import com.englishlearning.application.vocabulary.mapper.WordMeaningMapper;
+import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
-import com.englishlearning.domain.vocabulary.command.CreateWordCommand;
-import com.englishlearning.domain.vocabulary.command.DeleteWordCommand;
-import com.englishlearning.domain.vocabulary.command.UpdateWordCommand;
-import com.englishlearning.domain.vocabulary.command.WordMeaningCommand;
-import com.englishlearning.domain.vocabulary.command.AddExampleSentenceCommand;
-import com.englishlearning.domain.vocabulary.command.RemoveExampleSentenceCommand;
-import com.englishlearning.domain.vocabulary.command.AddWordMeaningCommand;
+import com.englishlearning.domain.vocabulary.command.*;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
-import com.englishlearning.domain.vocabulary.repository.PartOfSpeechRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
-
-import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,16 +31,19 @@ public class WordApplicationServiceImpl implements WordApplicationService {
 
     
     private final WordRepository wordRepository;
+    private final SentenceProvider sentenceProvider;
     private final WordMapper wordMapper;
-    private final PartOfSpeechRepository partOfSpeechRepository;
+    private final WordMeaningMapper wordMeaningMapper;
 
     @Autowired
     public WordApplicationServiceImpl(WordRepository wordRepository,
                                       WordMapper wordMapper,
-                                      PartOfSpeechRepository partOfSpeechRepository) {
+                                      SentenceProvider sentenceProvider,
+                                      WordMeaningMapper wordMeaningMapper) {
         this.wordRepository = wordRepository;
         this.wordMapper = wordMapper;
-        this.partOfSpeechRepository = partOfSpeechRepository;
+        this.sentenceProvider = sentenceProvider;
+        this.wordMeaningMapper = wordMeaningMapper;
     }
         
     /**
@@ -54,16 +52,15 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addWordMeaning(AddWordMeaningCommand command) {        
+    @Override
+    public WordDTO addWordMeaning(WordMeaningDTO command) {
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
-        
-        // 检查是否已存在相同词性的词义
+
         Optional<WordMeaning> existingMeaning = word.findMeaningByPartOfSpeech(command.getPartOfSpeechId());
         if (existingMeaning.isPresent()) {
             throw new IllegalArgumentException("该单词已存在词性为" + command.getPartOfSpeechId() + "的词义");
         }
-        // 创建新词义
         WordMeaning meaning = WordMeaning.builder()
                 .id(UUID.randomUUID().toString())
                 .partOfSpeechId(command.getPartOfSpeechId())
@@ -75,60 +72,63 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
                         new ArrayList<>() : command.getAntonymIds())
                 .build();
-        // 添加词义
         word.addMeaning(meaning);
-        // 保存并返回
-        return wordRepository.save(word);
+        Word wordPo = wordRepository.save(word);
+        return wordMapper.toDTO(wordPo);
     }
     
     /**
-     * 添加例句
-     * @param command 添加例句命令
+     * 为单词的词性添加例句
+     * @param addSentenceDto 添加例句命令
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addExampleSentence(AddExampleSentenceCommand command) {
-        command.validate();
-        // 获取单词实体
-        Word word = wordRepository.findById(command.getWordId())
-                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
+    @Override
+    public WordDTO addExampleSentence(AddWordMeaningExampleSentenceDTO addSentenceDto) {
+        Word word = wordRepository.findById(addSentenceDto.getWordId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + addSentenceDto.getWordId()));
 
-        WordMeaning wordMeaning = word.findMeaningByMeaningId(command.getWordMeaningId())
-               .orElseThrow(() -> new IllegalArgumentException("WordMeaning不存在: " + command.getWordMeaningId()));
-        
-        
-        return wordRepository.save(word);
+        WordMeaning wordMeaning = word.findMeaningByMeaningId(addSentenceDto.getWordMeaningId())
+               .orElseThrow(() -> new IllegalArgumentException("WordMeaning不存在: " + addSentenceDto.getWordMeaningId()));
+
+        List<String> sentenceIdList = sentenceProvider.addSentence(addSentenceDto.getSentences());
+
+        sentenceIdList.forEach(sentenceId -> {
+            word.addExampleSentence(wordMeaning.getId(), sentenceId);
+        });
+
+        Word savedWord = wordRepository.save(word);
+        return wordMapper.toDTO(savedWord);
     }
     
     /**
      * 移除例句
-     * @param command 移除例句命令
+     * @param deleteWordMeaningSentenceDTO 移除例句命令
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word removeExampleSentence(RemoveExampleSentenceCommand command) {
-        command.validate();
-        
-        // 获取单词实体
-        Word word = wordRepository.findById(command.getWordId())
-                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
-        
-        // 如果提供了词义ID，则使用词义ID移除例句
-        if (command.getWordMeaningId() != null && !command.getWordMeaningId().trim().isEmpty()) {
-            word.removeExampleSentence(command.getWordMeaningId(), command.getSentence());
-        } else {
-            // 兼容旧版本，使用词性ID移除例句
-            word.removeExampleSentence(command.getPartOfSpeechId(), command.getSentence());
-        }
-        
-        return wordRepository.save(word);
+    public WordMeaningDTO removeExampleSentence(DeleteWordMeaningSentenceDTO deleteWordMeaningSentenceDTO) {
+        Word word = wordRepository.findById(deleteWordMeaningSentenceDTO.getWordId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + deleteWordMeaningSentenceDTO.getWordId()));
+
+        WordMeaning wordMeaning = word.findMeaningByMeaningId(deleteWordMeaningSentenceDTO.getWordMeaningId())
+                .orElseThrow(() -> new IllegalArgumentException("WordMeaning不存在: " + deleteWordMeaningSentenceDTO.getWordMeaningId()));
+
+        deleteWordMeaningSentenceDTO.getSentenceIdList().forEach(sentenceId -> {
+            word.removeExampleSentence(wordMeaning.getId(), sentenceId);
+        });
+        Word saveWord = wordRepository.save(word);
+        Optional<WordMeaning> savedWordMeaning = saveWord.findMeaningByMeaningId(wordMeaning.getId());
+        return savedWordMeaning.map(wordMeaningMapper::toDTO).orElse(null);
+
     }
     
     /**
      * 添加同义词
      * @param wordId 单词ID
-     * @param partOfSpeechId 词性ID
-     * @param synonymId 同义词ID
+     * @param wordMeaningId 词性ID
+     * @param synonymWordId 同义词ID
+     * @param synonymWordMeaningId 同义词词性ID
      * @return 更新后的单词实体
      */
     @Transactional
@@ -156,8 +156,9 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     /**
      * 添加反义词
      * @param wordId 单词ID
-     * @param partOfSpeechId 词性ID
-     * @param antonymId 反义词ID
+     * @param wordMeaningId 词性ID
+     * @param antonymWordId 反义词ID
+     * @param antonymMeaningId 反义词词性ID
      * @return 更新后的单词实体
      */
     @Transactional

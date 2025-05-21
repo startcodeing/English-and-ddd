@@ -1,6 +1,9 @@
 package com.englishlearning.application.vocabulary.service;
 
+import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
+import com.englishlearning.application.vocabulary.dto.DeleteWordMeaningSentenceDTO;
 import com.englishlearning.application.vocabulary.dto.WordDTO;
+import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
 
 import java.util.List;
 
@@ -18,6 +21,16 @@ public interface WordApplicationService {
      * 更新单词
      */
     WordDTO updateWord(WordDTO dto);
+
+    /**
+     * 添加词性
+     */
+    WordDTO addWordMeaning(WordMeaningDTO dto);
+
+    /**
+     * 添加词性例句
+     */
+    WordDTO addExampleSentence(AddWordMeaningExampleSentenceDTO addSentenceDto);
     
     /**
      * 获取单词详情
@@ -48,4 +61,9 @@ public interface WordApplicationService {
      * 删除单词
      */
     void deleteWord(String id);
+
+    /**
+     * 删除词性例句
+     */
+    WordMeaningDTO removeExampleSentence(DeleteWordMeaningSentenceDTO deleteWordMeaningSentenceDTO);
 }

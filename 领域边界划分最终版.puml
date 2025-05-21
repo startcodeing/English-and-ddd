@@ -36,7 +36,7 @@ package "词汇管理上下文" <<VocabularyContext>> {
             - chineseMeaning: String
             - synonymIds: List<String>
             - antonymIds: List<String>
-            - exampleSentences: List<String>
+            - exampleSentenceIds: List<String>
         }
         
         Word "1" *-- "*" WordMeaning: 包含 >
@@ -187,5 +187,6 @@ package "学习行为上下文" <<LearningContext>> {
 WordLearningStatus ..> Word: 引用 >
 DictationItem ..> Word: 引用 >
 Sentence ..> Word: 引用 >
+WordMeaning ..> Sentence: 引用例句 >
 
 @enduml

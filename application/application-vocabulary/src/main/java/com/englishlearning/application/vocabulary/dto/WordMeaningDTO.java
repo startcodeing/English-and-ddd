@@ -21,11 +21,16 @@ public class WordMeaningDTO {
      * ID
      */
     private String id;
+
+    /**
+     * 单词ID
+     */
+    private String wordId;
     
     /**
      * 词性
      */
-    private PartOfSpeechDTO partOfSpeech;
+    private String partOfSpeechId;
     
     /**
      * 中文意思

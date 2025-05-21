@@ -1,6 +1,8 @@
 package com.englishlearning.interfaces.api.vocabulary.controller;
 
+import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
 import com.englishlearning.application.vocabulary.dto.WordDTO;
+import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
 import com.englishlearning.common.constants.ApiConstants;
 import com.englishlearning.common.types.Result;
@@ -85,5 +87,21 @@ public class WordController {
     public Result<Void> deleteWord(@PathVariable String id) {
         wordService.deleteWord(id);
         return Result.success();
+    }
+
+    /**
+     * 删除单词
+     */
+    @PostMapping("/wordMeaning")
+    public Result<WordDTO> addWordMeaning(@RequestBody WordMeaningDTO dto) {
+        return Result.success(wordService.addWordMeaning(dto));
+    }
+
+    /**
+     * 删除单词
+     */
+    @PostMapping("/wordMeaning")
+    public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody AddWordMeaningExampleSentenceDTO dto) {
+        return Result.success(wordService.addExampleSentence(dto));
     }
 }

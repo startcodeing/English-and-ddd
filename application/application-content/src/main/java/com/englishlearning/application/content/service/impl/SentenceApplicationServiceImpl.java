@@ -61,10 +61,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
             
             // 执行创建逻辑
             sentence.create(command);
-            
-            // 通过领域服务保存
-            Sentence savedSentence = sentenceService.createSentence(sentence);
-            
+            Sentence savedSentence = sentenceRepository.save(sentence);
             // 转换为DTO并返回
             return sentenceMapper.toDTO(savedSentence);
         } catch (IllegalArgumentException e) {

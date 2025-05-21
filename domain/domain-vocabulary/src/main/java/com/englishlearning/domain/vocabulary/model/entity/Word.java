@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -110,11 +109,8 @@ public class Word {
     public void addSynonym(String wordMeaningId,String synonymMeaningId) {
         this.assertMeaningExists(wordMeaningId);
         
-        WordMeaning targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId).get();
-                
-        if (!Objects.isNull(targetWordMeaning)) {
-            targetWordMeaning.addSynonym(synonymMeaningId);
-        }
+        Optional<WordMeaning> targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId);
+        targetWordMeaning.ifPresent(wordMeaning -> wordMeaning.addSynonym(synonymMeaningId));
     }
 
     
@@ -122,14 +118,9 @@ public class Word {
      * 添加反义词到指定词义ID的词义中
      */
     public void addAntonym(String wordMeaningId, String antonymMeaningId) {
-      
         this.assertMeaningExists(wordMeaningId);
-        
-        WordMeaning targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId).get();
-                
-        if (!Objects.isNull(targetWordMeaning)) {
-            targetWordMeaning.addAntonym(antonymMeaningId);
-        }
+        Optional<WordMeaning> targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId);
+        targetWordMeaning.ifPresent(wordMeaning -> {wordMeaning.addAntonym(antonymMeaningId);});
     }
 
     
@@ -139,33 +130,24 @@ public class Word {
     public void addExampleSentence(String wordMeaningId, String sentenceId) {
         this.assertMeaningExists(wordMeaningId);
         
-        WordMeaning targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId).get();
-                
-        if (!Objects.isNull(targetWordMeaning)) {
-            targetWordMeaning.addExampleSentence(sentenceId);
-        }
+        Optional<WordMeaning> targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId);
+        targetWordMeaning.ifPresent(wordMeaning -> wordMeaning.addExampleSentence(sentenceId));
     }
 
     
     public void removeSynonym(String meaningId, String synonymId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
-        if (target.isPresent()) {
-            target.get().removeSynonym(synonymId);
-        }
+        target.ifPresent(wordMeaning -> wordMeaning.removeSynonym(synonymId));
     }
 
     public void removeAntonym(String meaningId, String antonymId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
-        if (target.isPresent()) {
-            target.get().removeAntonym(antonymId);
-        }
+        target.ifPresent(wordMeaning -> wordMeaning.removeAntonym(antonymId));
     }
 
     public void removeExampleSentence(String meaningId, String sentenceId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
-        if (target.isPresent()) {
-            target.get().removeExampleSentence(sentenceId);
-        }
+        target.ifPresent(wordMeaning -> wordMeaning.removeExampleSentence(sentenceId));
     }
 
         
@@ -211,7 +193,7 @@ public class Word {
     }
 
     private void assertMeaningExists(String meaningId) {
-        if (!findMeaningByMeaningId(meaningId).isPresent()) {
+        if (findMeaningByMeaningId(meaningId).isEmpty()) {
             throw new IllegalArgumentException("WordMeaning not found: " + meaningId);
         }
     }
