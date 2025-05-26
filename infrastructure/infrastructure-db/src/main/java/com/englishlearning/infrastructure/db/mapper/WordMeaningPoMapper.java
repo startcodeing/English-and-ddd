@@ -1,12 +1,11 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
-import com.englishlearning.domain.vocabulary.model.entity.VocabularyExampleSentence;
 import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import com.englishlearning.infrastructure.db.po.WordMeaningSentencePO;
 import com.englishlearning.infrastructure.db.po.WordMeaningSynonymPO;
 import com.englishlearning.infrastructure.db.po.WordMeaningAntonymPO;
-import com.englishlearning.infrastructure.db.po.VocabularyExampleSentencePO;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -19,17 +18,15 @@ import java.util.stream.Collectors;
 /**
  * 单词词义实体与PO转换器
  */
-@Mapper(componentModel = "spring", uses = {VocabularyExampleSentencePoMapper.class})
+@Mapper(componentModel = "spring")
 public interface WordMeaningPoMapper {
-    
-    WordMeaningPoMapper INSTANCE = Mappers.getMapper(WordMeaningPoMapper.class);
-    
+
     /**
      * 将领域实体转换为PO
      */
-    @Mapping(target = "exampleSentences", source = "exampleSentenceIds", qualifiedByName = "toSentencePOs")
-    @Mapping(target = "synonyms", source = "synonymWordMeaningIds", qualifiedByName = "toSynonymPOs")
-    @Mapping(target = "antonyms", source = "antonymWordMeaningIds", qualifiedByName = "toAntonymPOs")
+    @Mapping(target = "exampleSentences",expression = "java(toSentencePOs(entity.getExampleSentenceIds(),entity.getId()))")
+    @Mapping(target = "synonyms",expression = "java(toSynonymPOs(entity.getSynonymWordMeaningIds(),entity.getId()))" )
+    @Mapping(target = "antonyms",expression = "java(toAntonymPOs(entity.getAntonymWordMeaningIds(),entity.getId()))")
     WordMeaningPO toPo(WordMeaning entity);
     
     /**
@@ -54,14 +51,14 @@ public interface WordMeaningPoMapper {
      * 将例句ID列表转换为例句关联PO列表
      */
     @Named("toSentencePOs")
-    default List<WordMeaningSentencePO> toSentencePOs(List<String> sentenceIds) {
+    default List<WordMeaningSentencePO> toSentencePOs(List<String> sentenceIds, @Context String wordMeaningId) {
         if (sentenceIds == null || sentenceIds.isEmpty()) {
             return new ArrayList<>();
         }
         
         return sentenceIds.stream()
                 .map(sentenceId -> WordMeaningSentencePO.builder()
-                        .id(new WordMeaningSentencePO.WordMeaningSentenceId(null, sentenceId))
+                        .id(new WordMeaningSentencePO.WordMeaningSentenceId(wordMeaningId, sentenceId))
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -85,14 +82,14 @@ public interface WordMeaningPoMapper {
      * 将同义词ID列表转换为同义词关联PO列表
      */
     @Named("toSynonymPOs")
-    default List<WordMeaningSynonymPO> toSynonymPOs(List<String> synonymIds) {
+    default List<WordMeaningSynonymPO> toSynonymPOs(List<String> synonymIds,@Context String wordMeaningId) {
         if (synonymIds == null || synonymIds.isEmpty()) {
             return new ArrayList<>();
         }
         
         return synonymIds.stream()
                 .map(synonymId -> WordMeaningSynonymPO.builder()
-                        .id(new WordMeaningSynonymPO.WordMeaningSynonymId(null, synonymId))
+                        .id(new WordMeaningSynonymPO.WordMeaningSynonymId(wordMeaningId, synonymId))
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -116,14 +113,14 @@ public interface WordMeaningPoMapper {
      * 将反义词ID列表转换为反义词关联PO列表
      */
     @Named("toAntonymPOs")
-    default List<WordMeaningAntonymPO> toAntonymPOs(List<String> antonymIds) {
+    default List<WordMeaningAntonymPO> toAntonymPOs(List<String> antonymIds,@Context String wordMeaningId) {
         if (antonymIds == null || antonymIds.isEmpty()) {
             return new ArrayList<>();
         }
         
         return antonymIds.stream()
                 .map(antonymId -> WordMeaningAntonymPO.builder()
-                        .id(new WordMeaningAntonymPO.WordMeaningAntonymId(null, antonymId))
+                        .id(new WordMeaningAntonymPO.WordMeaningAntonymId(wordMeaningId, antonymId))
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());

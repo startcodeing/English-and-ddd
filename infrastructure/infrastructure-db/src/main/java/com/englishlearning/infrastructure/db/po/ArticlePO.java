@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticlePO {
-    
+
     @Id
     private String id;
     

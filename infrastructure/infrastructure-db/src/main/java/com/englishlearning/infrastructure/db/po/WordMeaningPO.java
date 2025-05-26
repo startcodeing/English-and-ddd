@@ -1,13 +1,12 @@
 package com.englishlearning.infrastructure.db.po;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 import javax.persistence.*;
+import java.util.List;
+import java.util.List;
 
 /**
  * 单词词义持久化对象
@@ -15,7 +14,6 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "vocabulary_word_meaning")
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class WordMeaningPO {
