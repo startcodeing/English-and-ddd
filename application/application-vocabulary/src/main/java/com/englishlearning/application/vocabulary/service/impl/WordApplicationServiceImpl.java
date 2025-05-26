@@ -61,19 +61,18 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (existingMeaning.isPresent()) {
             throw new IllegalArgumentException("该单词已存在词性为" + command.getPartOfSpeechId() + "的词义");
         }
-//        WordMeaning meaning = WordMeaning.builder()
-//                .id(UUID.randomUUID().toString())
-//                .partOfSpeechId(command.getPartOfSpeechId())
-//                .chineseMeaning(command.getChineseMeaning())
-//                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentences())?
-//                        new ArrayList<>() : command.getExampleSentences())
-//                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
-//                        new ArrayList<>() : command.getSynonymIds())
-//                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
-//                        new ArrayList<>() : command.getAntonymIds())
-//                .build();
-        WordMeaning wordMeaning = new WordMeaning();
-        word.addMeaning(wordMeaning);
+        WordMeaning meaning = WordMeaning.builder()
+                .id(UUID.randomUUID().toString())
+                .partOfSpeechId(command.getPartOfSpeechId())
+                .chineseMeaning(command.getChineseMeaning())
+                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentences())?
+                        new ArrayList<>() : command.getExampleSentences())
+                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
+                        new ArrayList<>() : command.getSynonymIds())
+                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
+                        new ArrayList<>() : command.getAntonymIds())
+                .build();
+        word.addMeaning(meaning);
         Word wordPo = wordRepository.save(word);
         return wordMapper.toDTO(wordPo);
     }

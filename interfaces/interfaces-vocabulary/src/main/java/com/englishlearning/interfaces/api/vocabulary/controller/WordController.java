@@ -100,7 +100,7 @@ public class WordController {
     /**
      * 删除单词
      */
-    @PostMapping("/wordMeaning")
+    @PostMapping("/wordMeaning/exampleSentence")
     public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody AddWordMeaningExampleSentenceDTO dto) {
         return Result.success(wordService.addExampleSentence(dto));
     }
