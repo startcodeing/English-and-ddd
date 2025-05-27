@@ -28,9 +28,34 @@ public interface WordApplicationService {
     WordDTO addWordMeaning(WordMeaningDTO dto);
 
     /**
+     * 删除词性
+     */
+    WordDTO removeWordMeaning(String wordId,String meaningId);
+
+    /**
      * 添加词性例句
      */
     WordDTO addExampleSentence(AddWordMeaningExampleSentenceDTO addSentenceDto);
+
+    /**
+     * 添加词性同义词
+     */
+    WordMeaningDTO addSynonym(String wordId, String wordMeaningId, String synonymWordId,String synonymWordMeaningId);
+
+    /**
+     * 添加词性反义词
+     */
+    WordMeaningDTO addAntonym(String wordId, String wordMeaningId,String antonymWordId,String antonymMeaningId);
+
+    /**
+     * 删除词性同义词
+     */
+    void removeSynonym(String wordId,String meaningId, String synonymId);
+
+    /**
+     * 删除词性反义词
+     */
+    void removeAntonym(String wordId,String meaningId, String synonymId);
     
     /**
      * 获取单词详情

@@ -1,4 +1,4 @@
-package com.englishlearning.domain.vocabulary.command;
+package com.englishlearning.domain.vocabulary.dto;
 
 import com.englishlearning.domain.vocabulary.model.entity.WordBook;
 

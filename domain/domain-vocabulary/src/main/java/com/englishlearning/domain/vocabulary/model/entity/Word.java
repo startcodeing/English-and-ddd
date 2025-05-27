@@ -1,7 +1,5 @@
 package com.englishlearning.domain.vocabulary.model.entity;
 
-import com.englishlearning.domain.vocabulary.command.CreateWordCommand;
-import com.englishlearning.domain.vocabulary.command.UpdateWordCommand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -50,22 +48,20 @@ public class Word {
     /**
      * 创建新的单词
      */
-    public void createWord(CreateWordCommand createCommand) {
-        createCommand.validate();
-        this.spelling = createCommand.getSpelling();
-        this.difficultyLevel = createCommand.getDifficultyLevel();
-        this.pronunciation = createCommand.getPronunciation();
+    public void createWord(Word word) {
+        this.spelling = word.getSpelling();
+        this.difficultyLevel = word.getDifficultyLevel();
+        this.pronunciation = word.getPronunciation();
     }
     
     /**
      * 更新单词信息
      */
-    public void updateWord(UpdateWordCommand updateCommand) {
-        updateCommand.validate();
-        this.id = updateCommand.getId();
-        this.spelling = updateCommand.getSpelling();
-        this.difficultyLevel = updateCommand.getDifficultyLevel();
-        this.pronunciation = updateCommand.getPronunciation();
+    public void updateWord(Word word) {
+        this.id = word.getId();
+        this.spelling = word.getSpelling();
+        this.difficultyLevel = word.getDifficultyLevel();
+        this.pronunciation = word.getPronunciation();
     }
 
     /**
@@ -134,37 +130,30 @@ public class Word {
         targetWordMeaning.ifPresent(wordMeaning -> wordMeaning.addExampleSentence(sentenceId));
     }
 
-    
+    /**
+     * 删除指定词性的同义词
+     */
     public void removeSynonym(String meaningId, String synonymId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
         target.ifPresent(wordMeaning -> wordMeaning.removeSynonym(synonymId));
     }
 
+
+    /**
+     * 删除指定词性的反义词
+     */
     public void removeAntonym(String meaningId, String antonymId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
         target.ifPresent(wordMeaning -> wordMeaning.removeAntonym(antonymId));
     }
 
+    /**
+     * 删除指定词性的例句
+     */
     public void removeExampleSentence(String meaningId, String sentenceId) {
         Optional<WordMeaning> target = findMeaningByMeaningId(meaningId);
         target.ifPresent(wordMeaning -> wordMeaning.removeExampleSentence(sentenceId));
     }
-
-        
-    /**
-     * 使用现有ID创建单词（用于从存储中重建实体）
-     */
-    public static Word reconstitute(String id, Integer difficultyLevel, String spelling,
-                                   String pronunciation, List<WordMeaning> meanings) {
-        return new Word(
-                id,
-                difficultyLevel,
-                spelling,
-                pronunciation,
-                meanings != null ? new ArrayList<>(meanings) : new ArrayList<>()
-        );
-    }
-
     
     /**
      * 根据词性查找词义

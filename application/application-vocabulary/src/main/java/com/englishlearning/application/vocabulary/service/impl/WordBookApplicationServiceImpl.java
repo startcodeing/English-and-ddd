@@ -1,14 +1,13 @@
 package com.englishlearning.application.vocabulary.service.impl;
 
 import com.englishlearning.application.vocabulary.dto.WordBookDTO;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.service.WordBookApplicationService;
-import com.englishlearning.domain.vocabulary.command.AddWordToWordBookCommand;
-import com.englishlearning.domain.vocabulary.command.CreateWordBookCommand;
-import com.englishlearning.domain.vocabulary.command.DeleteWordBookCommand;
-import com.englishlearning.domain.vocabulary.command.RemoveWordFromWordBookCommand;
-import com.englishlearning.domain.vocabulary.command.UpdateWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.AddWordToWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.CreateWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.DeleteWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.RemoveWordFromWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.UpdateWordBookCommand;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordBook;
 import com.englishlearning.domain.vocabulary.repository.WordBookRepository;

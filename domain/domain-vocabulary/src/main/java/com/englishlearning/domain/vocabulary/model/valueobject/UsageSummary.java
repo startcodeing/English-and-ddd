@@ -29,10 +29,7 @@ public class UsageSummary {
      * 更新用法总结内容
      */
     public UsageSummary update(String newContent) {
-        if (newContent == null || newContent.trim().isEmpty()) {
-            return new UsageSummary("");
-        }
-        return new UsageSummary(newContent);
+        return of(newContent);
     }
     
     /**

@@ -1,4 +1,4 @@
-package com.englishlearning.domain.vocabulary.command;
+package com.englishlearning.domain.vocabulary.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePartOfSpeechCommand {
+public class CreatePartOfSpeechDTO {
     
     /**
      * 英文名称
@@ -36,18 +36,5 @@ public class CreatePartOfSpeechCommand {
      * 常用短语/搭配列表
      */
     private List<String> commonPhrases;
-    
-    /**
-     * 验证命令
-     * @throws IllegalArgumentException 如果参数无效
-     */
-    public void validate() {
-        if (englishName == null || englishName.trim().isEmpty()) {
-            throw new IllegalArgumentException("词性英文名称不能为空");
-        }
-        
-        if (chineseMeaning == null || chineseMeaning.trim().isEmpty()) {
-            throw new IllegalArgumentException("词性中文意思不能为空");
-        }
-    }
+
 }

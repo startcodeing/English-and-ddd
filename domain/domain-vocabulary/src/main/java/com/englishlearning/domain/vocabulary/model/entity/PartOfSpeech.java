@@ -1,7 +1,7 @@
 package com.englishlearning.domain.vocabulary.model.entity;
 
-import com.englishlearning.domain.vocabulary.command.CreatePartOfSpeechCommand;
-import com.englishlearning.domain.vocabulary.command.UpdatePartOfSpeechCommand;
+import com.englishlearning.domain.vocabulary.dto.CreatePartOfSpeechDTO;
+import com.englishlearning.domain.vocabulary.dto.UpdatePartOfSpeechDTO;
 import com.englishlearning.domain.vocabulary.model.valueobject.CommonPhrases;
 import com.englishlearning.domain.vocabulary.model.valueobject.UsageSummary;
 import lombok.*;
@@ -48,12 +48,11 @@ public class PartOfSpeech {
     /**
      * 创建新的词性
      */
-    public void create(CreatePartOfSpeechCommand createCommand) {
-        createCommand.validate();
-        this.englishName = createCommand.getEnglishName();
-        this.chineseMeaning = createCommand.getChineseMeaning();
-        this.usageSummary = UsageSummary.of(createCommand.getUsageSummary());
-        this.commonPhrases = CommonPhrases.of(createCommand.getCommonPhrases());
+    public void create(CreatePartOfSpeechDTO createDto) {
+        this.englishName = createDto.getEnglishName();
+        this.chineseMeaning = createDto.getChineseMeaning();
+        this.usageSummary = UsageSummary.of(createDto.getUsageSummary());
+        //this.commonPhrases = CommonPhrases.of(createDto.getCommonPhrases());
     }
     
     /**
@@ -73,21 +72,14 @@ public class PartOfSpeech {
     /**
      * 更新词性信息
      */
-    public void update(UpdatePartOfSpeechCommand updateCommand) {
-        updateCommand.validate();
-        this.id = updateCommand.getId();
-        this.englishName = updateCommand.getEnglishName();
-        this.chineseMeaning = updateCommand.getChineseMeaning();
-        this.usageSummary = UsageSummary.of(updateCommand.getUsageSummary());
-        this.commonPhrases = CommonPhrases.of(updateCommand.getCommonPhrases());
+    public void update(UpdatePartOfSpeechDTO updateDto) {
+        this.id = updateDto.getId();
+        this.englishName = updateDto.getEnglishName();
+        this.chineseMeaning = updateDto.getChineseMeaning();
+        this.usageSummary = UsageSummary.of(updateDto.getUsageSummary());
+        //this.commonPhrases = CommonPhrases.of(updateDto.getCommonPhrases());
     }
-    
-    /**
-     * 更新用法总结
-     */
-    public void updateUsageSummary(String usageSummary) {
-        this.usageSummary = this.usageSummary.update(usageSummary);
-    }
+
     
     /**
      * 添加常用短语

@@ -13,8 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PartOfSpeechPoMapper {
     
-    PartOfSpeechPoMapper INSTANCE = Mappers.getMapper(PartOfSpeechPoMapper.class);
-    
+
 //    /**
 //     * PO转Entity
 //     */

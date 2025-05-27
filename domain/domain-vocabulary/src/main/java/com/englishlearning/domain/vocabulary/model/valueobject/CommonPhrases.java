@@ -61,10 +61,7 @@ public class CommonPhrases {
      * 更新短语列表
      */
     public CommonPhrases update(List<String> newPhrases) {
-        if (newPhrases == null) {
-            return new CommonPhrases(new ArrayList<>());
-        }
-        return new CommonPhrases(new ArrayList<>(newPhrases));
+        return of(newPhrases);
     }
     
     /**

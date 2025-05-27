@@ -1,4 +1,4 @@
-package com.englishlearning.domain.vocabulary.command;
+package com.englishlearning.domain.vocabulary.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdatePartOfSpeechCommand {
+public class UpdatePartOfSpeechDTO {
     
     /**
      * 词性ID

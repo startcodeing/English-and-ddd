@@ -1,7 +1,7 @@
 package com.englishlearning.domain.vocabulary.model.entity;
 
-import com.englishlearning.domain.vocabulary.command.CreateWordBookCommand;
-import com.englishlearning.domain.vocabulary.command.UpdateWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.CreateWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.UpdateWordBookCommand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

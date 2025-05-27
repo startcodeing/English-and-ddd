@@ -1,4 +1,4 @@
-package com.englishlearning.domain.vocabulary.command;
+package com.englishlearning.domain.vocabulary.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,27 +6,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 删除词性命令
- * 封装删除词性所需的参数
+ * 删除单词本命令
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeletePartOfSpeechCommand {
+public class DeleteWordBookCommand {
     
     /**
-     * 词性ID
+     * ID
      */
     private String id;
     
     /**
      * 验证命令
-     * @throws IllegalArgumentException 如果参数无效
      */
     public void validate() {
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("词性ID不能为空");
+            throw new IllegalArgumentException("单词本ID不能为空");
         }
     }
 }

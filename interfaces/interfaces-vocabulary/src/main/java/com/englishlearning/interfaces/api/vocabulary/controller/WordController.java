@@ -1,8 +1,6 @@
 package com.englishlearning.interfaces.api.vocabulary.controller;
 
-import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
+import com.englishlearning.application.vocabulary.dto.*;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
 import com.englishlearning.common.constants.ApiConstants;
 import com.englishlearning.common.types.Result;
@@ -38,6 +36,74 @@ public class WordController {
     @PutMapping()
     public Result<WordDTO> updateWord(@Valid @RequestBody WordDTO dto) {
         return Result.success(wordService.updateWord(dto));
+    }
+
+
+    /**
+     * 添加词性
+     */
+    @PostMapping("/addWordMeaning")
+    public Result<WordDTO> addWordMeaning(@RequestBody WordMeaningDTO dto) {
+        return Result.success(wordService.addWordMeaning(dto));
+    }
+
+    /**
+     * 添加词性
+     */
+    @PostMapping("/deleteWordMeaning")
+    public Result<WordDTO> deleteWordMeaning(@RequestBody DeleteWordMeaningDTO dto) {
+        return Result.success(wordService.removeWordMeaning(dto.getWordId(),dto.getMeaningId()));
+    }
+
+    /**
+     * 添加词性例句
+     */
+    @PostMapping("/wordMeaning/exampleSentence")
+    public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody AddWordMeaningExampleSentenceDTO dto) {
+        return Result.success(wordService.addExampleSentence(dto));
+    }
+
+    /**
+     * 添加词性同义词
+     */
+    @PostMapping("/wordMeaning/addSynonym")
+    public Result<WordMeaningDTO> addWordMeaningSynonym(@RequestBody AddWordMeaningSynonymDTO synonymDTO) {
+        return Result.success(wordService.addSynonym(synonymDTO.getWordId(),synonymDTO.getWordMeaningId(),synonymDTO.getSynonymWordId(),synonymDTO.getSynonymWordMeaningId()));
+    }
+
+    /**
+     * 添加词性反义词
+     */
+    @PostMapping("/wordMeaning/addAntonym")
+    public Result<WordMeaningDTO> addWordMeaningAntonym(@RequestBody AddWordMeaningAntonymDTO synonymDTO) {
+        return Result.success(wordService.addAntonym(synonymDTO.getWordId(), synonymDTO.getWordMeaningId(),synonymDTO.getAntonymWordId(),synonymDTO.getAntonymMeaningId()));
+    }
+
+    /**
+     * 添加词性同义词
+     */
+    @PostMapping("/wordMeaning/deleteSynonym")
+    public Result<Void> removeWordMeaningSynonym(@RequestBody DeleteSynonymDTO synonymDTO) {
+        wordService.removeSynonym(synonymDTO.getWordId(),synonymDTO.getMeaningId(),synonymDTO.getSynonymId());
+        return Result.success();
+    }
+
+    /**
+     * 添加词性反义词
+     */
+    @PostMapping("/wordMeaning/deleteAntonym")
+    public Result<WordDTO> removeMeaningAntonym(@RequestBody DeleteAntonymDTO antonymDTO) {
+        wordService.removeAntonym(antonymDTO.getWordId(),antonymDTO.getMeaningId(),antonymDTO.getSynonymId());
+        return Result.success();
+    }
+
+    /**
+     * 删除单词
+     */
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteWord(@PathVariable String id) {
+        wordService.deleteWord(id);
+        return Result.success();
     }
     
     /**
@@ -80,28 +146,5 @@ public class WordController {
         return Result.success(wordService.getAllWords());
     }
     
-    /**
-     * 删除单词
-     */
-    @DeleteMapping("/{id}")
-    public Result<Void> deleteWord(@PathVariable String id) {
-        wordService.deleteWord(id);
-        return Result.success();
-    }
 
-    /**
-     * 删除单词
-     */
-    @PostMapping("/wordMeaning")
-    public Result<WordDTO> addWordMeaning(@RequestBody WordMeaningDTO dto) {
-        return Result.success(wordService.addWordMeaning(dto));
-    }
-
-    /**
-     * 删除单词
-     */
-    @PostMapping("/wordMeaning/exampleSentence")
-    public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody AddWordMeaningExampleSentenceDTO dto) {
-        return Result.success(wordService.addExampleSentence(dto));
-    }
 }

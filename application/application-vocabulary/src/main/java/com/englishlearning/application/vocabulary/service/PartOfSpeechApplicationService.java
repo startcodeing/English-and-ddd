@@ -2,9 +2,6 @@ package com.englishlearning.application.vocabulary.service;
 
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
 
-import com.englishlearning.domain.vocabulary.command.UpdatePartOfSpeechUsageSummaryCommand;
-import com.englishlearning.domain.vocabulary.command.UpdatePartOfSpeechCommonPhrasesCommand;
-
 import java.util.List;
 
 /**
@@ -36,18 +33,15 @@ public interface PartOfSpeechApplicationService {
      * 删除词性
      */
     void deletePartOfSpeech(String id);
-    
+
+
     /**
-     * 更新词性用法总结
-     * @param command 更新词性用法总结命令
-     * @return 更新后的词性DTO
+     * 添加常用短语
      */
-    PartOfSpeechDTO updatePartOfSpeechUsageSummary(UpdatePartOfSpeechUsageSummaryCommand command);
-    
+    void addCommonPhrase(String partOfSpeechId,String phrase);
+
     /**
-     * 更新词性常用短语
-     * @param command 更新词性常用短语命令
-     * @return 更新后的词性DTO
+     * 删除词性常用短语
      */
-    PartOfSpeechDTO updatePartOfSpeechCommonPhrases(UpdatePartOfSpeechCommonPhrasesCommand command);
+    void removeCommonPhrase(String partOfSpeechId,String phrase);
 }

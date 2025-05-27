@@ -8,7 +8,6 @@ import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.mapper.WordMeaningMapper;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
-import com.englishlearning.domain.vocabulary.command.*;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
@@ -76,7 +75,17 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         Word wordPo = wordRepository.save(word);
         return wordMapper.toDTO(wordPo);
     }
-    
+
+
+    @Override
+    public WordDTO removeWordMeaning(String wordId, String meaningId) {
+        Word word = wordRepository.findById(wordId).orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
+        word.findMeaningByMeaningId(meaningId).orElseThrow(() -> new IllegalArgumentException("词性不存在: " + meaningId));
+        word.removeMeaning(meaningId);
+        Word wordPo = wordRepository.save(word);
+        return wordMapper.toDTO(wordPo);
+    }
+
     /**
      * 为单词的词性添加例句
      * @param addSentenceDto 添加例句命令
@@ -93,9 +102,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
 
         List<String> sentenceIdList = sentenceProvider.addSentence(addSentenceDto.getSentences());
 
-        sentenceIdList.forEach(sentenceId -> {
-            word.addExampleSentence(wordMeaning.getId(), sentenceId);
-        });
+        sentenceIdList.forEach(sentenceId -> word.addExampleSentence(wordMeaning.getId(), sentenceId));
 
         Word savedWord = wordRepository.save(word);
         return wordMapper.toDTO(savedWord);
@@ -114,9 +121,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         WordMeaning wordMeaning = word.findMeaningByMeaningId(deleteWordMeaningSentenceDTO.getWordMeaningId())
                 .orElseThrow(() -> new IllegalArgumentException("WordMeaning不存在: " + deleteWordMeaningSentenceDTO.getWordMeaningId()));
 
-        deleteWordMeaningSentenceDTO.getSentenceIdList().forEach(sentenceId -> {
-            word.removeExampleSentence(wordMeaning.getId(), sentenceId);
-        });
+        deleteWordMeaningSentenceDTO.getSentenceIdList().forEach(sentenceId -> word.removeExampleSentence(wordMeaning.getId(), sentenceId));
         Word saveWord = wordRepository.save(word);
         Optional<WordMeaning> savedWordMeaning = saveWord.findMeaningByMeaningId(wordMeaning.getId());
         return savedWordMeaning.map(wordMeaningMapper::toDTO).orElse(null);
@@ -132,7 +137,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addSynonym(String wordId, String wordMeaningId, String synonymWordId,String synonymWordMeaningId) {
+    public WordMeaningDTO addSynonym(String wordId, String wordMeaningId, String synonymWordId,String synonymWordMeaningId) {
         // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
@@ -149,8 +154,8 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         } else {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
-        
-        return wordRepository.save(word);
+        Word savedWord = wordRepository.save(word);
+        return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
     
     /**
@@ -162,7 +167,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public Word addAntonym(String wordId, String wordMeaningId,String antonymWordId,String antonymMeaningId) {
+    public WordMeaningDTO addAntonym(String wordId, String wordMeaningId,String antonymWordId,String antonymMeaningId) {
         // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
@@ -180,10 +185,27 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         } else {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
-        
-        return wordRepository.save(word);
+        Word savedWord = wordRepository.save(word);
+        return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
 
+    @Override
+    public void removeSynonym(String wordId,String meaningId, String synonymId) {
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
+        word.findMeaningByMeaningId(meaningId).orElseThrow(() -> new IllegalArgumentException("词性不存在: " + meaningId));
+        word.removeSynonym(meaningId, synonymId);
+        wordRepository.save(word);
+    }
+
+    @Override
+    public void removeAntonym(String wordId,String meaningId, String synonymId) {
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
+        word.findMeaningByMeaningId(meaningId).orElseThrow(() -> new IllegalArgumentException("词性不存在: " + meaningId));
+        word.removeAntonym(meaningId, synonymId);
+        wordRepository.save(word);
+    }
 
     @Transactional
     @Override
@@ -195,7 +217,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 throw new IllegalArgumentException("单词已存在: " + dto.getSpelling());
             }
             // 创建命令对象
-            CreateWordCommand command = CreateWordCommand.builder()
+            Word wordInfo = Word.builder()
                     .spelling(dto.getSpelling())
                     .pronunciation(dto.getPronunciation())
                     .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
@@ -203,7 +225,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
             Word word = Word.builder()
                     .id(UUID.randomUUID().toString())
                     .build();
-            word.createWord(command);            
+            word.createWord(wordInfo);
             Word savedWord = wordRepository.save(word);
             return wordMapper.toDTO(savedWord);
         } catch (IllegalArgumentException e) {
@@ -217,17 +239,14 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     @Override
     public WordDTO updateWord(WordDTO dto) {
         try {
-            // 创建命令对象
-            UpdateWordCommand command = UpdateWordCommand.builder()
+            Word command = Word.builder()
                     .id(dto.getId())
                     .spelling(dto.getSpelling())
                     .pronunciation(dto.getPronunciation())
                     .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
                     .build();
-            command.validate();
             Word word = wordRepository.findById(command.getId())
                     .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
-            
             word.updateWord(command);
             Word updatedWord = wordRepository.save(word);
             return wordMapper.toDTO(updatedWord);
@@ -297,14 +316,8 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     @Override
     public void deleteWord(String id) {
         try {
-            // 创建命令对象
-            DeleteWordCommand command = DeleteWordCommand.builder()
-                    .id(id)
-                    .build();
-            // 验证命令
-            command.validate();
             // 直接删除
-            wordRepository.deleteById(command.getId());
+            wordRepository.deleteById(id);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
