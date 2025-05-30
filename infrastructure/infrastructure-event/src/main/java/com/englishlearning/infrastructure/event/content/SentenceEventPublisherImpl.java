@@ -3,10 +3,10 @@ package com.englishlearning.infrastructure.event.content;
 import com.englishlearning.domain.content.event.SentenceCreatedEvent;
 import com.englishlearning.domain.content.event.SentenceUpdatedEvent;
 import com.englishlearning.domain.content.event.SentenceEventPublisher;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.GenericEventMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +14,14 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class SentenceEventPublisherImpl implements SentenceEventPublisher {
     
-    private final EventBus eventBus;
+    private EventBus eventBus;
+    
+    @Autowired
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
     
     @Override
     public void publishSentenceCreatedEvent(SentenceCreatedEvent event) {
@@ -36,4 +40,4 @@ public class SentenceEventPublisherImpl implements SentenceEventPublisher {
         log.info("Publishing sentence deleted event for id: {}", sentenceId);
         eventBus.publish(GenericEventMessage.asEventMessage(sentenceId));
     }
-} 
+}

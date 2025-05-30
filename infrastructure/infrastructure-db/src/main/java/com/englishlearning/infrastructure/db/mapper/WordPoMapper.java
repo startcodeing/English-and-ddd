@@ -1,11 +1,8 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.vocabulary.model.entity.Word;
-import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import com.englishlearning.infrastructure.db.po.WordPO;
-import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -15,9 +12,7 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {WordMeaningPoMapper.class})
 public interface WordPoMapper{
-    
-    WordPoMapper INSTANCE = Mappers.getMapper(WordPoMapper.class);
-    
+
     /**
      * 将领域实体转换为PO
      */

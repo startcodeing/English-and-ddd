@@ -18,7 +18,7 @@ import java.util.List;
 public class WordDTO {
     private String id;
     private String spelling;
-    private String pronunciation;
+    private String phonetic;
     private Integer difficultyLevel;
     
     /**

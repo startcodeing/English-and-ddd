@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: english-learning-platform
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     #内存数据库，服务停止数据会丢失
     #url: jdbc:h2:mem:englishdb

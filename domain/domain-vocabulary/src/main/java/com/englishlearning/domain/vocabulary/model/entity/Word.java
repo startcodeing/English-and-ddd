@@ -37,7 +37,7 @@ public class Word {
     /**
      * 发音
      */
-    private String pronunciation;
+    private String phonetic;
     
     /**
      * 词义列表（不同词性下的含义、同义词、反义词和例句）
@@ -51,7 +51,7 @@ public class Word {
     public void createWord(Word word) {
         this.spelling = word.getSpelling();
         this.difficultyLevel = word.getDifficultyLevel();
-        this.pronunciation = word.getPronunciation();
+        this.phonetic = word.getPhonetic();
     }
     
     /**
@@ -61,7 +61,7 @@ public class Word {
         this.id = word.getId();
         this.spelling = word.getSpelling();
         this.difficultyLevel = word.getDifficultyLevel();
-        this.pronunciation = word.getPronunciation();
+        this.phonetic = word.getPhonetic();
     }
 
     /**
