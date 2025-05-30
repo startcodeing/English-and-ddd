@@ -1,5 +1,6 @@
 package com.englishlearning.application.vocabulary.service;
 
+import com.englishlearning.application.vocabulary.dto.CommonPhraseDTO;
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
 
 import java.util.List;
@@ -38,10 +39,10 @@ public interface PartOfSpeechApplicationService {
     /**
      * 添加常用短语
      */
-    void addCommonPhrase(String partOfSpeechId,String phrase);
+    void addCommonPhrase(CommonPhraseDTO commonPhraseDTO);
 
     /**
      * 删除词性常用短语
      */
-    void removeCommonPhrase(String partOfSpeechId,String phrase);
+    void removeCommonPhrase(CommonPhraseDTO commonPhraseDTO);
 }

@@ -1,5 +1,6 @@
 package com.englishlearning.interfaces.api.vocabulary.controller;
 
+import com.englishlearning.application.vocabulary.dto.CommonPhraseDTO;
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
 import com.englishlearning.application.vocabulary.service.PartOfSpeechApplicationService;
 import com.englishlearning.common.constants.ApiConstants;
@@ -36,6 +37,25 @@ public class PartOfSpeechController {
     @PutMapping()
     public Result<PartOfSpeechDTO> updatePartOfSpeech(@Valid @RequestBody PartOfSpeechDTO dto) {
         return Result.success(partOfSpeechService.updatePartOfSpeech(dto));
+    }
+
+
+    /**
+     * 更新词性
+     */
+    @PostMapping("/commonPhrase")
+    public Result<Void> getCommonPhrase(@Valid @RequestBody CommonPhraseDTO dto) {
+        partOfSpeechService.addCommonPhrase(dto);
+        return Result.success();
+    }
+
+    /**
+     * 更新词性
+     */
+    @DeleteMapping("/commonPhrase")
+    public Result<Void> deleteCommonPhrase(@Valid @RequestBody CommonPhraseDTO dto) {
+        partOfSpeechService.removeCommonPhrase(dto);
+        return Result.success();
     }
     
     /**

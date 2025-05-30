@@ -52,7 +52,7 @@ public class PartOfSpeech {
         this.englishName = createDto.getEnglishName();
         this.chineseMeaning = createDto.getChineseMeaning();
         this.usageSummary = UsageSummary.of(createDto.getUsageSummary());
-        //this.commonPhrases = CommonPhrases.of(createDto.getCommonPhrases());
+        this.commonPhrases = CommonPhrases.of(createDto.getCommonPhrases());
     }
     
     /**
@@ -77,7 +77,7 @@ public class PartOfSpeech {
         this.englishName = updateDto.getEnglishName();
         this.chineseMeaning = updateDto.getChineseMeaning();
         this.usageSummary = UsageSummary.of(updateDto.getUsageSummary());
-        //this.commonPhrases = CommonPhrases.of(updateDto.getCommonPhrases());
+        this.commonPhrases = CommonPhrases.of(updateDto.getCommonPhrases());
     }
 
     

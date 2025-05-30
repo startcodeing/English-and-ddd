@@ -21,13 +21,13 @@
         <!-- 领域模块 -->
         <dependency>
             <groupId>com.englishlearning</groupId>
-            <artifactId>domain-vocabulary</artifactId>
+            <artifactId>domain-content</artifactId>
         </dependency>
         <dependency>
             <groupId>com.englishlearning</groupId>
-            <artifactId>domain-content</artifactId>
+            <artifactId>domain-vocabulary</artifactId>
         </dependency>
-        
+
         <!-- 应用模块 -->
         <dependency>
             <groupId>com.englishlearning</groupId>

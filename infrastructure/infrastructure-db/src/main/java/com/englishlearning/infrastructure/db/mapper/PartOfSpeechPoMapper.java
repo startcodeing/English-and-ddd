@@ -4,26 +4,20 @@ import com.englishlearning.domain.vocabulary.model.entity.PartOfSpeech;
 import com.englishlearning.infrastructure.db.po.PartOfSpeechPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 词性PO映射接口
  */
 @Mapper(componentModel = "spring")
 public interface PartOfSpeechPoMapper {
-    
 
-//    /**
-//     * PO转Entity
-//     */
-//    PartOfSpeech toEntity(PartOfSpeechPO po);
-//
-//    /**
-//     * Entity转PO
-//     */
-//    PartOfSpeechPO toPo(PartOfSpeech entity);
-    
+
     /**
      * PO List转Entity List
      */
@@ -43,13 +37,15 @@ public interface PartOfSpeechPoMapper {
         }
 
         Long id = partOfSpeech.getId() != null ? Long.valueOf(partOfSpeech.getId()) : null;
+        List<String> commonPhraseList = Objects.isNull(partOfSpeech.getCommonPhrases())
+                ? Collections.emptyList() : partOfSpeech.getCommonPhrasesList();
 
         return new PartOfSpeechPO(
                 id,
                 partOfSpeech.getEnglishName(),
                 partOfSpeech.getChineseMeaning(),
                 partOfSpeech.getUsageSummaryContent(),
-                partOfSpeech.getCommonPhrasesList()
+                commonPhraseList
         );
     }
 

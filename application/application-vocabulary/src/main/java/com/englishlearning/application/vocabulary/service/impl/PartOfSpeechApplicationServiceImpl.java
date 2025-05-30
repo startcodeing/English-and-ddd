@@ -1,5 +1,6 @@
 package com.englishlearning.application.vocabulary.service.impl;
 
+import com.englishlearning.application.vocabulary.dto.CommonPhraseDTO;
 import com.englishlearning.application.vocabulary.dto.PartOfSpeechDTO;
 import com.englishlearning.application.vocabulary.service.PartOfSpeechApplicationService;
 import com.englishlearning.domain.vocabulary.dto.CreatePartOfSpeechDTO;
@@ -37,7 +38,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
             if (existPartOfSpeech.isPresent()) {
                 throw new RuntimeException("Part of speech already exists");
             }
-            CreatePartOfSpeechDTO createCommand = CreatePartOfSpeechDTO.builder()
+            CreatePartOfSpeechDTO createPartOfSpeechDTO = CreatePartOfSpeechDTO.builder()
                     .englishName(dto.getEnglishName())
                     .chineseMeaning(dto.getChineseMeaning())
                     .usageSummary(dto.getUsageSummary())
@@ -45,7 +46,7 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
                     .build();
             
             PartOfSpeech partOfSpeech = PartOfSpeech.builder().build();
-            partOfSpeech.create(createCommand);
+            partOfSpeech.create(createPartOfSpeechDTO);
             PartOfSpeech savedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
             return convertToDTO(savedPartOfSpeech);
         } catch (IllegalArgumentException e) {
@@ -59,17 +60,18 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
     @Override
     public PartOfSpeechDTO updatePartOfSpeech(PartOfSpeechDTO dto) {
         try {
-            UpdatePartOfSpeechDTO updateCommand = UpdatePartOfSpeechDTO.builder()
+            UpdatePartOfSpeechDTO updatePartOfSpeechDTO = UpdatePartOfSpeechDTO.builder()
                     .englishName(dto.getEnglishName())
                     .chineseMeaning(dto.getChineseMeaning())
                     .usageSummary(dto.getUsageSummary())
                     .commonPhrases(dto.getCommonPhrases())
                     .id(dto.getId())
                     .build();
-            updateCommand.validate();
-            PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(updateCommand.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + updateCommand.getId()));
-            partOfSpeech.update(updateCommand);
+            updatePartOfSpeechDTO.validate();
+            PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(updatePartOfSpeechDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + updatePartOfSpeechDTO.getId()));
+
+            partOfSpeech.update(updatePartOfSpeechDTO);
             PartOfSpeech updatedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
             return convertToDTO(updatedPartOfSpeech);
         } catch (IllegalArgumentException e) {
@@ -92,16 +94,20 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
 
 
     @Override
-    public void addCommonPhrase(String partOfSpeechId,String phrase) {
-        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(partOfSpeechId).orElseThrow(() -> new IllegalArgumentException("词性不存在: " + partOfSpeechId));
-        partOfSpeech.addCommonPhrase(phrase);
+    public void addCommonPhrase(CommonPhraseDTO commonPhraseDTO) {
+        String partOfSpeechId = commonPhraseDTO.getPartOfSpeechId();
+        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(partOfSpeechId)
+                .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + partOfSpeechId));
+        partOfSpeech.addCommonPhrase(commonPhraseDTO.getPhrase());
         partOfSpeechRepository.save(partOfSpeech);
     }
 
     @Override
-    public void removeCommonPhrase(String partOfSpeechId,String phrase) {
-        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(partOfSpeechId).orElseThrow(() -> new IllegalArgumentException("词性不存在: " + partOfSpeechId));
-        partOfSpeech.removeCommonPhrase(phrase);
+    public void removeCommonPhrase(CommonPhraseDTO commonPhraseDTO) {
+        String partOfSpeechId = commonPhraseDTO.getPartOfSpeechId();
+        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(partOfSpeechId)
+                .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + partOfSpeechId));
+        partOfSpeech.removeCommonPhrase(commonPhraseDTO.getPhrase());
         partOfSpeechRepository.save(partOfSpeech);
     }
 
