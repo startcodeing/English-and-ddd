@@ -12,9 +12,7 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {SentenceVariantMapper.class})
 public interface SentenceMapper {
-    
-    SentenceMapper INSTANCE = Mappers.getMapper(SentenceMapper.class);
-    
+
     /**
      * 实体转DTO
      */

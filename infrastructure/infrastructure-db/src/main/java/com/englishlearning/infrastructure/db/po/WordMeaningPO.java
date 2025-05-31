@@ -45,21 +45,21 @@ public class WordMeaningPO {
      * 例句关联，通过关联表实现
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<WordMeaningSentencePO> exampleSentences;
     
     /**
      * 同义词关联，通过关联表实现
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<WordMeaningSynonymPO> synonyms;
     
     /**
      * 反义词关联，通过关联表实现
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @JoinColumn(name = "meaning_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<WordMeaningAntonymPO> antonyms;
     
     /**

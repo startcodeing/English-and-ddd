@@ -142,22 +142,17 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      */
     @Transactional
     public WordMeaningDTO addSynonym(String wordId, String wordMeaningId, String synonymWordId, String synonymWordMeaningId) {
-        // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
 
-        // 校验添加的同义词是否存在
         Word synonymWord = wordRepository.findById(synonymWordId).orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymWordId));
         synonymWord.findMeaningByMeaningId(synonymWordMeaningId).orElseThrow(() -> new IllegalArgumentException("同义词不存在: " + synonymWordMeaningId));
 
-        // 查找对应词性的词义
         Optional<WordMeaning> meaningOpt = word.findMeaningByMeaningId(wordMeaningId);
-        if (meaningOpt.isPresent()) {
-            // 添加同义词并保存
-            word.addSynonym(meaningOpt.get().getId(), synonymWordMeaningId);
-        } else {
+        if (meaningOpt.isEmpty()) {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
+        word.addSynonym(meaningOpt.get().getId(), synonymWordMeaningId);
         Word savedWord = wordRepository.save(word);
         return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
@@ -173,23 +168,18 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      */
     @Transactional
     public WordMeaningDTO addAntonym(String wordId, String wordMeaningId, String antonymWordId, String antonymMeaningId) {
-        // 获取单词实体
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
 
-        // 获取反义词实体
         Word antonymWord = wordRepository.findById(antonymWordId)
                 .orElseThrow(() -> new IllegalArgumentException("反义词不存在: " + antonymWordId));
         antonymWord.findMeaningByMeaningId(antonymMeaningId).orElseThrow(() -> new IllegalArgumentException("反义词WordMeaning不存在: " + antonymMeaningId));
 
-        // 查找对应词性的词义
         Optional<WordMeaning> meaningOpt = word.findMeaningByMeaningId(wordMeaningId);
-        if (meaningOpt.isPresent()) {
-            // 添加反义词并保存
-            word.addAntonym(meaningOpt.get().getId(), antonymMeaningId);
-        } else {
+        if (meaningOpt.isEmpty()) {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
+        word.addAntonym(meaningOpt.get().getId(), antonymMeaningId);
         Word savedWord = wordRepository.save(word);
         return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
@@ -219,7 +209,6 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (existWord.isPresent()) {
             throw new IllegalArgumentException("单词已存在: " + dto.getSpelling());
         }
-        // 创建命令对象
         Word wordInfo = Word.builder()
                 .spelling(dto.getSpelling())
                 .phonetic(dto.getPhonetic())

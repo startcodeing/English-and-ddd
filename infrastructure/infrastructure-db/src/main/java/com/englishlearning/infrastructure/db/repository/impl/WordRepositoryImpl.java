@@ -40,7 +40,6 @@ public class WordRepositoryImpl implements WordRepository {
         
         // 设置时间戳
         setTimestamps(wordPO, word.getId());
-        
         WordPO savedPO = jpaRepository.save(wordPO);
         return mapper.toEntity(savedPO);
     }
@@ -69,13 +68,11 @@ public class WordRepositoryImpl implements WordRepository {
      */
     private void setTimestamps(WordPO wordPO, String wordId) {
         long now = System.currentTimeMillis();
-        
         // 设置单词的时间戳
         if (wordPO.getCreatedAt() == null) {
             wordPO.setCreatedAt(now);
         }
         wordPO.setUpdatedAt(now);
-        
         // 设置词义的时间戳和关联关系
         if (wordPO.getMeanings() != null) {
             for (WordMeaningPO meaningPO : wordPO.getMeanings()) {

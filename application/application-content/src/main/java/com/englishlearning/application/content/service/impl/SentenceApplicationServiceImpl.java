@@ -56,7 +56,6 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                 .build();
         sentence.create(command);
         Sentence savedSentence = sentenceRepository.save(sentence);
-        // 转换为DTO并返回
         return sentenceMapper.toDTO(savedSentence);
     }
     
