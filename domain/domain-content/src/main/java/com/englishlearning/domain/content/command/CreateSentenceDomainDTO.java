@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateSentenceCommand {
+public class CreateSentenceDomainDTO {
     
     /**
      * 英文内容

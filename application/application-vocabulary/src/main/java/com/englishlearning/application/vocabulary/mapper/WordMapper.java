@@ -21,6 +21,11 @@ public interface WordMapper {
      * @param word 单词领域实体
      * @return 单词DTO
      */
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "spelling", target = "spelling")
+    @Mapping(source = "phonetic", target = "phonetic")
+    @Mapping(source = "difficultyLevel", target = "difficultyLevel")
+    @Mapping(source = "meanings", target = "meanings")
     WordDTO toDTO(Word word);
     
     /**

@@ -28,11 +28,28 @@ public class WordRepositoryImpl implements WordRepository {
     private final WordJpaRepository jpaRepository;
     private final WordMeaningJpaRepository meaningJpaRepository;
     private final WordPoMapper mapper;
-    private final WordMeaningPoMapper meaningMapper;
     private final UUIDGenerator uuidGenerator;
     
     @Override
     public Word save(Word word) {
+        // 确保实体ID已生成
+        ensureEntityIdsGenerated(word);
+        
+        // 转换为PO对象
+        WordPO wordPO = mapper.toPo(word);
+        
+        // 设置时间戳
+        setTimestamps(wordPO, word.getId());
+        
+        WordPO savedPO = jpaRepository.save(wordPO);
+        return mapper.toEntity(savedPO);
+    }
+    
+    /**
+     * 确保实体及其关联实体都有ID
+     */
+    private void ensureEntityIdsGenerated(Word word) {
+        // 确保单词有ID
         if (!StringUtils.hasText(word.getId())) {
             word.setId(uuidGenerator.generateUUID());
         }
@@ -45,29 +62,30 @@ public class WordRepositoryImpl implements WordRepository {
                 }
             }
         }
-        
-        WordPO wordPO = mapper.toPo(word);
-        
-        // 设置时间戳
+    }
+    
+    /**
+     * 设置PO对象的时间戳和关联关系
+     */
+    private void setTimestamps(WordPO wordPO, String wordId) {
         long now = System.currentTimeMillis();
+        
+        // 设置单词的时间戳
         if (wordPO.getCreatedAt() == null) {
             wordPO.setCreatedAt(now);
         }
         wordPO.setUpdatedAt(now);
         
-        // 设置词义的时间戳和单词ID
+        // 设置词义的时间戳和关联关系
         if (wordPO.getMeanings() != null) {
             for (WordMeaningPO meaningPO : wordPO.getMeanings()) {
-                meaningPO.setWordId(word.getId());
+                meaningPO.setWordId(wordId);
                 if (meaningPO.getCreatedAt() == null) {
                     meaningPO.setCreatedAt(now);
                 }
                 meaningPO.setUpdatedAt(now);
             }
         }
-        
-        WordPO savedPO = jpaRepository.save(wordPO);
-        return mapper.toEntity(savedPO);
     }
     
     @Override

@@ -19,8 +19,7 @@ import java.util.List;
 public class PartOfSpeechPO {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
     @Column(name = "english_name", nullable = false, unique = true)
     private String englishName;

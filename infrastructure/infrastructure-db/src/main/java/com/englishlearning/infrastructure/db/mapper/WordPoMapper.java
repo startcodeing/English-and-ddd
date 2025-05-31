@@ -3,7 +3,6 @@ package com.englishlearning.infrastructure.db.mapper;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.infrastructure.db.po.WordPO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 

@@ -13,8 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {SentencePoMapper.class, WordPoMapper.class})
 public interface ArticlePoMapper {
     
-    ArticlePoMapper INSTANCE = Mappers.getMapper(ArticlePoMapper.class);
-    
+
     /**
      * PO转Entity
      */

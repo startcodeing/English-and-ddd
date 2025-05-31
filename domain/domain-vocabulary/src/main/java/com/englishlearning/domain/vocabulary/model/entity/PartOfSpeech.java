@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 词性实体
  */
-@Getter
+@Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor

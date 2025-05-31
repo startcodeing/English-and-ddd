@@ -10,7 +10,7 @@ import java.util.Optional;
  * 词性JPA仓储接口
  */
 @Repository
-public interface PartOfSpeechJpaRepository extends JpaRepository<PartOfSpeechPO, Long> {
+public interface PartOfSpeechJpaRepository extends JpaRepository<PartOfSpeechPO, String> {
     
     /**
      * 根据英文名称查找词性

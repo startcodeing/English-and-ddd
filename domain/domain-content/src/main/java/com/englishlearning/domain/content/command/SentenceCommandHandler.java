@@ -13,7 +13,7 @@ public interface SentenceCommandHandler {
      * @param command 创建句子命令
      * @return 创建的句子实体
      */
-    Sentence createSentence(CreateSentenceCommand command);
+    Sentence createSentence(CreateSentenceDomainDTO command);
     
     /**
      * 处理更新句子命令

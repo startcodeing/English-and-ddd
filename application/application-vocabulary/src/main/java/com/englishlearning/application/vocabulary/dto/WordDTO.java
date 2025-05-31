@@ -24,5 +24,5 @@ public class WordDTO {
     /**
      * 词义列表（不同词性下的含义、同义词、反义词和例句）
      */
-    private List<WordMeaningDTO> wordMeanings;
+    private List<WordMeaningDTO> meanings;
 }

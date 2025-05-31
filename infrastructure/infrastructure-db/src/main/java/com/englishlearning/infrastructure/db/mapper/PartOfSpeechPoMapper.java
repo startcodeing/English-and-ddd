@@ -36,7 +36,7 @@ public interface PartOfSpeechPoMapper {
             return null;
         }
 
-        Long id = partOfSpeech.getId() != null ? Long.valueOf(partOfSpeech.getId()) : null;
+        String id = partOfSpeech.getId() != null ? partOfSpeech.getId() : null;
         List<String> commonPhraseList = Objects.isNull(partOfSpeech.getCommonPhrases())
                 ? Collections.emptyList() : partOfSpeech.getCommonPhrasesList();
 

@@ -1,15 +1,14 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
+import com.englishlearning.infrastructure.db.po.WordMeaningAntonymPO;
 import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import com.englishlearning.infrastructure.db.po.WordMeaningSentencePO;
 import com.englishlearning.infrastructure.db.po.WordMeaningSynonymPO;
-import com.englishlearning.infrastructure.db.po.WordMeaningAntonymPO;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
 import java.util.List;

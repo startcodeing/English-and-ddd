@@ -3,7 +3,6 @@ package com.englishlearning.application.content.mapper;
 import com.englishlearning.application.content.dto.ArticleDTO;
 import com.englishlearning.domain.content.model.entity.Article;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
@@ -13,8 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {SentenceMapper.class})
 public interface ArticleMapper {
     
-    ArticleMapper INSTANCE = Mappers.getMapper(ArticleMapper.class);
-    
+
     /**
      * 实体转DTO
      */

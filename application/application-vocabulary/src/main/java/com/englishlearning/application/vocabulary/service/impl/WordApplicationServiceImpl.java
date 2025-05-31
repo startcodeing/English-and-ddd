@@ -65,12 +65,12 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .id(UUID.randomUUID().toString())
                 .partOfSpeechId(command.getPartOfSpeechId())
                 .chineseMeaning(command.getChineseMeaning())
-                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentences()) ?
-                        new ArrayList<>() : command.getExampleSentences())
-                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymIds()) ?
-                        new ArrayList<>() : command.getSynonymIds())
-                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymIds()) ?
-                        new ArrayList<>() : command.getAntonymIds())
+                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentenceIds()) ?
+                        new ArrayList<>() : command.getExampleSentenceIds())
+                .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymWordMeaningIds()) ?
+                        new ArrayList<>() : command.getSynonymWordMeaningIds())
+                .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymWordMeaningIds()) ?
+                        new ArrayList<>() : command.getAntonymWordMeaningIds())
                 .build();
         word.addMeaning(meaning);
         Word wordPo = wordRepository.save(word);

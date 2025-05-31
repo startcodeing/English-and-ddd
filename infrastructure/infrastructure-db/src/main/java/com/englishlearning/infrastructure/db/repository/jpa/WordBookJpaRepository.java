@@ -10,7 +10,7 @@ import java.util.Optional;
  * 单词本JPA仓储接口
  */
 @Repository
-public interface WordBookJpaRepository extends JpaRepository<WordBookPO, Long> {
+public interface WordBookJpaRepository extends JpaRepository<WordBookPO, String> {
     
     /**
      * 根据名称查找单词本

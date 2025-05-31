@@ -1,6 +1,6 @@
 package com.englishlearning.domain.content.model.entity;
 
-import com.englishlearning.domain.content.command.CreateSentenceCommand;
+import com.englishlearning.domain.content.command.CreateSentenceDomainDTO;
 import com.englishlearning.domain.content.command.UpdateSentenceCommand;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import lombok.AllArgsConstructor;
@@ -61,7 +61,7 @@ public class Sentence {
      * 创建句子
      * @param command 创建句子命令
      */
-    public void create(CreateSentenceCommand command) {
+    public void create(CreateSentenceDomainDTO command) {
         command.validate();
         this.englishContent = command.getEnglishContent();
         this.chineseMeaning = command.getChineseMeaning();

@@ -37,8 +37,7 @@ public class WordBookRepositoryImpl implements WordBookRepository {
     @Override
     public Optional<WordBook> findById(String id) {
         try {
-            Long longId = Long.parseLong(id);
-            return jpaRepository.findById(longId)
+            return jpaRepository.findById(id)
                 .map(mapper::toEntity);
         } catch (NumberFormatException e) {
             return Optional.empty();
@@ -67,11 +66,6 @@ public class WordBookRepositoryImpl implements WordBookRepository {
      */
     @Override
     public void deleteById(String id) {
-        try {
-            Long longId = Long.parseLong(id);
-            jpaRepository.deleteById(longId);
-        } catch (NumberFormatException e) {
-            // 如果ID格式不正确，则不执行删除操作
-        }
+        jpaRepository.deleteById(id);
     }
 }

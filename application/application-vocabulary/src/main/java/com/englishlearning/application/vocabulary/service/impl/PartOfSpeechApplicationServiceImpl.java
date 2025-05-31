@@ -32,64 +32,46 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
     @Transactional
     @Override
     public PartOfSpeechDTO createPartOfSpeech(PartOfSpeechDTO dto) {
-        try {
-            // 检查是否已存在相同英文名称的词性
-            Optional<PartOfSpeech> existPartOfSpeech = partOfSpeechRepository.findByEnglishName(dto.getEnglishName());
-            if (existPartOfSpeech.isPresent()) {
-                throw new RuntimeException("Part of speech already exists");
-            }
-            CreatePartOfSpeechDTO createPartOfSpeechDTO = CreatePartOfSpeechDTO.builder()
-                    .englishName(dto.getEnglishName())
-                    .chineseMeaning(dto.getChineseMeaning())
-                    .usageSummary(dto.getUsageSummary())
-                    .commonPhrases(dto.getCommonPhrases())
-                    .build();
-            
-            PartOfSpeech partOfSpeech = PartOfSpeech.builder().build();
-            partOfSpeech.create(createPartOfSpeechDTO);
-            PartOfSpeech savedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
-            return convertToDTO(savedPartOfSpeech);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("创建词性失败: " + e.getMessage());
+        Optional<PartOfSpeech> existPartOfSpeech = partOfSpeechRepository.findByEnglishName(dto.getEnglishName());
+        if (existPartOfSpeech.isPresent()) {
+            throw new RuntimeException("Part of speech already exists");
         }
+        CreatePartOfSpeechDTO createPartOfSpeechDTO = CreatePartOfSpeechDTO.builder()
+                .englishName(dto.getEnglishName())
+                .chineseMeaning(dto.getChineseMeaning())
+                .usageSummary(dto.getUsageSummary())
+                .commonPhrases(dto.getCommonPhrases())
+                .build();
+
+        PartOfSpeech partOfSpeech = PartOfSpeech.builder().build();
+        partOfSpeech.create(createPartOfSpeechDTO);
+        PartOfSpeech savedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
+        return convertToDTO(savedPartOfSpeech);
     }
 
     @Transactional
     @Override
     public PartOfSpeechDTO updatePartOfSpeech(PartOfSpeechDTO dto) {
-        try {
-            UpdatePartOfSpeechDTO updatePartOfSpeechDTO = UpdatePartOfSpeechDTO.builder()
-                    .englishName(dto.getEnglishName())
-                    .chineseMeaning(dto.getChineseMeaning())
-                    .usageSummary(dto.getUsageSummary())
-                    .commonPhrases(dto.getCommonPhrases())
-                    .id(dto.getId())
-                    .build();
-            updatePartOfSpeechDTO.validate();
-            PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(updatePartOfSpeechDTO.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + updatePartOfSpeechDTO.getId()));
+        UpdatePartOfSpeechDTO updatePartOfSpeechDTO = UpdatePartOfSpeechDTO.builder()
+                .englishName(dto.getEnglishName())
+                .chineseMeaning(dto.getChineseMeaning())
+                .usageSummary(dto.getUsageSummary())
+                .commonPhrases(dto.getCommonPhrases())
+                .id(dto.getId())
+                .build();
+        updatePartOfSpeechDTO.validate();
+        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(updatePartOfSpeechDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + updatePartOfSpeechDTO.getId()));
 
-            partOfSpeech.update(updatePartOfSpeechDTO);
-            PartOfSpeech updatedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
-            return convertToDTO(updatedPartOfSpeech);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("更新词性失败: " + e.getMessage());
-        }
+        partOfSpeech.update(updatePartOfSpeechDTO);
+        PartOfSpeech updatedPartOfSpeech = partOfSpeechRepository.save(partOfSpeech);
+        return convertToDTO(updatedPartOfSpeech);
     }
 
     @Transactional
     @Override
     public void deletePartOfSpeech(String id) {
-        try {
-            // 直接删除
-            partOfSpeechRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("删除词性失败: " + e.getMessage());
-        }
+        partOfSpeechRepository.deleteById(id);
     }
 
 
@@ -113,24 +95,17 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
 
     @Override
     public PartOfSpeechDTO getPartOfSpeech(String id) {
-        try {
-            Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
-            return optionalPartOfSpeech.map(this::convertToDTO).orElse(null);
-        } catch (Exception e) {
-            throw new RuntimeException("获取词性失败: " + e.getMessage());
-        }
+        Optional<PartOfSpeech> optionalPartOfSpeech = partOfSpeechRepository.findById(id);
+        return optionalPartOfSpeech.map(this::convertToDTO).orElse(null);
     }
+
 
     @Override
     public List<PartOfSpeechDTO> getAllPartOfSpeech() {
-        try {
-            List<PartOfSpeech> partOfSpeeches = partOfSpeechRepository.findAll();
-            return partOfSpeeches.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("获取所有词性失败: " + e.getMessage());
-        }
+        List<PartOfSpeech> partOfSpeeches = partOfSpeechRepository.findAll();
+        return partOfSpeeches.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 

@@ -19,8 +19,7 @@ import java.util.List;
 public class WordBookPO {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
     @Column(name = "name", nullable = false)
     private String name;

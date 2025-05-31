@@ -4,7 +4,6 @@ import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
@@ -14,13 +13,19 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring")
 public interface WordMeaningMapper {
-    WordMeaningMapper INSTANCE = Mappers.getMapper(WordMeaningMapper.class);
-    
+
     /**
      * 将领域实体转换为DTO
      * @param meaning 词义领域实体
      * @return 词义DTO
      */
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "wordId", target = "wordId")
+    @Mapping(source = "partOfSpeechId", target = "partOfSpeechId")
+    @Mapping(source = "chineseMeaning", target = "chineseMeaning")
+    @Mapping(source = "synonymWordMeaningIds", target = "synonymWordMeaningIds")
+    @Mapping(source = "antonymWordMeaningIds", target = "antonymWordMeaningIds")
+    @Mapping(source = "exampleSentenceIds", target = "exampleSentenceIds")
     WordMeaningDTO toDTO(WordMeaning meaning);
     
     /**

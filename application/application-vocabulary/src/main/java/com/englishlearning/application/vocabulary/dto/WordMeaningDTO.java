@@ -40,15 +40,15 @@ public class WordMeaningDTO {
     /**
      * 同义词列表
      */
-    private List<String> synonymIds;
+    private List<String> synonymWordMeaningIds;
     
     /**
      * 反义词列表
      */
-    private List<String> antonymIds;
+    private List<String> antonymWordMeaningIds;
     
     /**
      * 例句列表
      */
-    private List<String> exampleSentences;
+    private List<String> exampleSentenceIds;
 }

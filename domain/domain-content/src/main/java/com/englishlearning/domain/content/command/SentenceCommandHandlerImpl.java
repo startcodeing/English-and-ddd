@@ -3,7 +3,6 @@ package com.englishlearning.domain.content.command;
 import com.englishlearning.domain.content.event.SentenceCreatedEvent;
 import com.englishlearning.domain.content.event.SentenceEventPublisher;
 import com.englishlearning.domain.content.event.SentenceUpdatedEvent;
-import com.englishlearning.domain.content.model.entity.Article;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.ArticleRepository;
@@ -13,7 +12,6 @@ import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -35,7 +33,7 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
      * @return 创建的句子实体
      */
     @Override
-    public Sentence createSentence(CreateSentenceCommand command) {
+    public Sentence createSentence(CreateSentenceDomainDTO command) {
         command.validate();
         
         // 验证文章是否存在

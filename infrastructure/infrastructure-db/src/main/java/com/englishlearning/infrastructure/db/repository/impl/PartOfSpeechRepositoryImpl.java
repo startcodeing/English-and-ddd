@@ -1,5 +1,6 @@
 package com.englishlearning.infrastructure.db.repository.impl;
 
+import com.englishlearning.common.utils.UUIDGenerator;
 import com.englishlearning.domain.vocabulary.model.entity.PartOfSpeech;
 import com.englishlearning.domain.vocabulary.repository.PartOfSpeechRepository;
 import com.englishlearning.infrastructure.db.mapper.PartOfSpeechPoMapper;
@@ -20,12 +21,14 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
     
     private final PartOfSpeechJpaRepository jpaRepository;
     private final PartOfSpeechPoMapper mapper;
+    private final UUIDGenerator uuidGenerator;
     
     /**
      * 保存词性
      */
     @Override
     public PartOfSpeech save(PartOfSpeech partOfSpeech) {
+        partOfSpeech.setId(uuidGenerator.generateUUID());
         PartOfSpeechPO po = mapper.toPo(partOfSpeech);
         po = jpaRepository.save(po);
         return mapper.toEntity(po);
@@ -36,13 +39,8 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
      */
     @Override
     public Optional<PartOfSpeech> findById(String id) {
-        try {
-            Long longId = Long.parseLong(id);
-            return jpaRepository.findById(longId)
-                .map(mapper::toEntity);
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        return jpaRepository.findById(id)
+            .map(mapper::toEntity);
     }
 
     /**
@@ -67,11 +65,6 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
      */
     @Override
     public void deleteById(String id) {
-        try {
-            Long longId = Long.parseLong(id);
-            jpaRepository.deleteById(longId);
-        } catch (NumberFormatException e) {
-            // 如果ID格式不正确，则不执行删除操作
-        }
+        jpaRepository.deleteById(id);
     }
 }
