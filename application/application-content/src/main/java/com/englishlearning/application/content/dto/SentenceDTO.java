@@ -33,5 +33,5 @@ public class SentenceDTO {
     
     private List<SentenceVariantDTO> variants;
     
-    private List<WordDTO> unfamiliarWords;
+    private List<String> unfamiliarWords;
 } 

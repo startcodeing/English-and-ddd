@@ -1,4 +1,4 @@
-package com.englishlearning.domain.content.command;
+package com.englishlearning.domain.content.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,18 +8,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 更新文章命令
+ * 创建文章命令
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateArticleCommand {
-    
-    /**
-     * 文章ID
-     */
-    private String id;
+public class CreateArticleDTO {
     
     /**
      * 标题
@@ -55,13 +50,10 @@ public class UpdateArticleCommand {
      * 验证命令
      */
     public void validate() {
-        if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("文章ID不能为空");
-        }
-        if (title != null && title.trim().isEmpty()) {
+        if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("文章标题不能为空");
         }
-        if (content != null && content.trim().isEmpty()) {
+        if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("文章内容不能为空");
         }
         if (difficultyLevel != null && (difficultyLevel < 1 || difficultyLevel > 10)) {

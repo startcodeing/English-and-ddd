@@ -1,8 +1,7 @@
 package com.englishlearning.domain.content.model.entity;
 
-import com.englishlearning.domain.content.command.CreateArticleCommand;
-import com.englishlearning.domain.content.command.UpdateArticleCommand;
-import com.englishlearning.domain.vocabulary.model.entity.Word;
+import com.englishlearning.domain.content.dto.CreateArticleDTO;
+import com.englishlearning.domain.content.dto.UpdateArticleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,18 +60,18 @@ public class Article {
     /**
      * 陌生单词列表
      */
-    private List<Word> unfamiliarWords;
+    private List<String> unfamiliarWords;
     
     /**
      * 文章中包含的句子列表
      */
-    private List<Sentence> sentences;
+    private List<String> sentences;
     
     /**
      * 创建文章
      * @param command 创建文章命令
      */
-    public void create(CreateArticleCommand command) {
+    public void create(CreateArticleDTO command) {
         this.title = command.getTitle();
         this.content = command.getContent();
         this.source = command.getSource();
@@ -87,7 +86,7 @@ public class Article {
      * 更新文章
      * @param command 更新文章命令
      */
-    public void update(UpdateArticleCommand command) {
+    public void update(UpdateArticleDTO command) {
         if (command.getTitle() != null) {
             this.title = command.getTitle();
         }
@@ -110,19 +109,19 @@ public class Article {
     
     /**
      * 添加句子
-     * @param sentence 句子
+     * @param sentenceId 句子主键
      */
-    public void addSentence(Sentence sentence) {
+    public void addSentence(String sentenceId) {
         if (this.sentences == null) {
             this.sentences = new ArrayList<>();
         }
         
         // 避免重复添加
         boolean exists = this.sentences.stream()
-                .anyMatch(s -> s.getId() != null && s.getId().equals(sentence.getId()));
+                .anyMatch(s -> s.equals(sentenceId));
         
         if (!exists) {
-            this.sentences.add(sentence);
+            this.sentences.add(sentenceId);
         }
     }
     
@@ -133,26 +132,26 @@ public class Article {
     public void removeSentence(String sentenceId) {
         if (this.sentences != null) {
             this.sentences = this.sentences.stream()
-                    .filter(s -> !Objects.equals(s.getId(), sentenceId))
+                    .filter(s -> !Objects.equals(s, sentenceId))
                     .collect(Collectors.toList());
         }
     }
     
     /**
      * 添加陌生单词
-     * @param word 单词
+     * @param wordId 单词
      */
-    public void addUnfamiliarWord(Word word) {
+    public void addUnfamiliarWord(String wordId) {
         if (this.unfamiliarWords == null) {
             this.unfamiliarWords = new ArrayList<>();
         }
         
         // 避免重复添加
         boolean exists = this.unfamiliarWords.stream()
-                .anyMatch(w -> w.getId() != null && w.getId().equals(word.getId()));
+                .anyMatch(w -> w.equals(wordId));
         
         if (!exists) {
-            this.unfamiliarWords.add(word);
+            this.unfamiliarWords.add(wordId);
         }
     }
     
@@ -163,7 +162,7 @@ public class Article {
     public void removeUnfamiliarWord(String wordId) {
         if (this.unfamiliarWords != null) {
             this.unfamiliarWords = this.unfamiliarWords.stream()
-                    .filter(w -> !Objects.equals(w.getId(), wordId))
+                    .filter(w -> !Objects.equals(w, wordId))
                     .collect(Collectors.toList());
         }
     }
@@ -178,6 +177,19 @@ public class Article {
             return false;
         }
         return this.unfamiliarWords.stream()
-                .anyMatch(w -> Objects.equals(w.getId(), wordId));
+                .anyMatch(w -> Objects.equals(w, wordId));
+    }
+
+
+    /**
+     * 检查是否包含指定例句
+     * @param sentenceId 例句主键
+     * @return 是否包含
+     */
+    public boolean containsSentence(String sentenceId) {
+        if (this.sentences == null) {
+            return false;
+        }
+        return this.sentences.stream().anyMatch(s -> s.equals(sentenceId));
     }
 }

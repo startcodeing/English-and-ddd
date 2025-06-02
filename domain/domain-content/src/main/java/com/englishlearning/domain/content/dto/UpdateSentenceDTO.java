@@ -1,4 +1,4 @@
-package com.englishlearning.domain.content.command;
+package com.englishlearning.domain.content.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

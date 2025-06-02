@@ -55,7 +55,7 @@ public interface SentenceApplicationService {
     /**
      * 为句子添加陌生单词
      */
-    SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO);
+    SentenceDTO addUnfamiliarWord(String sentenceId, String wordId);
 
     /**
      * 删除陌生单词

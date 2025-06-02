@@ -1,4 +1,4 @@
-package com.englishlearning.domain.content.command;
+package com.englishlearning.domain.content.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,25 +6,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 删除文章命令
+ * 删除句子命令
+ * 封装删除句子所需的参数
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteArticleCommand {
+public class DeleteSentenceDTO {
     
     /**
-     * 文章ID
+     * 句子ID
      */
     private String id;
     
     /**
      * 验证命令
+     * @throws IllegalArgumentException 如果参数无效
      */
     public void validate() {
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("文章ID不能为空");
+            throw new IllegalArgumentException("句子ID不能为空");
         }
     }
 }

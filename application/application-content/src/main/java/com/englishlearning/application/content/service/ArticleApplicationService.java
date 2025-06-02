@@ -55,15 +55,40 @@ public interface ArticleApplicationService {
     /**
      * 为文章添加句子
      */
-    ArticleDTO addSentence(String articleId, SentenceDTO sentenceDTO);
+    ArticleDTO addSentence(String articleId, String sentenceId);
+
+    /**
+     * 移除文章句子
+     */
+    ArticleDTO removeSentence(String articleId, String sentenceId);
     
     /**
      * 为文章添加陌生单词
      */
-    ArticleDTO addUnfamiliarWord(String articleId, WordDTO wordDTO);
+    ArticleDTO addUnfamiliarWord(String articleId, String wordId);
+
+    /**
+     * 删除文章包含的陌生单词
+     */
+    ArticleDTO removeUnfamiliarWord(String articleId, String wordId);
     
     /**
      * 删除文章
      */
     void deleteArticle(String id);
+
+    /**
+     * 识别文章中不认识的单词
+     * @param articleId 文章主键
+     * @param knownWordIds 已知的单词主键集合
+     * @return 更新后的文章信息
+     */
+    ArticleDTO identifyUnfamiliarWords(String articleId, List<String> knownWordIds);
+
+    /**
+     * 从文章中抽取句子
+     * @param articleId 文章主键
+     * @return 文章信息
+     */
+    ArticleDTO extractSentences(String articleId);
 }

@@ -4,14 +4,11 @@ import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.dto.SentenceVariantDTO;
 import com.englishlearning.application.content.mapper.SentenceMapper;
 import com.englishlearning.application.content.service.SentenceApplicationService;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.domain.content.command.CreateSentenceDomainDTO;
-import com.englishlearning.domain.content.command.UpdateSentenceDTO;
+import com.englishlearning.domain.content.dto.CreateSentenceDomainDTO;
+import com.englishlearning.domain.content.dto.UpdateSentenceDTO;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
-import com.englishlearning.domain.content.service.SentenceService;
-import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +28,6 @@ import java.util.stream.Collectors;
 public class SentenceApplicationServiceImpl implements SentenceApplicationService {
     
     private final SentenceRepository sentenceRepository;
-    private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceMapper sentenceMapper;
 
@@ -110,12 +106,12 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
      */
     @Transactional
     @Override
-    public SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO) {
+    public SentenceDTO addUnfamiliarWord(String sentenceId, String wordId) {
         Sentence sentence = sentenceRepository.findById(sentenceId)
                 .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
-        Word word = wordRepository.findById(wordDTO.getId())
-                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
-        sentence.addUnfamiliarWord(word);
+        wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
+        sentence.addUnfamiliarWord(wordId);
         Sentence saveSentence = sentenceRepository.save(sentence);
         return sentenceMapper.toDTO(saveSentence);
     }
@@ -125,7 +121,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     public SentenceDTO removeUnfamiliarWord(String sentenceId, String wordId) {
         Sentence sentence = sentenceRepository.findById(sentenceId)
                 .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
-       wordRepository.findById(wordId)
+        wordRepository.findById(wordId)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
         sentence.removeUnfamiliarWord(wordId);
         Sentence saveSentence = sentenceRepository.save(sentence);
@@ -138,7 +134,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Transactional
     @Override
     public void deleteSentence(String id) {
-        sentenceService.deleteSentence(id);
+        sentenceRepository.deleteById(id);
     }
     
     /**

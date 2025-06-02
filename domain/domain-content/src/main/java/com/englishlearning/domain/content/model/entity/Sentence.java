@@ -1,7 +1,7 @@
 package com.englishlearning.domain.content.model.entity;
 
-import com.englishlearning.domain.content.command.CreateSentenceDomainDTO;
-import com.englishlearning.domain.content.command.UpdateSentenceDTO;
+import com.englishlearning.domain.content.dto.CreateSentenceDomainDTO;
+import com.englishlearning.domain.content.dto.UpdateSentenceDTO;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,7 +55,7 @@ public class Sentence {
     /**
      * 陌生单词列表
      */
-    private List<Word> unfamiliarWords;
+    private List<String> unfamiliarWords;
     
     /**
      * 创建句子
@@ -112,18 +112,18 @@ public class Sentence {
     
     /**
      * 添加陌生单词
-     * @param word 单词
+     * @param wordId 单词
      */
-    public void addUnfamiliarWord(Word word) {
+    public void addUnfamiliarWord(String wordId) {
         if (this.unfamiliarWords == null) {
             this.unfamiliarWords = new ArrayList<>();
         }
         // 避免重复添加
         boolean exists = this.unfamiliarWords.stream()
-                .anyMatch(w -> w.getId() != null && w.getId().equals(word.getId()));
+                .anyMatch(w -> w.equals(wordId));
         
         if (!exists) {
-            this.unfamiliarWords.add(word);
+            this.unfamiliarWords.add(wordId);
         }
     }
     
@@ -134,7 +134,7 @@ public class Sentence {
     public void removeUnfamiliarWord(String wordId) {
         if (this.unfamiliarWords != null) {
             this.unfamiliarWords = this.unfamiliarWords.stream()
-                    .filter(w -> !Objects.equals(w.getId(), wordId))
+                    .filter(w -> !Objects.equals(w, wordId))
                     .collect(Collectors.toList());
         }
     }
@@ -149,6 +149,6 @@ public class Sentence {
             return false;
         }
         return this.unfamiliarWords.stream()
-                .anyMatch(w -> Objects.equals(w.getId(), wordId));
+                .anyMatch(w -> Objects.equals(w, wordId));
     }
 }

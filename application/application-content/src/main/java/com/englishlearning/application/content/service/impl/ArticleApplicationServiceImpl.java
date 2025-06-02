@@ -1,29 +1,23 @@
 package com.englishlearning.application.content.service.impl;
 
 import com.englishlearning.application.content.dto.ArticleDTO;
-import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.mapper.ArticleMapper;
-import com.englishlearning.application.content.mapper.SentenceMapper;
 import com.englishlearning.application.content.service.ArticleApplicationService;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.application.vocabulary.mapper.WordMapper;
-import com.englishlearning.domain.content.command.CreateArticleCommand;
-import com.englishlearning.domain.content.command.DeleteArticleCommand;
-import com.englishlearning.domain.content.command.UpdateArticleCommand;
+import com.englishlearning.domain.content.dto.CreateArticleDTO;
+import com.englishlearning.domain.content.dto.UpdateArticleDTO;
 import com.englishlearning.domain.content.model.entity.Article;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.repository.ArticleRepository;
 import com.englishlearning.domain.content.repository.SentenceRepository;
-import com.englishlearning.domain.content.service.ArticleService;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -37,10 +31,10 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     private final ArticleRepository articleRepository;
     private final SentenceRepository sentenceRepository;
     private final WordRepository wordRepository;
-    private final ArticleService articleService;
     private final ArticleMapper articleMapper;
-    private final SentenceMapper sentenceMapper;
-    private final WordMapper wordMapper;
+
+    // 用于句子切分的正则表达式
+    private static final Pattern SENTENCE_PATTERN = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)");
 
     /**
      * 创建文章
@@ -48,33 +42,21 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Transactional
     @Override
     public ArticleDTO createArticle(ArticleDTO articleDTO) {
-        try {
-            // 创建命令对象
-            CreateArticleCommand command = CreateArticleCommand.builder()
-                    .title(articleDTO.getTitle())
-                    .content(articleDTO.getContent())
-                    .source(articleDTO.getSource())
-                    .author(articleDTO.getAuthor())
-                    .publishDate(articleDTO.getPublishDate())
-                    .difficultyLevel(articleDTO.getDifficultyLevel())
-                    .build();
-            
-            // 创建文章实体
-            Article article = Article.builder()
-                    .id(UUID.randomUUID().toString())
-                    .build();
-            
-            // 执行创建逻辑
-            article.create(command);
-            
-            // 通过领域服务保存
-            Article savedArticle = articleService.createArticle(article);
-            return articleMapper.toDTO(savedArticle);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("创建文章失败: " + e.getMessage());
-        }
+        CreateArticleDTO command = CreateArticleDTO.builder()
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .source(articleDTO.getSource())
+                .author(articleDTO.getAuthor())
+                .publishDate(articleDTO.getPublishDate())
+                .difficultyLevel(articleDTO.getDifficultyLevel())
+                .build();
+        Article article = Article.builder()
+                .id(UUID.randomUUID().toString())
+                .build();
+        article.create(command);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+
     }
     
     /**
@@ -83,35 +65,144 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Transactional
     @Override
     public ArticleDTO updateArticle(ArticleDTO articleDTO) {
-        try {
-            // 创建命令对象
-            UpdateArticleCommand command = UpdateArticleCommand.builder()
-                    .id(articleDTO.getId())
-                    .title(articleDTO.getTitle())
-                    .content(articleDTO.getContent())
-                    .source(articleDTO.getSource())
-                    .author(articleDTO.getAuthor())
-                    .publishDate(articleDTO.getPublishDate())
-                    .difficultyLevel(articleDTO.getDifficultyLevel())
-                    .build();
-            
-            // 查找现有文章
-            Article article = articleRepository.findById(command.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + command.getId()));
-            
-            // 执行更新逻辑
-            article.update(command);
-            
-            // 通过领域服务保存
-            Article updatedArticle = articleService.updateArticle(article);
-            return articleMapper.toDTO(updatedArticle);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("更新文章失败: " + e.getMessage());
-        }
+        UpdateArticleDTO command = UpdateArticleDTO.builder()
+                .id(articleDTO.getId())
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .source(articleDTO.getSource())
+                .author(articleDTO.getAuthor())
+                .publishDate(articleDTO.getPublishDate())
+                .difficultyLevel(articleDTO.getDifficultyLevel())
+                .build();
+        Article article = articleRepository.findById(command.getId())
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + command.getId()));
+
+        article.update(command);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
     }
-    
+
+    /**
+     * 为文章添加句子
+     */
+    @Transactional
+    @Override
+    public ArticleDTO addSentence(String articleId, String sentenceId) {
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+        sentenceRepository.findById(sentenceId).orElseThrow(() -> new IllegalArgumentException("添加的句子不存在: " + sentenceId));
+        article.addSentence(sentenceId);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+
+    /**
+     * 为文章添加句子
+     */
+    @Transactional
+    @Override
+    public ArticleDTO removeSentence(String articleId, String sentenceId) {
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+        sentenceRepository.findById(sentenceId).orElseThrow(() -> new IllegalArgumentException("添加的句子不存在: " + sentenceId));
+        article.removeSentence(sentenceId);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+    /**
+     * 为文章添加陌生单词
+     */
+    @Transactional
+    @Override
+    public ArticleDTO addUnfamiliarWord(String articleId, String wordId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("添加的单词不存在: " + wordId));
+
+        article.addUnfamiliarWord(word.getId());
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+
+    /**
+     * 为文章添加陌生单词
+     */
+    @Transactional
+    @Override
+    public ArticleDTO removeUnfamiliarWord(String articleId, String wordId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("添加的单词不存在: " + wordId));
+        article.removeUnfamiliarWord(word.getId());
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+    @Override
+    public ArticleDTO identifyUnfamiliarWords(String articleId, List<String> knownWordIds) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+
+        // 从文章内容中提取所有单词
+        String[] words = article.getContent().replaceAll("[^a-zA-Z' ]", " ").split("\\s+");
+        List<String> uniqueWords = Arrays.stream(words)
+                .filter(w -> !w.isEmpty())
+                .map(String::toLowerCase)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 找出库中存在的单词
+        List<Word> allWords = wordRepository.findBySpellingIn(uniqueWords);
+
+        // 过滤掉已知单词
+        List<String> unfamiliarWords = allWords.stream()
+                .map(Word::getId)
+                .filter(id -> !knownWordIds.contains(id))
+                .collect(Collectors.toList());
+
+        // 更新文章的陌生单词列表
+        article.setUnfamiliarWords(unfamiliarWords);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+    @Override
+    public ArticleDTO extractSentences(String articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + articleId));
+
+        Matcher matcher = SENTENCE_PATTERN.matcher(article.getContent());
+        List<Sentence> sentences = new ArrayList<>();
+        while (matcher.find()) {
+            String content = matcher.group().trim();
+            Sentence sentence = Sentence.builder()
+                    .englishContent(content)
+                    .build();
+            sentences.add(sentence);
+        }
+
+        List<String> savedSentenceIds = new ArrayList<>();
+        for (Sentence sentence : sentences) {
+            savedSentenceIds.add(sentenceRepository.save(sentence).getId());
+        }
+
+        article.setSentences(savedSentenceIds);
+        Article saved = articleRepository.save(article);
+        return articleMapper.toDTO(saved);
+    }
+
+    /**
+     * 删除文章
+     */
+    @Transactional
+    @Override
+    public void deleteArticle(String id) {
+        articleRepository.deleteById(id);
+    }
+
     /**
      * 查找文章
      */
@@ -169,66 +260,5 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
         return articleRepository.findByDifficultyLevel(difficultyLevel).stream()
                 .map(articleMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-    
-    /**
-     * 为文章添加句子
-     */
-    @Transactional
-    @Override
-    public ArticleDTO addSentence(String articleId, SentenceDTO sentenceDTO) {
-        try {
-            // 查找句子实体
-            Sentence sentence = sentenceMapper.toEntity(sentenceDTO);
-            
-            // 通过领域服务添加句子
-            Article updatedArticle = articleService.addSentence(articleId, sentence);
-            
-            // 转换为DTO并返回
-            return articleMapper.toDTO(updatedArticle);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("添加句子失败: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * 为文章添加陌生单词
-     */
-    @Transactional
-    @Override
-    public ArticleDTO addUnfamiliarWord(String articleId, WordDTO wordDTO) {
-        try {
-            // 查找单词实体
-            Word word = wordRepository.findById(wordDTO.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
-            
-            // 通过领域服务添加陌生单词
-            Article updatedArticle = articleService.addUnfamiliarWord(articleId, word);
-            
-            // 转换为DTO并返回
-            return articleMapper.toDTO(updatedArticle);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("添加陌生单词失败: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * 删除文章
-     */
-    @Transactional
-    @Override
-    public void deleteArticle(String id) {
-        try {
-            // 通过领域服务删除文章
-            articleService.deleteArticle(id);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("删除文章失败: " + e.getMessage());
-        }
     }
 }

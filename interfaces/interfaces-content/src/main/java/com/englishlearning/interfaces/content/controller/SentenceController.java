@@ -3,7 +3,6 @@ package com.englishlearning.interfaces.content.controller;
 import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.dto.SentenceVariantDTO;
 import com.englishlearning.application.content.service.SentenceApplicationService;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
 import com.englishlearning.common.types.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -57,9 +56,9 @@ public class SentenceController {
     /**
      * 为句子添加陌生单词
      */
-    @PostMapping("/{id}/unfamiliar-words")
-    public Result<SentenceDTO> addUnfamiliarWord(@PathVariable String id, @Valid @RequestBody WordDTO wordDTO) {
-        return Result.success(sentenceService.addUnfamiliarWord(id, wordDTO));
+    @PostMapping("/{id}/unfamiliar-words/{wordId}")
+    public Result<SentenceDTO> addUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
+        return Result.success(sentenceService.addUnfamiliarWord(id, wordId));
     }
     
     /**

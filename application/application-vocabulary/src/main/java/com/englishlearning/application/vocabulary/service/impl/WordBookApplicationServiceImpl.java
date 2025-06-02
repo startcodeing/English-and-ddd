@@ -3,7 +3,7 @@ package com.englishlearning.application.vocabulary.service.impl;
 import com.englishlearning.application.vocabulary.dto.WordBookDTO;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.service.WordBookApplicationService;
-import com.englishlearning.domain.vocabulary.dto.AddWordToWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.AddWordToWordBookDomainDTO;
 import com.englishlearning.domain.vocabulary.dto.CreateWordBookDTO;
 import com.englishlearning.domain.vocabulary.dto.DeleteWordBookDomainDTO;
 import com.englishlearning.domain.vocabulary.dto.RemoveWordFromWordBookDomainDTO;
@@ -120,7 +120,7 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
         WordBook wordBook = wordBookRepository.findById(wordBookId)
                 .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + wordBookId));
         for (String wordId : wordIds) {
-            AddWordToWordBookCommand command = AddWordToWordBookCommand.builder()
+            AddWordToWordBookDomainDTO command = AddWordToWordBookDomainDTO.builder()
                     .wordBookId(wordBookId)
                     .wordId(wordId)
                     .build();

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddWordToWordBookCommand {
+public class AddWordToWordBookDomainDTO {
     
     /**
      * 单词本ID

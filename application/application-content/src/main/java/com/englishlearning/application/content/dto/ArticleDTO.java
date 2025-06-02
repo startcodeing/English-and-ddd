@@ -1,6 +1,5 @@
 package com.englishlearning.application.content.dto;
 
-import com.englishlearning.application.vocabulary.dto.WordDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +40,7 @@ public class ArticleDTO {
     @Max(value = 10, message = "难度级别最大为10")
     private Integer difficultyLevel;
     
-    private List<WordDTO> unfamiliarWords;
+    private List<String> unfamiliarWords;
     
-    private List<SentenceDTO> sentences;
+    private List<String> sentences;
 } 
