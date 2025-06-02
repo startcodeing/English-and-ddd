@@ -37,47 +37,21 @@ public class SentenceController {
         sentenceDTO.setId(id);
         return Result.success(sentenceService.updateSentence(sentenceDTO));
     }
-    
-    /**
-     * 获取句子详情
-     */
-    @GetMapping("/{id}")
-    public Result<SentenceDTO> getSentence(@PathVariable String id) {
-        return sentenceService.findSentenceById(id)
-            .map(Result::success)
-            .orElse(Result.failure("句子不存在"));
-    }
-    
-    /**
-     * 获取所有句子
-     */
-    @GetMapping
-    public Result<List<SentenceDTO>> getAllSentences() {
-        return Result.success(sentenceService.findAllSentences());
-    }
-    
-    /**
-     * 根据英文内容查询句子
-     */
-    @GetMapping("/search/english")
-    public Result<List<SentenceDTO>> searchByEnglishContent(@RequestParam String content) {
-        return Result.success(sentenceService.findSentencesByEnglishContent(content));
-    }
-    
-    /**
-     * 根据中文意思查询句子
-     */
-    @GetMapping("/search/chinese")
-    public Result<List<SentenceDTO>> searchByChineseMeaning(@RequestParam String meaning) {
-        return Result.success(sentenceService.findSentencesByChineseMeaning(meaning));
-    }
-    
+
     /**
      * 为句子添加变体
      */
     @PostMapping("/{id}/variants")
     public Result<SentenceDTO> addVariant(@PathVariable String id, @Valid @RequestBody SentenceVariantDTO variantDTO) {
         return Result.success(sentenceService.addVariant(id, variantDTO));
+    }
+
+    /**
+     * 删除句子变体
+     */
+    @DeleteMapping("/{id}/variants/{variantId}")
+    public Result<SentenceDTO> deleteVariant(@PathVariable String id,@PathVariable String variantId) {
+        return Result.success(sentenceService.removeVariant(id, variantId));
     }
     
     /**
@@ -91,18 +65,11 @@ public class SentenceController {
     /**
      * 移除句子的陌生单词
      */
-//    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
-//    public Result<SentenceDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
-//        return Result.success(sentenceService.removeUnfamiliarWord(id, wordId));
-//    }
-    
-    /**
-     * 分析句子结构
-     */
-//    @GetMapping("/{id}/grammar-analysis")
-//    public Result<String> analyzeSentenceGrammar(@PathVariable String id) {
-//        return Result.success(sentenceService.analyzeSentenceGrammar(id));
-//    }
+    @DeleteMapping("/{id}/unfamiliar-words/{wordId}")
+    public Result<SentenceDTO> removeUnfamiliarWord(@PathVariable String id, @PathVariable String wordId) {
+        return Result.success(sentenceService.removeUnfamiliarWord(id, wordId));
+    }
+
     
     /**
      * 删除句子
@@ -112,4 +79,39 @@ public class SentenceController {
         sentenceService.deleteSentence(id);
         return Result.success();
     }
+
+    /**
+     * 获取句子详情
+     */
+    @GetMapping("/{id}")
+    public Result<SentenceDTO> getSentence(@PathVariable String id) {
+        return sentenceService.findSentenceById(id)
+                .map(Result::success)
+                .orElse(Result.failure("句子不存在"));
+    }
+
+    /**
+     * 获取所有句子
+     */
+    @GetMapping
+    public Result<List<SentenceDTO>> getAllSentences() {
+        return Result.success(sentenceService.findAllSentences());
+    }
+
+    /**
+     * 根据英文内容查询句子
+     */
+    @GetMapping("/search/english")
+    public Result<List<SentenceDTO>> searchByEnglishContent(@RequestParam String content) {
+        return Result.success(sentenceService.findSentencesByEnglishContent(content));
+    }
+
+    /**
+     * 根据中文意思查询句子
+     */
+    @GetMapping("/search/chinese")
+    public Result<List<SentenceDTO>> searchByChineseMeaning(@RequestParam String meaning) {
+        return Result.success(sentenceService.findSentencesByChineseMeaning(meaning));
+    }
+
 } 

@@ -1,7 +1,7 @@
 package com.englishlearning.domain.vocabulary.model.entity;
 
-import com.englishlearning.domain.vocabulary.dto.CreateWordBookCommand;
-import com.englishlearning.domain.vocabulary.dto.UpdateWordBookCommand;
+import com.englishlearning.domain.vocabulary.dto.CreateWordBookDTO;
+import com.englishlearning.domain.vocabulary.dto.UpdateWordBookDomainDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,7 +45,7 @@ public class WordBook {
      * 创建单词本
      * @param command 创建单词本命令
      */
-    public void create(CreateWordBookCommand command) {
+    public void create(CreateWordBookDTO command) {
         command.validate();
         this.id = UUID.randomUUID().toString();
         this.name = command.getName();
@@ -57,7 +57,7 @@ public class WordBook {
      * 更新单词本
      * @param command 更新单词本命令
      */
-    public void update(UpdateWordBookCommand command) {
+    public void update(UpdateWordBookDomainDTO command) {
         command.validate();
         this.name = command.getName();
         this.description = command.getDescription();

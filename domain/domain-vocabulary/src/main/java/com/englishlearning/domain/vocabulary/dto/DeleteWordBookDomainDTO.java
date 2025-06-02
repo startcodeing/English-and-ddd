@@ -6,33 +6,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 从单词本移除单词命令
+ * 删除单词本命令
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RemoveWordFromWordBookCommand {
+public class DeleteWordBookDomainDTO {
     
     /**
-     * 单词本ID
+     * ID
      */
-    private String wordBookId;
-    
-    /**
-     * 单词ID
-     */
-    private String wordId;
+    private String id;
     
     /**
      * 验证命令
      */
     public void validate() {
-        if (wordBookId == null || wordBookId.trim().isEmpty()) {
+        if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("单词本ID不能为空");
-        }
-        if (wordId == null || wordId.trim().isEmpty()) {
-            throw new IllegalArgumentException("单词ID不能为空");
         }
     }
 }

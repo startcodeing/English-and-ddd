@@ -20,7 +20,7 @@ public interface SentenceCommandHandler {
      * @param command 更新句子命令
      * @return 更新后的句子实体
      */
-    Sentence updateSentence(UpdateSentenceCommand command);
+    Sentence updateSentence(UpdateSentenceDTO command);
     
     /**
      * 处理删除句子命令

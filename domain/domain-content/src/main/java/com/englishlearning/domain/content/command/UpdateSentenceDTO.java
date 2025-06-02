@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateSentenceCommand {
+public class UpdateSentenceDTO {
     
     /**
      * 句子ID
@@ -28,11 +28,6 @@ public class UpdateSentenceCommand {
      * 中文意思
      */
     private String chineseMeaning;
-    
-    /**
-     * 文章ID
-     */
-    private String articleId;
     
     /**
      * 语法分析

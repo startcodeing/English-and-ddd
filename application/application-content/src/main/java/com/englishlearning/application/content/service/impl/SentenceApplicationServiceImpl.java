@@ -3,12 +3,10 @@ package com.englishlearning.application.content.service.impl;
 import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.dto.SentenceVariantDTO;
 import com.englishlearning.application.content.mapper.SentenceMapper;
-import com.englishlearning.application.content.mapper.SentenceVariantMapper;
 import com.englishlearning.application.content.service.SentenceApplicationService;
 import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.domain.content.command.CreateSentenceDomainDTO;
-import com.englishlearning.domain.content.command.UpdateSentenceCommand;
+import com.englishlearning.domain.content.command.UpdateSentenceDTO;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
@@ -36,26 +34,24 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceMapper sentenceMapper;
-    private final SentenceVariantMapper variantMapper;
-    private final WordMapper wordMapper;
-    
+
     /**
      * 创建句子
      */
     @Transactional
     @Override
     public SentenceDTO createSentence(SentenceDTO sentenceDTO) {
-        CreateSentenceDomainDTO command = CreateSentenceDomainDTO.builder()
+        CreateSentenceDomainDTO sentenceInfo = CreateSentenceDomainDTO.builder()
                 .englishContent(sentenceDTO.getEnglishContent())
                 .chineseMeaning(sentenceDTO.getChineseMeaning())
                 .grammarAnalysis(sentenceDTO.getGrammarAnalysis())
                 .build();
 
-        Sentence sentence = Sentence.builder()
+        Sentence newSentence = Sentence.builder()
                 .id(UUID.randomUUID().toString())
                 .build();
-        sentence.create(command);
-        Sentence savedSentence = sentenceRepository.save(sentence);
+        newSentence.create(sentenceInfo);
+        Sentence savedSentence = sentenceRepository.save(newSentence);
         return sentenceMapper.toDTO(savedSentence);
     }
     
@@ -65,18 +61,84 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Transactional
     @Override
     public SentenceDTO updateSentence(SentenceDTO sentenceDTO) {
-        UpdateSentenceCommand command = UpdateSentenceCommand.builder()
+        UpdateSentenceDTO updateInfo = UpdateSentenceDTO.builder()
                 .id(sentenceDTO.getId())
                 .englishContent(sentenceDTO.getEnglishContent())
                 .chineseMeaning(sentenceDTO.getChineseMeaning())
                 .grammarAnalysis(sentenceDTO.getGrammarAnalysis())
                 .build();
 
-        Sentence sentence = sentenceRepository.findById(command.getId())
-                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + command.getId()));
-        sentence.update(command);
-        Sentence updatedSentence = sentenceService.updateSentence(sentence);
-        return sentenceMapper.toDTO(updatedSentence);
+        Sentence sentence = sentenceRepository.findById(updateInfo.getId())
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + updateInfo.getId()));
+
+        sentence.update(updateInfo);
+        Sentence savedSentence = sentenceRepository.save(sentence);
+        return sentenceMapper.toDTO(savedSentence);
+    }
+
+    /**
+     * 为句子添加变体
+     */
+    @Transactional
+    @Override
+    public SentenceDTO addVariant(String sentenceId, SentenceVariantDTO variantDTO) {
+        Sentence sentence = sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
+
+        SentenceVariant variant = SentenceVariant.builder()
+                .type(variantDTO.getType())
+                .content(variantDTO.getContent())
+                .build();
+
+        sentence.addVariant(variant);
+        Sentence saveSentence = sentenceRepository.save(sentence);
+        return sentenceMapper.toDTO(saveSentence);
+    }
+
+
+    @Override
+    public SentenceDTO removeVariant(String sentenceId, String variantId) {
+        Sentence sentence = sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
+        sentence.removeVariant(variantId);
+        Sentence saveSentence = sentenceRepository.save(sentence);
+        return sentenceMapper.toDTO(saveSentence);
+    }
+
+    /**
+     * 为句子添加陌生单词
+     */
+    @Transactional
+    @Override
+    public SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO) {
+        Sentence sentence = sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
+        Word word = wordRepository.findById(wordDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
+        sentence.addUnfamiliarWord(word);
+        Sentence saveSentence = sentenceRepository.save(sentence);
+        return sentenceMapper.toDTO(saveSentence);
+    }
+
+
+    @Override
+    public SentenceDTO removeUnfamiliarWord(String sentenceId, String wordId) {
+        Sentence sentence = sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + sentenceId));
+       wordRepository.findById(wordId)
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordId));
+        sentence.removeUnfamiliarWord(wordId);
+        Sentence saveSentence = sentenceRepository.save(sentence);
+        return sentenceMapper.toDTO(saveSentence);
+    }
+
+    /**
+     * 删除句子
+     */
+    @Transactional
+    @Override
+    public void deleteSentence(String id) {
+        sentenceService.deleteSentence(id);
     }
     
     /**
@@ -116,41 +178,5 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
         return sentenceRepository.findByChineseMeaningLike(chineseMeaning).stream()
                 .map(sentenceMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-    
-    /**
-     * 为句子添加变体
-     */
-    @Transactional
-    @Override
-    public SentenceDTO addVariant(String sentenceId, SentenceVariantDTO variantDTO) {
-        SentenceVariant variant = SentenceVariant.builder()
-                .type(variantDTO.getType())
-                .content(variantDTO.getContent())
-                .build();
-
-        Sentence updatedSentence = sentenceService.addVariant(sentenceId, variant);
-        return sentenceMapper.toDTO(updatedSentence);
-    }
-    
-    /**
-     * 为句子添加陌生单词
-     */
-    @Transactional
-    @Override
-    public SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO) {
-        Word word = wordRepository.findById(wordDTO.getId())
-                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + wordDTO.getId()));
-        Sentence updatedSentence = sentenceService.addUnfamiliarWord(sentenceId, word);
-        return sentenceMapper.toDTO(updatedSentence);
-    }
-    
-    /**
-     * 删除句子
-     */
-    @Transactional
-    @Override
-    public void deleteSentence(String id) {
-        sentenceService.deleteSentence(id);
     }
 }

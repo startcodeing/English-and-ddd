@@ -36,12 +36,6 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
     public Sentence createSentence(CreateSentenceDomainDTO command) {
         command.validate();
         
-        // 验证文章是否存在
-        if (command.getArticleId() != null && !command.getArticleId().trim().isEmpty()) {
-            articleRepository.findById(command.getArticleId())
-                    .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + command.getArticleId()));
-        }
-        
         // 创建句子实体
         Sentence sentence = Sentence.builder()
                 .id(UUID.randomUUID().toString())
@@ -69,19 +63,12 @@ public class SentenceCommandHandlerImpl implements SentenceCommandHandler {
      * @return 更新后的句子实体
      */
     @Override
-    public Sentence updateSentence(UpdateSentenceCommand command) {
+    public Sentence updateSentence(UpdateSentenceDTO command) {
         command.validate();
         
         // 获取句子实体
         Sentence sentence = sentenceRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + command.getId()));
-        
-        // 验证文章是否存在
-        if (command.getArticleId() != null && !command.getArticleId().trim().isEmpty() && 
-                !command.getArticleId().equals(sentence.getArticleId())) {
-            articleRepository.findById(command.getArticleId())
-                    .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + command.getArticleId()));
-        }
         
         // 执行更新逻辑
         sentence.update(command);

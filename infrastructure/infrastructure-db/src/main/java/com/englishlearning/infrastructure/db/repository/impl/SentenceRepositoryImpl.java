@@ -2,6 +2,7 @@ package com.englishlearning.infrastructure.db.repository.impl;
 
 import com.englishlearning.common.utils.UUIDGenerator;
 import com.englishlearning.domain.content.model.entity.Sentence;
+import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
 import com.englishlearning.infrastructure.db.mapper.SentencePoMapper;
 import com.englishlearning.infrastructure.db.po.SentencePO;
@@ -29,6 +30,11 @@ public class SentenceRepositoryImpl implements SentenceRepository {
         if (!StringUtils.hasText(sentence.getId())) {
             sentence.setId(uuidGenerator.generateUUID());
         }
+        sentence.getVariants().forEach(variant -> {
+            if (!StringUtils.hasText(variant.getId())) {
+                variant.setId(uuidGenerator.generateUUID());
+            }
+        });
         SentencePO sentencePO = mapper.toPo(sentence);
         SentencePO savedPO = jpaRepository.save(sentencePO);
         return mapper.toEntity(savedPO);

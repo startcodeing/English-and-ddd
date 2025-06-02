@@ -25,11 +25,6 @@ public class CreateSentenceDomainDTO {
     private String chineseMeaning;
     
     /**
-     * 文章ID
-     */
-    private String articleId;
-    
-    /**
      * 语法分析
      */
     private String grammarAnalysis;
@@ -40,6 +35,12 @@ public class CreateSentenceDomainDTO {
     public void validate() {
         if (englishContent == null || englishContent.trim().isEmpty()) {
             throw new IllegalArgumentException("句子英文内容不能为空");
+        }
+        if (chineseMeaning == null || chineseMeaning.trim().isEmpty()) {
+            throw new IllegalArgumentException("句子中文内容不能为空");
+        }
+        if (grammarAnalysis == null || grammarAnalysis.trim().isEmpty()) {
+            throw new IllegalArgumentException("句子语法分析内容不能为空");
         }
     }
 }

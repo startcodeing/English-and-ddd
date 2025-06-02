@@ -1,7 +1,7 @@
 package com.englishlearning.domain.content.model.entity;
 
 import com.englishlearning.domain.content.command.CreateSentenceDomainDTO;
-import com.englishlearning.domain.content.command.UpdateSentenceCommand;
+import com.englishlearning.domain.content.command.UpdateSentenceDTO;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,10 +62,8 @@ public class Sentence {
      * @param command 创建句子命令
      */
     public void create(CreateSentenceDomainDTO command) {
-        command.validate();
         this.englishContent = command.getEnglishContent();
         this.chineseMeaning = command.getChineseMeaning();
-        this.articleId = command.getArticleId();
         this.grammarAnalysis = command.getGrammarAnalysis();
         this.variants = new ArrayList<>();
         this.unfamiliarWords = new ArrayList<>();
@@ -75,20 +73,11 @@ public class Sentence {
      * 更新句子
      * @param command 更新句子命令
      */
-    public void update(UpdateSentenceCommand command) {
-        command.validate();
-        if (command.getEnglishContent() != null) {
-            this.englishContent = command.getEnglishContent();
-        }
-        if (command.getChineseMeaning() != null) {
-            this.chineseMeaning = command.getChineseMeaning();
-        }
-        if (command.getArticleId() != null) {
-            this.articleId = command.getArticleId();
-        }
-        if (command.getGrammarAnalysis() != null) {
-            this.grammarAnalysis = command.getGrammarAnalysis();
-        }
+    public void update(UpdateSentenceDTO command) {
+        this.id = command.getId();
+        this.englishContent = command.getEnglishContent();
+        this.chineseMeaning = command.getChineseMeaning();
+        this.grammarAnalysis = command.getGrammarAnalysis();
     }
     
     /**
@@ -129,7 +118,6 @@ public class Sentence {
         if (this.unfamiliarWords == null) {
             this.unfamiliarWords = new ArrayList<>();
         }
-        
         // 避免重复添加
         boolean exists = this.unfamiliarWords.stream()
                 .anyMatch(w -> w.getId() != null && w.getId().equals(word.getId()));

@@ -46,11 +46,21 @@ public interface SentenceApplicationService {
      * 为句子添加变体
      */
     SentenceDTO addVariant(String sentenceId, SentenceVariantDTO variantDTO);
+
+    /**
+     * 删除句子变体
+     */
+    SentenceDTO removeVariant(String sentenceId, String variantId);
     
     /**
      * 为句子添加陌生单词
      */
     SentenceDTO addUnfamiliarWord(String sentenceId, WordDTO wordDTO);
+
+    /**
+     * 删除陌生单词
+     */
+    SentenceDTO removeUnfamiliarWord(String sentenceId, String wordId);
     
     /**
      * 删除句子
