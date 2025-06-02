@@ -1,0 +1,39 @@
+import axios from './axios';
+import { Word } from '@/types';
+
+const BASE_URL = '/api/vocabulary/word';
+
+// 获取所有单词
+export const getAllWords = () => {
+  return axios.get<Word[]>(`${BASE_URL}`);
+};
+
+// 根据ID获取单词
+export const getWordById = (id: string) => {
+  return axios.get<Word>(`${BASE_URL}/${id}`);
+};
+
+// 根据拼写查询单词
+export const getWordBySpelling = (spelling: string) => {
+  return axios.get<Word[]>(`${BASE_URL}/spelling/${spelling}`);
+};
+
+// 根据难度级别查询单词
+export const getWordsByDifficultyLevel = (level: number) => {
+  return axios.get<Word[]>(`${BASE_URL}/difficulty/${level}`);
+};
+
+// 创建单词
+export const createWord = (word: Omit<Word, 'id'>) => {
+  return axios.post<Word>(`${BASE_URL}`, word);
+};
+
+// 更新单词
+export const updateWord = (id: string, word: Partial<Word>) => {
+  return axios.put<Word>(`${BASE_URL}/${id}`, word);
+};
+
+// 删除单词
+export const deleteWord = (id: string) => {
+  return axios.delete(`${BASE_URL}/${id}`);
+};
