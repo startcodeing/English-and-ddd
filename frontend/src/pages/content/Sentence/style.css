@@ -1,0 +1,73 @@
+.sentence-page {
+  padding: 24px;
+}
+
+.sentence-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sentence-page-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.sentence-page-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* 表格样式优化 */
+.sentence-page .ant-table-wrapper {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 句子内容样式 */
+.sentence-content {
+  font-weight: 500;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 句子含义样式 */
+.sentence-meaning {
+  color: #666;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .sentence-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sentence-page-actions {
+    margin-top: 16px;
+    width: 100%;
+  }
+  
+  .sentence-page-actions .ant-input-affix-wrapper {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+  
+  .sentence-page-actions .ant-btn {
+    width: 100%;
+  }
+}

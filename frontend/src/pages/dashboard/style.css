@@ -1,0 +1,106 @@
+.dashboard-container {
+  padding: 24px;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h2 {
+  margin-bottom: 8px;
+}
+
+/* 统计卡片样式 */
+.stat-row {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+/* 详情行样式 */
+.detail-row {
+  margin-bottom: 24px;
+}
+
+/* 进度卡片样式 */
+.progress-card {
+  height: 100%;
+}
+
+.progress-item {
+  margin-bottom: 16px;
+}
+
+.progress-item:last-child {
+  margin-bottom: 0;
+}
+
+.progress-label {
+  display: inline-block;
+  width: 60px;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+/* 活动卡片样式 */
+.activity-card {
+  height: 100%;
+}
+
+.activity-meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+.activity-type {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.activity-time {
+  color: #8c8c8c;
+}
+
+/* 快捷入口样式 */
+.shortcut-row {
+  margin-bottom: 24px;
+}
+
+.shortcut-card {
+  text-align: center;
+  padding: 16px;
+  transition: all 0.3s;
+}
+
+.shortcut-card:hover {
+  color: #1890ff;
+}
+
+.shortcut-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.shortcut-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .stat-row, .detail-row, .shortcut-row {
+    margin-bottom: 16px;
+  }
+}

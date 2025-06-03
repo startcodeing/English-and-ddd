@@ -1,0 +1,18 @@
+.custom-modal .ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.custom-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.custom-modal .ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 10px 16px;
+}

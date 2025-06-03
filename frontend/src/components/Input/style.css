@@ -1,0 +1,30 @@
+.custom-input-container {
+  margin-bottom: 16px;
+}
+
+.custom-input-label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.custom-input {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.custom-input-error {
+  border-color: #ff4d4f;
+}
+
+.custom-input-error:hover,
+.custom-input-error:focus {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.custom-input-error-message {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}

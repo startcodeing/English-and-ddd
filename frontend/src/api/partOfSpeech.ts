@@ -1,7 +1,7 @@
 import axios from './axios';
 import { PartOfSpeech } from '@/types';
 
-const BASE_URL = '/api/vocabulary/part-of-speech';
+const BASE_URL = '/api/v1/vocabulary/part-of-speech';
 
 // 获取所有词性
 export const getAllPartOfSpeech = () => {

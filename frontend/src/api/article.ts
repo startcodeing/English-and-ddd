@@ -1,7 +1,7 @@
 import axios from './axios';
 import { Article } from '@/types';
 
-const BASE_URL = '/api/content/article';
+const BASE_URL = '/api/v1/articles';
 
 // 获取所有文章
 export const getAllArticles = () => {

@@ -1,7 +1,7 @@
 import axios from './axios';
 import { Sentence } from '@/types';
 
-const BASE_URL = '/api/content/sentence';
+const BASE_URL = '/api/v1/sentences';
 
 // 获取所有句子
 export const getAllSentences = () => {

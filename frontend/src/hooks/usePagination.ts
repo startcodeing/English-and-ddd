@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { PaginationRequest, PaginationResponse } from '../types';
+import { PaginationRequest, PaginationResponse } from '@/types';
 
 interface UsePaginationProps<T, P> {
   fetchFunction: (params: PaginationRequest & P) => Promise<PaginationResponse<T>>;

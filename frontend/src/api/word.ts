@@ -1,7 +1,7 @@
 import axios from './axios';
 import { Word } from '@/types';
 
-const BASE_URL = '/api/vocabulary/word';
+const BASE_URL = '/api/v1/vocabulary/word';
 
 // 获取所有单词
 export const getAllWords = () => {

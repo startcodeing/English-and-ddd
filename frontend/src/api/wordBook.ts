@@ -1,7 +1,7 @@
 import axios from './axios';
 import { WordBook } from '@/types';
 
-const BASE_URL = '/api/vocabulary/word-book';
+const BASE_URL = '/api/v1/vocabulary/word-book';
 
 // 获取所有单词本
 export const getAllWordBooks = () => {

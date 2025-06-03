@@ -1,0 +1,45 @@
+.error-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+}
+
+.error-page .ant-result {
+  padding: 48px 32px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.error-page .ant-result-title {
+  font-size: 72px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.error-page .ant-result-subtitle {
+  font-size: 20px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.error-page .ant-result-extra {
+  margin-top: 32px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .error-page .ant-result {
+    padding: 32px 16px;
+  }
+  
+  .error-page .ant-result-title {
+    font-size: 48px;
+  }
+  
+  .error-page .ant-result-subtitle {
+    font-size: 16px;
+  }
+}
