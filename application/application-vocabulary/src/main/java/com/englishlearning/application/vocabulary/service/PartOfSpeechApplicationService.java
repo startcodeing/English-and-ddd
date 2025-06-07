@@ -18,7 +18,7 @@ public interface PartOfSpeechApplicationService {
     /**
      * 更新词性
      */
-    PartOfSpeechDTO updatePartOfSpeech(PartOfSpeechDTO dto);
+    PartOfSpeechDTO updatePartOfSpeech(String id,PartOfSpeechDTO dto);
     
     /**
      * 获取词性详情

@@ -1,0 +1,261 @@
+.wordbook-page {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-header h2 {
+  margin: 0 0 8px 0;
+  color: #1890ff;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.page-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.page-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.action-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 表格样式优化 */
+.ant-table {
+  background-color: #fff;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #f5f5f5;
+}
+
+.ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 单词本名称样式 */
+.wordbook-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wordbook-name .anticon {
+  color: #1890ff;
+  font-size: 16px;
+}
+
+.wordbook-name span {
+  font-weight: 600;
+  color: #262626;
+}
+
+/* 描述文本样式 */
+.description-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  color: #666;
+}
+
+/* 单词数量标签样式 */
+.word-count-tag {
+  font-weight: 500;
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-buttons .ant-btn-link {
+  padding: 4px 8px;
+  height: auto;
+  font-size: 12px;
+}
+
+/* 模态框内容样式 */
+.modal-content {
+  padding: 16px 0;
+}
+
+.modal-description {
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border-left: 4px solid #1890ff;
+}
+
+.modal-description strong {
+  color: #262626;
+  margin-right: 8px;
+}
+
+/* 单词表格样式 */
+.word-table {
+  margin-top: 16px;
+}
+
+.word-spelling {
+  font-weight: bold;
+  font-size: 16px;
+  color: #262626;
+}
+
+.word-phonetic {
+  font-style: italic;
+  color: #666;
+  font-size: 14px;
+}
+
+.word-meaning {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  color: #595959;
+}
+
+/* 搜索栏样式 */
+.search-bar {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-info {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .wordbook-page {
+    padding: 16px;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .search-section {
+    justify-content: center;
+  }
+  
+  .action-section {
+    justify-content: center;
+  }
+  
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .description-text {
+    max-width: 120px;
+  }
+  
+  .word-meaning {
+    max-width: 120px;
+  }
+}
+
+/* 空状态样式 */
+.ant-empty {
+  padding: 40px 20px;
+}
+
+.ant-empty-description {
+  color: #999;
+}
+
+/* 加载状态样式 */
+.ant-spin-container {
+  min-height: 200px;
+}
+
+/* 标签样式优化 */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* 按钮样式优化 */
+.ant-btn-primary {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-link {
+  font-weight: 500;
+}
+
+/* 表单样式 */
+.ant-form-item-label > label {
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-input,
+.ant-input-affix-wrapper {
+  border-radius: 6px;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 工具提示样式 */
+.ant-tooltip-inner {
+  border-radius: 6px;
+}

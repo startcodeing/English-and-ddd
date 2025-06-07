@@ -1,0 +1,305 @@
+/* 单词详情页面样式 */
+.word-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+.word-detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.word-detail-header .ant-typography {
+  margin: 0;
+}
+
+/* 基本信息卡片 */
+.basic-info-card {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.basic-info-card .ant-card-head {
+  border-bottom: 4px solid #409eff;
+}
+
+.word-info-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.word-info-field {
+  flex: 1;
+  margin-bottom: 15px;
+}
+
+.basic-info-actions {
+  margin-top: 20px;
+}
+
+/* 词性部分 */
+.meanings-section {
+  margin-top: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+  border-left: 4px solid #409eff;
+  padding-left: 8px;
+  color: #333;
+}
+
+/* 词性卡片 */
+.pos-card {
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.pos-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pos-card.editing {
+  background-color: #fffef0;
+  border-color: #e6a23c;
+  box-shadow: 0 2px 12px rgba(230, 162, 60, 0.2);
+}
+
+.pos-card.new {
+  background-color: #f0f9ff;
+  border-color: #409eff;
+  box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2);
+}
+
+.pos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pos-title {
+  margin: 0 !important;
+  font-size: 16px;
+}
+
+.pos-name-clickable {
+  cursor: pointer;
+  color: #409eff;
+  transition: color 0.3s ease;
+}
+
+.pos-name-clickable:hover {
+  color: #66b1ff;
+  text-decoration: underline;
+}
+
+.pos-content {
+  padding: 0;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field .ant-typography {
+  margin-right: 8px;
+}
+
+/* 标签列表 */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.tag-list .ant-tag {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* 例句列表 */
+.sentence-list {
+  margin-top: 4px;
+}
+
+.sentence-item {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sentence-item .ant-tag {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* 添加词性按钮 */
+.add-meaning-btn {
+  width: 100%;
+  height: 50px;
+  font-size: 14px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.add-meaning-btn:hover {
+  border-color: #409eff;
+  color: #409eff;
+}
+
+.add-meaning-btn:disabled {
+  border-color: #f0f0f0;
+  color: #c0c0c0;
+}
+
+/* 表单样式优化 */
+.pos-card .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.pos-card .ant-form-item-label {
+  font-weight: 600;
+}
+
+.pos-card .ant-input,
+.pos-card .ant-select,
+.pos-card .ant-input-affix-wrapper {
+  border-radius: 4px;
+}
+
+.pos-card .ant-input:focus,
+.pos-card .ant-select:focus,
+.pos-card .ant-input-affix-wrapper:focus {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 按钮样式 */
+.pos-card .ant-btn {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.pos-card .ant-btn-primary {
+  background: #409eff;
+  border-color: #409eff;
+}
+
+.pos-card .ant-btn-primary:hover {
+  background: #66b1ff;
+  border-color: #66b1ff;
+}
+
+.pos-card .ant-btn-link {
+  padding: 4px 8px;
+  height: auto;
+  font-size: 13px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .word-detail-container {
+    padding: 16px;
+  }
+  
+  .word-info-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .word-info-field {
+    margin-bottom: 16px;
+  }
+  
+  .pos-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .tag-list {
+    gap: 4px;
+  }
+  
+  .sentence-item {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .word-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .word-detail-header .ant-typography {
+    font-size: 20px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .pos-title {
+    font-size: 14px !important;
+  }
+}
+
+/* 动画效果 */
+.pos-card {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 加载状态 */
+.word-detail-container .ant-spin-container {
+  min-height: 200px;
+}
+
+/* 空状态 */
+.empty-meanings {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 14px;
+}
+
+.empty-meanings .anticon {
+  font-size: 48px;
+  color: #d9d9d9;
+  margin-bottom: 16px;
+}

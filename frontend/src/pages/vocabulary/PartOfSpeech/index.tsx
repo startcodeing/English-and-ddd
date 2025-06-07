@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech } from '../../../api/partOfSpeech';
-import { PartOfSpeech } from '../../../types';
+import { PartOfSpeech } from '@/types';
 import './style.css';
 
 const PartOfSpeechPage: React.FC = () => {
   // 状态定义
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
+  const [filteredPartsOfSpeech, setFilteredPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingPartOfSpeech, setEditingPartOfSpeech] = useState<PartOfSpeech | null>(null);
@@ -20,6 +21,7 @@ const PartOfSpeechPage: React.FC = () => {
     try {
       const response = await getAllPartOfSpeech();
       setPartsOfSpeech(response.data);
+      setFilteredPartsOfSpeech(response.data);
     } catch (error) {
       message.error('获取词性列表失败');
       console.error('获取词性列表失败:', error);
@@ -106,18 +108,19 @@ const PartOfSpeechPage: React.FC = () => {
   };
 
   // 搜索词性
-  const handleSearch = () => {
-    if (!searchText) {
-      fetchPartsOfSpeech();
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    if (!value) {
+      setFilteredPartsOfSpeech(partsOfSpeech);
       return;
     }
     
-    const filteredPartsOfSpeech = partsOfSpeech.filter(pos => 
-      pos.englishName.toLowerCase().includes(searchText.toLowerCase()) ||
-      pos.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
+    const filtered = partsOfSpeech.filter(pos => 
+      pos.englishName.toLowerCase().includes(value.toLowerCase()) ||
+      pos.chineseMeaning.toLowerCase().includes(value.toLowerCase())
     );
     
-    setPartsOfSpeech(filteredPartsOfSpeech);
+    setFilteredPartsOfSpeech(filtered);
   };
 
   // 表格列定义
@@ -179,8 +182,7 @@ const PartOfSpeechPage: React.FC = () => {
           <Input
             placeholder="搜索英文名称或中文含义"
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onPressEnter={handleSearch}
+            onChange={e => handleSearch(e.target.value)}
             style={{ width: 200, marginRight: 16 }}
             prefix={<SearchOutlined />}
           />
@@ -196,7 +198,7 @@ const PartOfSpeechPage: React.FC = () => {
       
       <Table
         columns={columns}
-        dataSource={partsOfSpeech}
+        dataSource={filteredPartsOfSpeech}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 10 }}

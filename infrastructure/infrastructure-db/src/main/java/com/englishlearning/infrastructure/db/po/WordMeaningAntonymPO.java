@@ -18,25 +18,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class WordMeaningAntonymPO {
     
-    @EmbeddedId
-    private WordMeaningAntonymId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     
     @Column(name = "created_at")
     private Long createdAt;
-    
-    /**
-     * 复合主键类
-     */
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class WordMeaningAntonymId implements java.io.Serializable{
-        
-        @Column(name = "meaning_id")
-        private String meaningId;
-        
-        @Column(name = "antonym_meaning_id")
-        private String antonymMeaningId;
-    }
+
+    @Column(name = "meaning_id")
+    private String meaningId;
+
+    @Column(name = "antonym_meaning_id")
+    private String antonymMeaningId;
 }

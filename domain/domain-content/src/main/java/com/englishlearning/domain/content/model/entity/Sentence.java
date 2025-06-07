@@ -38,11 +38,6 @@ public class Sentence {
     private String chineseMeaning;
     
     /**
-     * 文章ID
-     */
-    private String articleId;
-    
-    /**
      * 语法分析
      */
     private String grammarAnalysis;

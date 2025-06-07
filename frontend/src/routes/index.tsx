@@ -8,7 +8,8 @@ const Dashboard = React.lazy(() => import('../pages/dashboard'));
 // 词汇管理页面
 const PartOfSpeech = React.lazy(() => import('../pages/vocabulary/PartOfSpeech'));
 const Word = React.lazy(() => import('../pages/vocabulary/Word'));
-const WordBook = React.lazy(() => import('../pages/dashboard')); // 临时占位
+const WordDetail = React.lazy(() => import('../pages/vocabulary/Word/WordDetail'));
+const WordBook = React.lazy(() => import('../pages/vocabulary/WordBook'));
 
 // 内容管理页面
 const Sentence = React.lazy(() => import('../pages/content/Sentence'));
@@ -77,6 +78,22 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <Word />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/vocabulary/word/create',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WordDetail mode="create" />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/vocabulary/word/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WordDetail mode="edit" />
           </React.Suspense>
         ),
       },

@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,8 @@ public interface WordMeaningPoMapper {
         
         return sentenceIds.stream()
                 .map(sentenceId -> WordMeaningSentencePO.builder()
-                        .id(new WordMeaningSentencePO.WordMeaningSentenceId(wordMeaningId, sentenceId))
+                        .meaningId(wordMeaningId)
+                        .sentenceId(sentenceId)
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -73,7 +75,7 @@ public interface WordMeaningPoMapper {
         }
         
         return sentencePOs.stream()
-                .map(po -> po.getId().getSentenceId())
+                .map(WordMeaningSentencePO::getSentenceId)
                 .collect(Collectors.toList());
     }
     
@@ -88,7 +90,8 @@ public interface WordMeaningPoMapper {
         
         return synonymIds.stream()
                 .map(synonymId -> WordMeaningSynonymPO.builder()
-                        .id(new WordMeaningSynonymPO.WordMeaningSynonymId(wordMeaningId, synonymId))
+                        .synonymMeaningId(synonymId)
+                        .meaningId(wordMeaningId)
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -104,7 +107,7 @@ public interface WordMeaningPoMapper {
         }
         
         return synonymPOs.stream()
-                .map(po -> po.getId().getSynonymMeaningId())
+                .map(WordMeaningSynonymPO::getSynonymMeaningId)
                 .collect(Collectors.toList());
     }
     
@@ -119,7 +122,8 @@ public interface WordMeaningPoMapper {
         
         return antonymIds.stream()
                 .map(antonymId -> WordMeaningAntonymPO.builder()
-                        .id(new WordMeaningAntonymPO.WordMeaningAntonymId(wordMeaningId, antonymId))
+                        .antonymMeaningId(antonymId)
+                        .meaningId(wordMeaningId)
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -135,7 +139,7 @@ public interface WordMeaningPoMapper {
         }
         
         return antonymPOs.stream()
-                .map(po -> po.getId().getAntonymMeaningId())
+                .map(WordMeaningAntonymPO::getAntonymMeaningId)
                 .collect(Collectors.toList());
     }
 }

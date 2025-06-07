@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 单词实体
@@ -86,6 +87,30 @@ public class Word {
         }
     }
 
+    /**
+     * 添加新的词义
+     */
+    public void updateMeaning(WordMeaning meaning) {
+        if (meaning == null) {
+            return;
+        }
+        if (this.meanings == null) {
+            this.meanings = new ArrayList<>();
+        }
+        boolean existMeaning = this.meanings.stream().anyMatch(m -> m.getId().equals(meaning.getId()));
+        if (!existMeaning) {
+            throw new IllegalArgumentException("词义" + meaning.getId() + "不存在");
+        }
+        boolean exists = this.meanings.stream()
+                .anyMatch(m -> m.getPartOfSpeechId().equals(meaning.getPartOfSpeechId()) && !m.getId().equals(meaning.getId()) );
+        if (exists) {
+            throw new IllegalArgumentException("存在词性为" + meaning.getPartOfSpeechId() + "的词义");
+        }
+        List<WordMeaning> currentMeaningList = new ArrayList<>(this.meanings.stream().filter(m -> !m.getId().equals(meaning.getId())).toList());
+        currentMeaningList.add(meaning);
+        this.meanings = currentMeaningList;
+    }
+
 
     /**
      * 移除指定ID的词义
@@ -95,6 +120,33 @@ public class Word {
             return;
         }
         
+        // 在删除词义之前，先清理该词义的所有关联关系
+        Optional<WordMeaning> meaningToRemove = this.findMeaningByMeaningId(wordMeaningId);
+        if (meaningToRemove.isPresent()) {
+            WordMeaning meaning = meaningToRemove.get();
+            
+            // 清理该词义的所有同义词关联
+            if (meaning.getSynonymWordMeaningIds() != null) {
+                meaning.getSynonymWordMeaningIds().clear();
+            }
+            
+            // 清理该词义的所有反义词关联
+            if (meaning.getAntonymWordMeaningIds() != null) {
+                meaning.getAntonymWordMeaningIds().clear();
+            }
+            
+            // 清理其他词义中对该词义的同义词引用
+            this.meanings.forEach(otherMeaning -> {
+                if (otherMeaning.getSynonymWordMeaningIds() != null) {
+                    otherMeaning.getSynonymWordMeaningIds().remove(wordMeaningId);
+                }
+                if (otherMeaning.getAntonymWordMeaningIds() != null) {
+                    otherMeaning.getAntonymWordMeaningIds().remove(wordMeaningId);
+                }
+            });
+        }
+        
+        // 最后删除词义本身
         this.meanings.removeIf(m -> m.getId().equals(wordMeaningId));
     }
 

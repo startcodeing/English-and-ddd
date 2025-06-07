@@ -14,12 +14,10 @@ import com.englishlearning.domain.vocabulary.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 单词应用服务实现类
@@ -56,13 +54,9 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     public WordDTO addWordMeaning(WordMeaningDTO command) {
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
-
-        Optional<WordMeaning> existingMeaning = word.findMeaningByPartOfSpeech(command.getPartOfSpeechId());
-        if (existingMeaning.isPresent()) {
-            throw new IllegalArgumentException("该单词已存在词性为" + command.getPartOfSpeechId() + "的词义");
-        }
+        String wordMeaningId = StringUtils.hasText(command.getId()) ? command.getId() : null;
         WordMeaning meaning = WordMeaning.builder()
-                .id(UUID.randomUUID().toString())
+                .id(wordMeaningId)
                 .partOfSpeechId(command.getPartOfSpeechId())
                 .chineseMeaning(command.getChineseMeaning())
                 .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentenceIds()) ?
@@ -72,7 +66,11 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymWordMeaningIds()) ?
                         new ArrayList<>() : command.getAntonymWordMeaningIds())
                 .build();
-        word.addMeaning(meaning);
+        if (Objects.isNull(wordMeaningId)) {
+            word.addMeaning(meaning);
+        }else {
+            word.updateMeaning(meaning);
+        }
         Word wordPo = wordRepository.save(word);
         return wordMapper.toDTO(wordPo);
     }
@@ -225,14 +223,14 @@ public class WordApplicationServiceImpl implements WordApplicationService {
 
     @Transactional
     @Override
-    public WordDTO updateWord(WordDTO dto) {
+    public WordDTO updateWord(String id,WordDTO dto) {
         Word command = Word.builder()
-                .id(dto.getId())
+                .id(id)
                 .spelling(dto.getSpelling())
                 .phonetic(dto.getPhonetic())
                 .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
                 .build();
-        Word word = wordRepository.findById(command.getId())
+        Word word = wordRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
         word.updateWord(command);
         Word updatedWord = wordRepository.save(word);

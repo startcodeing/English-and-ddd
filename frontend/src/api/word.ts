@@ -1,5 +1,5 @@
 import axios from './axios';
-import { Word } from '@/types';
+import { Word, WordMeaning } from '@/types';
 
 const BASE_URL = '/api/v1/vocabulary/word';
 
@@ -36,4 +36,14 @@ export const updateWord = (id: string, word: Partial<Word>) => {
 // 删除单词
 export const deleteWord = (id: string) => {
   return axios.delete(`${BASE_URL}/${id}`);
+};
+
+// 添加词性
+export const addWordMeaning = (wordMeaning: Omit<WordMeaning, 'id'>) => {
+  return axios.post<Word>(`${BASE_URL}/wordMeaning`, wordMeaning);
+};
+
+// 删除词性
+export const deleteWordMeaning = (wordId: string, wordMeaningId: string) => {
+  return axios.delete<Word>(`${BASE_URL}/${wordId}/wordMeaning/${wordMeaningId}`);
 };

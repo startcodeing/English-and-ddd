@@ -1,0 +1,232 @@
+/* 单词详情抽屉样式 */
+.word-detail-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.word-detail-drawer-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* 基本信息卡片 */
+.basic-info-card {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.basic-info-card .ant-card-head {
+  border-bottom: 4px solid #409eff;
+}
+
+.word-info-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .word-info-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .word-info-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.word-info-field {
+  margin-bottom: 0;
+}
+
+/* 词性部分 */
+.meanings-section {
+  margin-top: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+  margin: 0;
+}
+
+/* 词性卡片 */
+.meaning-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.meaning-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.meaning-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meaning-text {
+  font-size: 14px;
+  color: #606266;
+}
+
+.meaning-content {
+  padding-top: 8px;
+}
+
+.meaning-item {
+  margin-bottom: 12px;
+}
+
+.meaning-item:last-child {
+  margin-bottom: 0;
+}
+
+.example-sentences {
+  margin-top: 8px;
+}
+
+.example-sentence {
+  background: #f8f9fa;
+  border-left: 4px solid #409eff;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 0 6px 6px 0;
+}
+
+.example-sentence:last-child {
+  margin-bottom: 0;
+}
+
+.english-sentence {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.chinese-sentence {
+  font-size: 13px;
+  color: #909399;
+}
+
+/* 新增词性卡片 */
+.new-meaning-card {
+  border: 2px dashed #dcdfe6;
+  background: #fafbfc;
+}
+
+.new-meaning-card .ant-card-head {
+  border-bottom: 2px dashed #dcdfe6;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .word-detail-drawer-content {
+    padding: 16px;
+  }
+  
+  .word-info-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .meaning-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* 表单样式优化 */
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: #303133;
+}
+
+/* 按钮样式 */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  background: #409eff;
+  border-color: #409eff;
+}
+
+.ant-btn-primary:hover {
+  background: #66b1ff;
+  border-color: #66b1ff;
+}
+
+/* 标签样式 */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* 输入框样式 */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  border-radius: 6px;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 文本域样式 */
+.ant-input {
+  transition: all 0.3s ease;
+}
+
+.ant-input:hover {
+  border-color: #c0c4cc;
+}
+
+/* 卡片标题样式 */
+.ant-card-head-title {
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 抽屉标题样式 */
+.word-detail-drawer .ant-drawer-header {
+  border-bottom: 2px solid #f0f2f5;
+}
+
+.word-detail-drawer .ant-drawer-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,7 +29,9 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
      */
     @Override
     public PartOfSpeech save(PartOfSpeech partOfSpeech) {
-        partOfSpeech.setId(uuidGenerator.generateUUID());
+        if (Objects.isNull(partOfSpeech.getId())) {
+            partOfSpeech.setId(uuidGenerator.generateUUID());
+        }
         PartOfSpeechPO po = mapper.toPo(partOfSpeech);
         po = jpaRepository.save(po);
         return mapper.toEntity(po);

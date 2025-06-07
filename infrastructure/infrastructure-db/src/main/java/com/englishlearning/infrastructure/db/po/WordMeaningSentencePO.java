@@ -17,26 +17,18 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WordMeaningSentencePO {
-    
-    @EmbeddedId
-    private WordMeaningSentenceId id;
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "meaning_id")
+    private String meaningId;
+
+    @Column(name = "sentence_id")
+    private String sentenceId;
+
     @Column(name = "created_at")
     private Long createdAt;
-    
-    /**
-     * 复合主键类
-     */
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class WordMeaningSentenceId implements java.io.Serializable{
-        
-        @Column(name = "meaning_id")
-        private String meaningId;
-        
-        @Column(name = "sentence_id")
-        private String sentenceId;
-    }
 }

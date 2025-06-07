@@ -2,8 +2,11 @@ package com.englishlearning.infrastructure.db.repository.jpa;
 
 import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -30,6 +33,9 @@ public interface WordMeaningJpaRepository extends JpaRepository<WordMeaningPO, S
     /**
      * 根据单词ID删除所有词义
      */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM WordMeaningPO wm WHERE wm.wordId = :wordId")
     void deleteByWordId(String wordId);
 
 

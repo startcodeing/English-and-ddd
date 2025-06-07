@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, Select, message } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Space, Button, Input, message, Modal } from 'antd';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { getAllWords, createWord, updateWord, deleteWord } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
 import { Word, PartOfSpeech } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import {DifficultyLevel} from '../../../types';
+import WordDetailDrawer from './WordDetailDrawer';
 import './style.css';
 
-const { Option } = Select;
+
 
 // 简化的单词类型，用于表格展示和表单处理
 interface SimpleWord {
@@ -25,11 +26,11 @@ const WordPage: React.FC = () => {
   // 状态定义
   const [words, setWords] = useState<SimpleWord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
+  const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'view'>('create');
   const [editingWord, setEditingWord] = useState<SimpleWord | null>(null);
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [searchText, setSearchText] = useState<string>('');
-  const [form] = Form.useForm();
 
   // 将API返回的Word转换为SimpleWord
   const convertToSimpleWord = (word: Word): SimpleWord => {
@@ -79,25 +80,31 @@ const WordPage: React.FC = () => {
     fetchPartsOfSpeech();
   }, []);
 
-  // 打开创建单词模态框
+  // 打开创建单词抽屉
   const handleAddWord = () => {
     setEditingWord(null);
-    form.resetFields();
-    setModalVisible(true);
+    setDrawerMode('create');
+    setDrawerVisible(true);
   };
 
-  // 打开编辑单词模态框
+  // 打开编辑单词抽屉
   const handleEditWord = (word: SimpleWord) => {
     setEditingWord(word);
-    form.setFieldsValue({
-      spelling: word.spelling,
-      phonetic: word.phonetic,
-      partOfSpeechId: word.partOfSpeechId,
-      meaning: word.meaning,
-      difficultyLevel: word.difficultyLevel,
-      example: word.example
-    });
-    setModalVisible(true);
+    setDrawerMode('edit');
+    setDrawerVisible(true);
+  };
+
+  // 查看单词详情
+  const handleViewWord = (word: SimpleWord) => {
+    setEditingWord(word);
+    setDrawerMode('view');
+    setDrawerVisible(true);
+  };
+
+  // 关闭抽屉
+  const handleCloseDrawer = () => {
+    setDrawerVisible(false);
+    setEditingWord(null);
   };
 
   // 删除单词
@@ -118,46 +125,7 @@ const WordPage: React.FC = () => {
     });
   };
 
-  // 保存单词（创建或更新）
-  const handleSaveWord = async () => {
-    try {
-      const values = await form.validateFields();
-      
-      // 构建Word对象
-      const wordData: any = {
-        spelling: values.spelling,
-        phonetic: values.phonetic,
-        difficultyLevel: values.difficultyLevel,
-        meanings: [
-          {
-            partOfSpeechId: values.partOfSpeechId,
-            chineseMeaning: values.meaning,
-            exampleSentences: values.example ? [
-              {
-                englishSentence: values.example,
-                chineseSentence: ''
-              }
-            ] : []
-          }
-        ]
-      };
-      
-      if (editingWord) {
-        // 更新单词
-        await updateWord(editingWord.id, wordData);
-        message.success('更新成功');
-      } else {
-        // 创建单词
-        await createWord(wordData);
-        message.success('创建成功');
-      }
-      
-      setModalVisible(false);
-      fetchWords();
-    } catch (error) {
-      console.error('保存失败:', error);
-    }
-  };
+
 
   // 搜索单词
   const handleSearch = () => {
@@ -189,20 +157,20 @@ const WordPage: React.FC = () => {
       dataIndex: 'phonetic',
       key: 'phonetic'
     },
-    {
-      title: '词性',
-      dataIndex: 'partOfSpeechId',
-      key: 'partOfSpeechId',
-      render: (partOfSpeechId: string) => {
-        const partOfSpeech = partsOfSpeech.find(pos => pos.id === partOfSpeechId);
-        return partOfSpeech ? partOfSpeech.englishName : '未知';
-      }
-    },
-    {
-      title: '含义',
-      dataIndex: 'meaning',
-      key: 'meaning'
-    },
+    // {
+    //   title: '词性',
+    //   dataIndex: 'partOfSpeechId',
+    //   key: 'partOfSpeechId',
+    //   render: (partOfSpeechId: string) => {
+    //     const partOfSpeech = partsOfSpeech.find(pos => pos.id === partOfSpeechId);
+    //     return partOfSpeech ? partOfSpeech.englishName : '未知';
+    //   }
+    // },
+    // {
+    //   title: '含义',
+    //   dataIndex: 'meaning',
+    //   key: 'meaning'
+    // },
     {
       title: '难度',
       dataIndex: 'difficultyLevel',
@@ -222,6 +190,12 @@ const WordPage: React.FC = () => {
         <Space size="middle">
           <Button 
             type="primary" 
+            icon={<EyeOutlined />} 
+            onClick={() => handleViewWord(record)}
+          >
+            查看详情
+          </Button>
+          <Button 
             icon={<EditOutlined />} 
             onClick={() => handleEditWord(record)}
           >
@@ -270,75 +244,16 @@ const WordPage: React.FC = () => {
         pagination={{ pageSize: 10 }}
       />
       
-      <Modal
-        title={editingWord ? '编辑单词' : '添加单词'}
-        open={modalVisible}
-        onOk={handleSaveWord}
-        onCancel={() => setModalVisible(false)}
-        width={600}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <Form.Item
-            name="spelling"
-            label="拼写"
-            rules={[{ required: true, message: '请输入单词拼写' }]}
-          >
-            <Input placeholder="请输入单词拼写" />
-          </Form.Item>
-          
-          <Form.Item
-            name="phonetic"
-            label="发音"
-            rules={[{ required: true, message: '请输入单词发音' }]}
-          >
-            <Input placeholder="请输入单词发音，如：/həˈləʊ/" />
-          </Form.Item>
-          
-          <Form.Item
-            name="partOfSpeechId"
-            label="词性"
-            rules={[{ required: true, message: '请选择词性' }]}
-          >
-            <Select placeholder="请选择词性">
-              {partsOfSpeech.map(pos => (
-                <Option key={pos.id} value={pos.id}>{pos.englishName}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-          
-          <Form.Item
-            name="meaning"
-            label="含义"
-            rules={[{ required: true, message: '请输入单词含义' }]}
-          >
-            <Input.TextArea placeholder="请输入单词含义" rows={2} />
-          </Form.Item>
-          
-          <Form.Item
-            name="difficultyLevel"
-            label="难度"
-            rules={[{ required: true, message: '请选择难度' }]}
-          >
-            <Select placeholder="请选择难度">
-              {difficultyLevelConfigs.map(config => (
-                <Option key={config.value} value={config.value}>
-                  <span style={{ color: config.color }}>{config.label}</span>
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          
-          <Form.Item
-            name="example"
-            label="示例"
-          >
-            <Input.TextArea placeholder="请输入示例句子" rows={3} />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <WordDetailDrawer
+        visible={drawerVisible}
+        mode={drawerMode}
+        wordId={editingWord?.id}
+        onClose={handleCloseDrawer}
+        onSuccess={() => {
+          fetchWords();
+          handleCloseDrawer();
+        }}
+      />
     </div>
   );
 };

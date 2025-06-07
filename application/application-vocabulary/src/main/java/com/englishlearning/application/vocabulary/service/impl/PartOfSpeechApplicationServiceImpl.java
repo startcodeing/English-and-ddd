@@ -51,16 +51,16 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
 
     @Transactional
     @Override
-    public PartOfSpeechDTO updatePartOfSpeech(PartOfSpeechDTO dto) {
+    public PartOfSpeechDTO updatePartOfSpeech(String id,PartOfSpeechDTO dto) {
         UpdatePartOfSpeechDTO updatePartOfSpeechDTO = UpdatePartOfSpeechDTO.builder()
                 .englishName(dto.getEnglishName())
                 .chineseMeaning(dto.getChineseMeaning())
                 .usageSummary(dto.getUsageSummary())
                 .commonPhrases(dto.getCommonPhrases())
-                .id(dto.getId())
+                .id(id)
                 .build();
         updatePartOfSpeechDTO.validate();
-        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(updatePartOfSpeechDTO.getId())
+        PartOfSpeech partOfSpeech = partOfSpeechRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("词性不存在: " + updatePartOfSpeechDTO.getId()));
 
         partOfSpeech.update(updatePartOfSpeechDTO);

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>单词管理页面</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 18px;
+      margin: 20px 0 10px;
+      border-left: 4px solid #409eff;
+      padding-left: 8px;
+    }
+    .word-info {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+    .word-info .field {
+      flex: 1;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    .field label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .pos-card {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      background: #fafafa;
+      position: relative;
+    }
+    .pos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .pos-header h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .tag-list, .sentence-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .tag, .sentence {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .tag {
+      background: #ecf5ff;
+      color: #409eff;
+    }
+    .sentence {
+      background: #f0f9eb;
+      color: #67c23a;
+    }
+    .edit-btn {
+      font-size: 13px;
+      color: #409eff;
+      cursor: pointer;
+    }
+    .add-btn {
+      font-size: 14px;
+      background: #409eff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .add-btn:hover {
+      background: #66b1ff;
+    }
+    .edit-btn.save-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #409eff;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .edit-btn.save-btn:hover {
+      background: #66b1ff;
+    }
+
+    .pos-card.editing {
+      background-color: #fffef0;
+      border-color: #e6a23c;
+    }
+    .pos-card.new {
+      background-color: #f0f9ff;
+      border-color: #409eff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>单词详情</h2>
+
+    <!-- 基本信息 -->
+    <div class="section-title">基本信息</div>
+    <div class="word-info">
+      <div class="field">
+        <label>拼写</label>
+        <input type="text" value="happy" />
+      </div>
+      <div class="field">
+        <label>音标</label>
+        <input type="text" value="/ˈhæpi/" />
+      </div>
+      <div class="field">
+        <label>难度</label>
+        <input type="text" value="3" />
+      </div>
+    </div>
+    <button class="add-btn">保存基本信息</button>
+
+    <!-- 词性列表 -->
+    <div class="section-title">词性列表</div>
+
+    <!-- 展示状态 -->
+    <div class="pos-card">
+      <div class="pos-header">
+        <h3>形容词 (adj)</h3>
+        <span class="edit-btn">✎ 编辑</span>
+      </div>
+      <div class="field">
+        <label>中文含义</label>
+        <div>高兴的，快乐的</div>
+      </div>
+      <div class="field">
+        <label>近义词：</label>
+        <div class="tag-list">
+          <span class="tag">joyful</span>
+          <span class="tag">glad</span>
+          <span class="tag">cheerful</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>反义词：</label>
+        <div class="tag-list">
+          <span class="tag">sad</span>
+          <span class="tag">unhappy</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>例句：</label>
+        <div class="sentence-list">
+          <span class="sentence">He is a happy child.</span>
+          <span class="sentence">She looks happy today.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑状态 -->
+    <div class="pos-card editing">
+      <div class="pos-header">
+        <h3>副词 (adv)</h3>
+        <span class="edit-btn">✔ 保存</span>
+      </div>
+      <div class="field">
+        <label>中文含义</label>
+        <input type="text" value="快乐地，高兴地"/>
+      </div>
+      <div class="field">
+        <label>近义词</label>
+        <input type="text" value="happily" placeholder="多个用逗号分隔"/>
+      </div>
+      <div class="field">
+        <label>反义词</label>
+        <input type="text" value="" placeholder="多个用逗号分隔"/>
+      </div>
+      <div class="field">
+        <label>例句</label>
+        <textarea rows="3">They lived happily ever after.</textarea>
+      </div>
+    </div>
+
+    <!-- 新增状态 -->
+    <div class="pos-card new">
+      <div class="pos-header">
+        <h3>新增词性</h3>
+      </div>
+      <span class="edit-btn save-btn">✔ 保存</span>
+      <div class="field">
+        <label>词性</label>
+        <input type="text" placeholder="如 noun, verb, adj 等"/>
+      </div>
+      <div class="field">
+        <label>中文含义</label>
+        <input type="text" placeholder="请输入中文释义"/>
+      </div>
+      <div class="field">
+        <label>近义词</label>
+        <input type="text" placeholder="多个用逗号分隔"/>
+      </div>
+      <div class="field">
+        <label>反义词</label>
+        <input type="text" placeholder="多个用逗号分隔"/>
+      </div>
+      <div class="field">
+        <label>例句</label>
+        <textarea rows="3" placeholder="多个例句可换行填写"></textarea>
+      </div>
+    </div>
+
+    <button class="add-btn">+ 添加新词性</button>
+  </div>
+</body>
+</html>

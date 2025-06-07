@@ -33,16 +33,16 @@ public class WordController {
     /**
      * 更新单词
      */
-    @PutMapping()
-    public Result<WordDTO> updateWord(@Valid @RequestBody WordDTO dto) {
-        return Result.success(wordService.updateWord(dto));
+    @PutMapping("/{id}")
+    public Result<WordDTO> updateWord(@PathVariable String id,@Valid @RequestBody WordDTO dto) {
+        return Result.success(wordService.updateWord(id,dto));
     }
 
 
     /**
      * 添加词性
      */
-    @PostMapping("/addWordMeaning")
+    @PostMapping("/wordMeaning")
     public Result<WordDTO> addWordMeaning(@RequestBody WordMeaningDTO dto) {
         return Result.success(wordService.addWordMeaning(dto));
     }
@@ -50,9 +50,9 @@ public class WordController {
     /**
      * 添加词性
      */
-    @PostMapping("/deleteWordMeaning")
-    public Result<WordDTO> deleteWordMeaning(@RequestBody DeleteWordMeaningDTO dto) {
-        return Result.success(wordService.removeWordMeaning(dto.getWordId(),dto.getMeaningId()));
+    @DeleteMapping("/{wordId}/wordMeaning/{wordMeaningId}")
+    public Result<WordDTO> deleteWordMeaning(@PathVariable String wordId, @PathVariable String wordMeaningId) {
+        return Result.success(wordService.removeWordMeaning(wordId,wordMeaningId));
     }
 
     /**

@@ -20,7 +20,7 @@ public interface WordApplicationService {
     /**
      * 更新单词
      */
-    WordDTO updateWord(WordDTO dto);
+    WordDTO updateWord(String id,WordDTO dto);
 
     /**
      * 添加词性

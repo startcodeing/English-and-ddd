@@ -1,16 +1,13 @@
 package com.englishlearning.application.content.mapper;
 
 import com.englishlearning.application.content.dto.ArticleDTO;
-import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.domain.content.model.entity.Article;
-import org.mapstruct.Mapper;
 
 import java.util.List;
 
 /**
  * 文章实体与DTO映射接口
  */
-@Mapper(componentModel = "spring", uses = {SentenceMapper.class, WordMapper.class})
 public interface ArticleMapper {
     
 
@@ -33,4 +30,4 @@ public interface ArticleMapper {
      * DTO列表转实体列表
      */
     List<Article> toEntityList(List<ArticleDTO> dtoList);
-} 
+}
