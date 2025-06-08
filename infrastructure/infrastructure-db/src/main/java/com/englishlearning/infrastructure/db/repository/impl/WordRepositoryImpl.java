@@ -76,7 +76,7 @@ public class WordRepositoryImpl implements WordRepository {
         // 设置词义的时间戳和关联关系
         if (wordPO.getMeanings() != null) {
             for (WordMeaningPO meaningPO : wordPO.getMeanings()) {
-                meaningPO.setWordId(wordId);
+                meaningPO.setWord(wordPO);
                 if (meaningPO.getCreatedAt() == null) {
                     meaningPO.setCreatedAt(now);
                 }
@@ -112,8 +112,8 @@ public class WordRepositoryImpl implements WordRepository {
         // 获取这些词义对应的单词ID
         List<String> wordIds = new ArrayList<>();
         for (WordMeaningPO meaningPO : meaningPOs) {
-            if (!wordIds.contains(meaningPO.getWordId())) {
-                wordIds.add(meaningPO.getWordId());
+            if (!wordIds.contains(meaningPO.getWord().getId())) {
+                wordIds.add(meaningPO.getWord().getId());
             }
         }
         
@@ -130,8 +130,8 @@ public class WordRepositoryImpl implements WordRepository {
         // 获取这些词义对应的单词ID
         List<String> wordIds = new ArrayList<>();
         for (WordMeaningPO meaningPO : meaningPOs) {
-            if (!wordIds.contains(meaningPO.getWordId())) {
-                wordIds.add(meaningPO.getWordId());
+            if (!wordIds.contains(meaningPO.getWord().getId())) {
+                wordIds.add(meaningPO.getWord().getId());
             }
         }
         

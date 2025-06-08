@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Select, Form, message, Space, Card, Tag, Typography } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getWordById, createWord, updateWord, addWordMeaning } from '../../../api';
+import { getWordById, createWord, updateWord, addWordMeaning, getAllWords } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
 import { Word, WordMeaning, PartOfSpeech } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
@@ -12,6 +12,64 @@ import './WordDetail.css';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Title, Text } = Typography;
+
+// 同义词/反义词选择组件
+interface WordMeaningSelectProps {
+  value?: string[];
+  onChange?: (value: string[]) => void;
+  placeholder?: string;
+  allWords: Word[];
+  partsOfSpeech: PartOfSpeech[];
+}
+
+const WordMeaningSelect: React.FC<WordMeaningSelectProps> = ({ 
+  value = [], 
+  onChange, 
+  placeholder, 
+  allWords, 
+  partsOfSpeech 
+}) => {
+  const getPartOfSpeechName = (partOfSpeechId: string) => {
+    const pos = partsOfSpeech.find(p => p.id === partOfSpeechId);
+    return pos ? `${pos.englishName}` : partOfSpeechId;
+  };
+  
+  // 构建所有可选项
+  const options = allWords.flatMap(word => 
+    word.meanings?.map(meaning => ({
+      value: `${word.spelling}-${getPartOfSpeechName(meaning.partOfSpeechId)}`,
+      label: `${word.spelling} (${getPartOfSpeechName(meaning.partOfSpeechId)}) - ${meaning.chineseMeaning}`,
+      word: word.spelling,
+      partOfSpeech: getPartOfSpeechName(meaning.partOfSpeechId)
+    })) || []
+  );
+  
+  const handleChange = (selectedValues: string[]) => {
+    onChange?.(selectedValues);
+  };
+  
+  return (
+    <Select
+      mode="multiple"
+      placeholder={placeholder}
+      value={value}
+      onChange={handleChange}
+      showSearch
+      filterOption={(input, option) =>
+        option?.label?.toString().toLowerCase().includes(input.toLowerCase()) || false
+      }
+      style={{ width: '100%' }}
+      maxTagCount={3}
+      maxTagTextLength={20}
+    >
+      {options.map((option, index) => (
+        <Option key={`${option.value}-${index}`} value={option.value} label={option.label}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
+  );
+};
 
 interface WordDetailProps {
   mode: 'create' | 'edit';
@@ -25,6 +83,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
   // 状态定义
   const [word, setWord] = useState<Word | null>(null);
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
+  const [allWords, setAllWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [editingMeaningId, setEditingMeaningId] = useState<string | null>(null);
   const [showNewMeaning, setShowNewMeaning] = useState<boolean>(false);
@@ -39,6 +98,17 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
     } catch (error) {
       message.error('获取词性列表失败');
       console.error('获取词性列表失败:', error);
+    }
+  };
+
+  // 获取所有单词
+  const fetchAllWords = async () => {
+    try {
+      const response = await getAllWords();
+      setAllWords(response.data);
+    } catch (error) {
+      message.error('获取单词列表失败');
+      console.error('获取单词列表失败:', error);
     }
   };
 
@@ -74,6 +144,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
 
   useEffect(() => {
     fetchPartsOfSpeech();
+    fetchAllWords();
     fetchWordDetail();
   }, [id, mode]);
 
@@ -105,6 +176,25 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
     }
   };
 
+  // 从选择的值中提取词性ID
+  const extractMeaningIds = (selectedValues: string[]) => {
+    return selectedValues.map(value => {
+      // 解析格式: "单词-词性"
+      const [wordSpelling, partOfSpeechName] = value.split('-');
+      
+      // 找到对应的单词和词性
+      const targetWord = allWords.find(w => w.spelling === wordSpelling);
+      if (!targetWord) return null;
+      
+      const targetMeaning = targetWord.meanings?.find(m => {
+        const pos = partsOfSpeech.find(p => p.id === m.partOfSpeechId);
+        return pos?.englishName === partOfSpeechName;
+      });
+      
+      return targetMeaning?.id;
+    }).filter(id => id !== null) as string[];
+  };
+
   // 添加新词性
   const handleAddMeaning = async () => {
     try {
@@ -115,16 +205,28 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
         return;
       }
 
+      // 提取同义词和反义词的词性ID
+      const synonymWordMeaningIds = values.synonyms ? extractMeaningIds(values.synonyms) : [];
+      const antonymWordMeaningIds = values.antonyms ? extractMeaningIds(values.antonyms) : [];
+
       const newMeaning: Omit<WordMeaning, 'id'> = {
         wordId: word.id,
         partOfSpeechId: values.partOfSpeechId,
         chineseMeaning: values.chineseMeaning,
+        synonymWordMeaningIds,
+        antonymWordMeaningIds,
         exampleSentences: values.exampleSentences ? [
           {
             id: '',
             meaningId: '',
             englishSentence: values.exampleSentences,
             chineseSentence: values.chineseTranslation || ''
+          }
+        ] : [],
+        sentences: values.exampleSentences ? [
+          {
+            englishContent: values.exampleSentences,
+            chineseMeaning: values.chineseTranslation || ''
           }
         ] : [],
         synonyms: values.synonyms ? values.synonyms.split(',').map((syn: string) => ({
@@ -172,17 +274,29 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
       
       if (!word || !editingMeaningId) return;
 
+      // 提取同义词和反义词的词性ID
+      const synonymWordMeaningIds = values.synonyms ? extractMeaningIds(values.synonyms) : [];
+      const antonymWordMeaningIds = values.antonyms ? extractMeaningIds(values.antonyms) : [];
+
       const meaningToUpdate: Omit<WordMeaning, 'createdAt' | 'updatedAt'> = {
         id: editingMeaningId,
         wordId: word.id,
         partOfSpeechId: values.partOfSpeechId,
         chineseMeaning: values.chineseMeaning,
+        synonymWordMeaningIds,
+        antonymWordMeaningIds,
         exampleSentences: values.exampleSentences ? [
           {
             id: '',
             meaningId: editingMeaningId,
             englishSentence: values.exampleSentences,
             chineseSentence: values.chineseTranslation || ''
+          }
+        ] : [],
+        sentences: values.exampleSentences ? [
+          {
+            englishContent: values.exampleSentences,
+            chineseMeaning: values.chineseTranslation || ''
           }
         ] : [],
         synonyms: values.synonyms ? values.synonyms.split(',').map((syn: string) => ({
@@ -303,9 +417,9 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
         </div>
       </Card>
 
-      {/* 词性列表 */}
+      {/* 词义信息 */}
       <div className="meanings-section">
-        <div className="section-title">词性列表</div>
+        <div className="section-title">词义信息</div>
         
         {word?.meanings.map((meaning) => (
           <Card key={meaning.id} className={`pos-card ${editingMeaningId === meaning.id ? 'editing' : ''}`}>
@@ -369,11 +483,19 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
                 </Form.Item>
                 
                 <Form.Item name="synonyms" label="近义词">
-                  <Input placeholder="多个用逗号分隔" />
+                  <WordMeaningSelect 
+                    allWords={allWords} 
+                    partsOfSpeech={partsOfSpeech}
+                    placeholder="选择近义词"
+                  />
                 </Form.Item>
                 
                 <Form.Item name="antonyms" label="反义词">
-                  <Input placeholder="多个用逗号分隔" />
+                  <WordMeaningSelect 
+                    allWords={allWords} 
+                    partsOfSpeech={partsOfSpeech}
+                    placeholder="选择反义词"
+                  />
                 </Form.Item>
                 
                 <Form.Item name="exampleSentences" label="例句">
@@ -468,11 +590,19 @@ const WordDetail: React.FC<WordDetailProps> = ({ mode }) => {
               </Form.Item>
               
               <Form.Item name="synonyms" label="近义词">
-                <Input placeholder="多个用逗号分隔" />
+                <WordMeaningSelect 
+                  allWords={allWords} 
+                  partsOfSpeech={partsOfSpeech}
+                  placeholder="选择近义词"
+                />
               </Form.Item>
               
               <Form.Item name="antonyms" label="反义词">
-                <Input placeholder="多个用逗号分隔" />
+                <WordMeaningSelect 
+                  allWords={allWords} 
+                  partsOfSpeech={partsOfSpeech}
+                  placeholder="选择反义词"
+                />
               </Form.Item>
               
               <Form.Item name="exampleSentences" label="例句">

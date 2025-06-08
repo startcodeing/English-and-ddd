@@ -55,12 +55,12 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         Word word = wordRepository.findById(command.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getWordId()));
         String wordMeaningId = StringUtils.hasText(command.getId()) ? command.getId() : null;
+        List<String> sentenceIdList = sentenceProvider.addSentence(command.getSentences());
         WordMeaning meaning = WordMeaning.builder()
                 .id(wordMeaningId)
                 .partOfSpeechId(command.getPartOfSpeechId())
                 .chineseMeaning(command.getChineseMeaning())
-                .exampleSentenceIds(CollectionUtils.isEmpty(command.getExampleSentenceIds()) ?
-                        new ArrayList<>() : command.getExampleSentenceIds())
+                .exampleSentenceIds(sentenceIdList)
                 .synonymWordMeaningIds(CollectionUtils.isEmpty(command.getSynonymWordMeaningIds()) ?
                         new ArrayList<>() : command.getSynonymWordMeaningIds())
                 .antonymWordMeaningIds(CollectionUtils.isEmpty(command.getAntonymWordMeaningIds()) ?

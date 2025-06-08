@@ -1,6 +1,5 @@
 package com.englishlearning.application.content.dto;
 
-import com.englishlearning.application.vocabulary.dto.WordDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -26,8 +26,9 @@ public class WordMeaningAntonymPO {
     @Column(name = "created_at")
     private Long createdAt;
 
-    @Column(name = "meaning_id")
-    private String meaningId;
+    @ManyToOne
+    @JoinColumn(name = "meaning_id")
+    private WordMeaningPO wordMeaning;
 
     @Column(name = "antonym_meaning_id")
     private String antonymMeaningId;

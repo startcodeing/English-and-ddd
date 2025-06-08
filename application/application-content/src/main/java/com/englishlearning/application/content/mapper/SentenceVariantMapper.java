@@ -2,15 +2,12 @@ package com.englishlearning.application.content.mapper;
 
 import com.englishlearning.application.content.dto.SentenceVariantDTO;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 /**
  * 句子变体实体与DTO映射接口
  */
-@Mapper(componentModel = "spring")
 public interface SentenceVariantMapper {
     
 
@@ -33,4 +30,4 @@ public interface SentenceVariantMapper {
      * DTO列表转实体列表
      */
     List<SentenceVariant> toEntityList(List<SentenceVariantDTO> dtoList);
-} 
+}

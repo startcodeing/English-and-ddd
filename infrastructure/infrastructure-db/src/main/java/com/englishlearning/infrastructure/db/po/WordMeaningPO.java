@@ -1,6 +1,7 @@
 package com.englishlearning.infrastructure.db.po;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "vocabulary_word_meaning")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class WordMeaningPO {
     
     /**
@@ -26,8 +28,9 @@ public class WordMeaningPO {
     /**
      * 单词ID
      */
-    @Column(name = "word_id", nullable = false)
-    private String wordId;
+    @ManyToOne
+    @JoinColumn(name = "word_id")
+    private WordPO word;
     
     /**
      * 词性ID
@@ -44,22 +47,19 @@ public class WordMeaningPO {
     /**
      * 例句关联，通过关联表实现
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "wordMeaning", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WordMeaningSentencePO> exampleSentences;
     
     /**
      * 同义词关联，通过关联表实现
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "wordMeaning",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WordMeaningSynonymPO> synonyms;
     
     /**
      * 反义词关联，通过关联表实现
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "meaning_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "wordMeaning",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WordMeaningAntonymPO> antonyms;
     
     /**

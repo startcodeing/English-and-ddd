@@ -1,10 +1,7 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
-import com.englishlearning.infrastructure.db.po.WordMeaningAntonymPO;
-import com.englishlearning.infrastructure.db.po.WordMeaningPO;
-import com.englishlearning.infrastructure.db.po.WordMeaningSentencePO;
-import com.englishlearning.infrastructure.db.po.WordMeaningSynonymPO;
+import com.englishlearning.infrastructure.db.po.*;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -58,7 +55,7 @@ public interface WordMeaningPoMapper {
         
         return sentenceIds.stream()
                 .map(sentenceId -> WordMeaningSentencePO.builder()
-                        .meaningId(wordMeaningId)
+                        .wordMeaning(WordMeaningPO.builder().id(wordMeaningId).build())
                         .sentenceId(sentenceId)
                         .createdAt(System.currentTimeMillis())
                         .build())
@@ -91,7 +88,7 @@ public interface WordMeaningPoMapper {
         return synonymIds.stream()
                 .map(synonymId -> WordMeaningSynonymPO.builder()
                         .synonymMeaningId(synonymId)
-                        .meaningId(wordMeaningId)
+                        .wordMeaning(WordMeaningPO.builder().id(wordMeaningId).build())
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());
@@ -123,7 +120,7 @@ public interface WordMeaningPoMapper {
         return antonymIds.stream()
                 .map(antonymId -> WordMeaningAntonymPO.builder()
                         .antonymMeaningId(antonymId)
-                        .meaningId(wordMeaningId)
+                        .wordMeaning(WordMeaningPO.builder().id(wordMeaningId).build())
                         .createdAt(System.currentTimeMillis())
                         .build())
                 .collect(Collectors.toList());

@@ -2,7 +2,6 @@ package com.englishlearning.domain.content.model.entity;
 
 import com.englishlearning.domain.content.dto.CreateSentenceDomainDTO;
 import com.englishlearning.domain.content.dto.UpdateSentenceDTO;
-import com.englishlearning.domain.vocabulary.model.entity.Word;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -26,6 +26,7 @@ public interface SentencePoMapper {
     /**
      * Entity转PO
      */
+    @Mapping(source = "unfamiliarWords",target = "unfamiliarWords")
     SentencePO toPo(Sentence entity);
     
     /**

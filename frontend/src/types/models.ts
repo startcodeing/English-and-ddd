@@ -53,9 +53,15 @@ export interface WordMeaning extends BaseEntity {
   partOfSpeechId: string;
   partOfSpeech?: PartOfSpeech;
   chineseMeaning: string;
+  synonymWordMeaningIds?: string[];
+  antonymWordMeaningIds?: string[];
   exampleSentences?: WordMeaningSentence[];
   synonyms?: WordMeaningSynonym[];
   antonyms?: WordMeaningAntonym[];
+  sentences?: Array<{
+    englishContent: string;
+    chineseMeaning: string;
+  }>;
   createdAt?: number;
   updatedAt?: number;
 }

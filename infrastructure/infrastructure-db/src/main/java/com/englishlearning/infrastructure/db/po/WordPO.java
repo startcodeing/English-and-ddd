@@ -50,8 +50,7 @@ public class WordPO {
     /**
      * 单词词义列表
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "word_id")
+    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<WordMeaningPO> meanings = new ArrayList<>();
     
     /**

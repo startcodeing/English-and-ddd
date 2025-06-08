@@ -35,7 +35,7 @@ public interface WordMeaningJpaRepository extends JpaRepository<WordMeaningPO, S
      */
     @Modifying
     @Transactional
-    @Query("DELETE FROM WordMeaningPO wm WHERE wm.wordId = :wordId")
+    @Query("DELETE FROM WordMeaningPO wm WHERE wm.word.id = :wordId")
     void deleteByWordId(String wordId);
 
 

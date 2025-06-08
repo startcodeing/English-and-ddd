@@ -23,8 +23,9 @@ public class WordMeaningSynonymPO {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "meaning_id")
-    private String meaningId;
+    @ManyToOne
+    @JoinColumn(name = "meaning_id")
+    private WordMeaningPO wordMeaning;
 
     @Column(name = "synonym_meaning_id")
     private String synonymMeaningId;

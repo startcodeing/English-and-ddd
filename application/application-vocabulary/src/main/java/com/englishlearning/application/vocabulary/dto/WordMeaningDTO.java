@@ -48,7 +48,13 @@ public class WordMeaningDTO {
     private List<String> antonymWordMeaningIds;
     
     /**
-     * 例句列表
+     * 例句主键列表
      */
     private List<String> exampleSentenceIds;
+
+
+    /**
+     * 新增例句列表
+     */
+    private List<AddWordMeaningExampleSentenceDTO.AddSentenceDTO> sentences;
 }
