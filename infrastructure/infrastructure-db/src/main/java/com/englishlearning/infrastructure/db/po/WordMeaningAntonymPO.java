@@ -30,6 +30,9 @@ public class WordMeaningAntonymPO {
     @JoinColumn(name = "meaning_id")
     private WordMeaningPO wordMeaning;
 
+    @Column(name = "antonym_word_id")
+    private String antonymWordId;
+
     @Column(name = "antonym_meaning_id")
     private String antonymMeaningId;
 }

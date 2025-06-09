@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 单词实体
@@ -119,34 +118,6 @@ public class Word {
         if (wordMeaningId == null || wordMeaningId.trim().isEmpty() || this.meanings == null) {
             return;
         }
-        
-        // 在删除词义之前，先清理该词义的所有关联关系
-        Optional<WordMeaning> meaningToRemove = this.findMeaningByMeaningId(wordMeaningId);
-        if (meaningToRemove.isPresent()) {
-            WordMeaning meaning = meaningToRemove.get();
-            
-            // 清理该词义的所有同义词关联
-            if (meaning.getSynonymWordMeaningIds() != null) {
-                meaning.getSynonymWordMeaningIds().clear();
-            }
-            
-            // 清理该词义的所有反义词关联
-            if (meaning.getAntonymWordMeaningIds() != null) {
-                meaning.getAntonymWordMeaningIds().clear();
-            }
-            
-            // 清理其他词义中对该词义的同义词引用
-            this.meanings.forEach(otherMeaning -> {
-                if (otherMeaning.getSynonymWordMeaningIds() != null) {
-                    otherMeaning.getSynonymWordMeaningIds().remove(wordMeaningId);
-                }
-                if (otherMeaning.getAntonymWordMeaningIds() != null) {
-                    otherMeaning.getAntonymWordMeaningIds().remove(wordMeaningId);
-                }
-            });
-        }
-        
-        // 最后删除词义本身
         this.meanings.removeIf(m -> m.getId().equals(wordMeaningId));
     }
 
@@ -154,21 +125,21 @@ public class Word {
     /**
      * 添加同义词到指定词义ID的词义中
      */
-    public void addSynonym(String wordMeaningId,String synonymMeaningId) {
+    public void addSynonym(String wordMeaningId,String synonymWordId,String synonymMeaningId) {
         this.assertMeaningExists(wordMeaningId);
         
         Optional<WordMeaning> targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId);
-        targetWordMeaning.ifPresent(wordMeaning -> wordMeaning.addSynonym(synonymMeaningId));
+        targetWordMeaning.ifPresent(wordMeaning -> wordMeaning.addSynonym(synonymWordId,synonymMeaningId));
     }
 
     
     /**
      * 添加反义词到指定词义ID的词义中
      */
-    public void addAntonym(String wordMeaningId, String antonymMeaningId) {
+    public void addAntonym(String wordMeaningId,String antonymWordId, String antonymMeaningId) {
         this.assertMeaningExists(wordMeaningId);
         Optional<WordMeaning> targetWordMeaning = this.findMeaningByMeaningId(wordMeaningId);
-        targetWordMeaning.ifPresent(wordMeaning -> {wordMeaning.addAntonym(antonymMeaningId);});
+        targetWordMeaning.ifPresent(wordMeaning -> {wordMeaning.addAntonym(antonymWordId,antonymMeaningId);});
     }
 
     

@@ -1,6 +1,7 @@
 package com.englishlearning.application.vocabulary.mapper;
 
 import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
+import com.englishlearning.application.vocabulary.dto.WordMeaningDetailDTO;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

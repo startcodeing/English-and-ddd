@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddWordMeaningSynonymDTO {
+public class SynonymDTO {
 
     @NotEmpty(message = "'wordId'不能为空")
     String wordId;

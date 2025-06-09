@@ -5,19 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-/**
- * 删除词性例句DTO
- */
-
-@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteWordMeaningSentenceDTO {
+@Builder
+public class SynonymDetailDTO {
 
-    private String wordId;
-    private String wordMeaningId;
-    private List<String> sentenceIdList;
+    private String synonymSpell;
+    private String synonymWordId;
+    private String synonymMeaningId;
 }

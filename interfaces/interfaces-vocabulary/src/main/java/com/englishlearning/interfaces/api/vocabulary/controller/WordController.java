@@ -59,7 +59,7 @@ public class WordController {
      * 添加词性例句
      */
     @PostMapping("/wordMeaning/exampleSentence")
-    public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody AddWordMeaningExampleSentenceDTO dto) {
+    public Result<WordDTO> addWordMeaningExampleSentence(@RequestBody ExampleSentenceDTO dto) {
         return Result.success(wordService.addExampleSentence(dto));
     }
 
@@ -67,7 +67,7 @@ public class WordController {
      * 添加词性同义词
      */
     @PostMapping("/wordMeaning/addSynonym")
-    public Result<WordMeaningDTO> addWordMeaningSynonym(@RequestBody AddWordMeaningSynonymDTO synonymDTO) {
+    public Result<WordMeaningDTO> addWordMeaningSynonym(@RequestBody SynonymDTO synonymDTO) {
         return Result.success(wordService.addSynonym(synonymDTO.getWordId(),synonymDTO.getWordMeaningId(),synonymDTO.getSynonymWordId(),synonymDTO.getSynonymWordMeaningId()));
     }
 
@@ -75,7 +75,7 @@ public class WordController {
      * 添加词性反义词
      */
     @PostMapping("/wordMeaning/addAntonym")
-    public Result<WordMeaningDTO> addWordMeaningAntonym(@RequestBody AddWordMeaningAntonymDTO synonymDTO) {
+    public Result<WordMeaningDTO> addWordMeaningAntonym(@RequestBody AntonymDTO synonymDTO) {
         return Result.success(wordService.addAntonym(synonymDTO.getWordId(), synonymDTO.getWordMeaningId(),synonymDTO.getAntonymWordId(),synonymDTO.getAntonymMeaningId()));
     }
 

@@ -1,5 +1,7 @@
 package com.englishlearning.application.vocabulary.dto;
 
+import com.englishlearning.domain.vocabulary.model.valueobject.AntonymInfo;
+import com.englishlearning.domain.vocabulary.model.valueobject.SynonymInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,12 +42,12 @@ public class WordMeaningDTO {
     /**
      * 同义词列表
      */
-    private List<String> synonymWordMeaningIds;
+    private List<SynonymInfo> synonymWordMeaningIds;
     
     /**
      * 反义词列表
      */
-    private List<String> antonymWordMeaningIds;
+    private List<AntonymInfo> antonymWordMeaningIds;
     
     /**
      * 例句主键列表
@@ -56,5 +58,5 @@ public class WordMeaningDTO {
     /**
      * 新增例句列表
      */
-    private List<AddWordMeaningExampleSentenceDTO.AddSentenceDTO> sentences;
+    private List<ExampleSentenceDTO.SentenceDTO> sentences;
 }

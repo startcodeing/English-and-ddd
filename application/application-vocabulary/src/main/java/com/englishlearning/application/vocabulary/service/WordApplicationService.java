@@ -1,9 +1,6 @@
 package com.englishlearning.application.vocabulary.service;
 
-import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
-import com.englishlearning.application.vocabulary.dto.DeleteWordMeaningSentenceDTO;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
+import com.englishlearning.application.vocabulary.dto.*;
 
 import java.util.List;
 
@@ -35,7 +32,7 @@ public interface WordApplicationService {
     /**
      * 添加词性例句
      */
-    WordDTO addExampleSentence(AddWordMeaningExampleSentenceDTO addSentenceDto);
+    WordDTO addExampleSentence(ExampleSentenceDTO addSentenceDto);
 
     /**
      * 添加词性同义词
@@ -58,9 +55,14 @@ public interface WordApplicationService {
     void removeAntonym(String wordId,String meaningId, String synonymId);
     
     /**
-     * 获取单词详情
+     * 获取单词信息
      */
     WordDTO getWord(String id);
+
+    /**
+     * 获取单词详情
+     */
+    WordDetailDTO getWordDetail(String id);
     
     /**
      * 根据拼写查找单词
@@ -90,5 +92,5 @@ public interface WordApplicationService {
     /**
      * 删除词性例句
      */
-    WordMeaningDTO removeExampleSentence(DeleteWordMeaningSentenceDTO deleteWordMeaningSentenceDTO);
+    WordMeaningDTO removeExampleSentence(DeleteExampleSentenceDTO deleteWordMeaningSentenceDTO);
 }

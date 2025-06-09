@@ -1,5 +1,7 @@
 package com.englishlearning.domain.vocabulary.model.entity;
 
+import com.englishlearning.domain.vocabulary.model.valueobject.AntonymInfo;
+import com.englishlearning.domain.vocabulary.model.valueobject.SynonymInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,12 +44,12 @@ public class WordMeaning {
     /**
      * 同义词列表
      */
-    private List<String> synonymWordMeaningIds;
+    private List<SynonymInfo> synonymWordMeaningIds;
     
     /**
      * 反义词列表
      */
-    private List<String> antonymWordMeaningIds;
+    private List<AntonymInfo> antonymWordMeaningIds;
     
     /**
      * 例句ID列表
@@ -57,7 +59,7 @@ public class WordMeaning {
     /**
      * 添加同义词
      */
-    public void addSynonym(String synonymMeaningId) {
+    public void addSynonym(String wordId,String synonymMeaningId) {
         if (synonymMeaningId == null) {
             return;
         }
@@ -69,26 +71,29 @@ public class WordMeaning {
             this.synonymWordMeaningIds = new ArrayList<>();
         }
 
-        if (!this.synonymWordMeaningIds.contains(synonymMeaningId)) {
-            this.synonymWordMeaningIds.add(synonymMeaningId);
+        SynonymInfo synonymInfo = SynonymInfo.builder().synonymWordId(wordId).synonymMeaningId(synonymMeaningId).build();
+        if (!this.synonymWordMeaningIds.contains(synonymInfo)) {
+            this.synonymWordMeaningIds.add(synonymInfo);
         }
+
     }
     
     /**
      * 添加反义词
      */
-    public void addAntonym(String antonymMeaingId) {
-        if (antonymMeaingId == null) {
+    public void addAntonym(String antonymWordId,String antonymMeaningId) {
+        if (antonymMeaningId == null) {
             return;
         }
-        if (this.id.equals(antonymMeaingId)) {
+        if (this.id.equals(antonymMeaningId)) {
             return;
         }
         if (this.antonymWordMeaningIds == null) {
             this.antonymWordMeaningIds = new ArrayList<>();
         }
-        if (!this.antonymWordMeaningIds.contains(antonymMeaingId)) {
-            this.antonymWordMeaningIds.add(antonymMeaingId);
+        SynonymInfo synonymInfo = SynonymInfo.builder().synonymWordId(antonymWordId).synonymMeaningId(antonymMeaningId).build();
+        if (!this.synonymWordMeaningIds.contains(synonymInfo)) {
+            this.synonymWordMeaningIds.add(synonymInfo);
         }
     }
     

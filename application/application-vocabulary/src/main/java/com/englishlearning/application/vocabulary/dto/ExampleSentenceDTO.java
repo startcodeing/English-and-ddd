@@ -14,11 +14,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddWordMeaningExampleSentenceDTO {
+public class ExampleSentenceDTO {
 
     private String wordId;
     private String wordMeaningId;
-    private List<AddSentenceDTO> sentences;
+    private List<SentenceDTO> sentences;
 
 
 
@@ -26,7 +26,7 @@ public class AddWordMeaningExampleSentenceDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class AddSentenceDTO {
+    public static class SentenceDTO {
         private String englishContent;
         private String chineseMeaning;
     }

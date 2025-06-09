@@ -2,7 +2,7 @@ package com.englishlearning.application.content.service.impl;
 
 import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.service.SentenceApplicationService;
-import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
+import com.englishlearning.application.vocabulary.dto.ExampleSentenceDTO;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -22,14 +22,14 @@ public class SentenceProviderImpl implements SentenceProvider {
 
 
     @Override
-    public List<String> addSentence(List<AddWordMeaningExampleSentenceDTO.AddSentenceDTO> sentenceList) {
+    public List<String> addSentence(List<ExampleSentenceDTO.SentenceDTO> sentenceList) {
         if (CollectionUtils.isEmpty(sentenceList)) {
             return List.of();
         }
 
         List<String> sentenceIdList = new ArrayList<>();
         sentenceList.forEach(sentence -> {
-            SentenceDTO sentenceDTO = SentenceDTO.builder()
+            SentenceDTO sentenceDTO = com.englishlearning.application.content.dto.SentenceDTO.builder()
                     .englishContent(sentence.getEnglishContent())
                     .chineseMeaning(sentence.getChineseMeaning())
                     .build();

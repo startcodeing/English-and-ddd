@@ -1,6 +1,8 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
+import com.englishlearning.domain.vocabulary.model.valueobject.AntonymInfo;
+import com.englishlearning.domain.vocabulary.model.valueobject.SynonymInfo;
 import com.englishlearning.infrastructure.db.po.*;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -98,13 +100,15 @@ public interface WordMeaningPoMapper {
      * 将同义词关联PO列表转换为同义词ID列表
      */
     @Named("toSynonymIds")
-    default List<String> toSynonymIds(List<WordMeaningSynonymPO> synonymPOs) {
+    default List<SynonymInfo> toSynonymIds(List<WordMeaningSynonymPO> synonymPOs) {
         if (synonymPOs == null || synonymPOs.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         return synonymPOs.stream()
-                .map(WordMeaningSynonymPO::getSynonymMeaningId)
+                .map(po -> SynonymInfo.builder()
+                        .synonymWordId(po.getSynonymWordId())
+                        .synonymMeaningId(po.getSynonymMeaningId()).build())
                 .collect(Collectors.toList());
     }
     
@@ -130,13 +134,15 @@ public interface WordMeaningPoMapper {
      * 将反义词关联PO列表转换为反义词ID列表
      */
     @Named("toAntonymIds")
-    default List<String> toAntonymIds(List<WordMeaningAntonymPO> antonymPOs) {
+    default List<AntonymInfo> toAntonymIds(List<WordMeaningAntonymPO> antonymPOs) {
         if (antonymPOs == null || antonymPOs.isEmpty()) {
             return new ArrayList<>();
         }
         
         return antonymPOs.stream()
-                .map(WordMeaningAntonymPO::getAntonymMeaningId)
+                .map(po -> AntonymInfo.builder()
+                        .antonymWordId(po.getAntonymWordId())
+                        .antonymMeaningId(po.getAntonymMeaningId()).build())
                 .collect(Collectors.toList());
     }
 }

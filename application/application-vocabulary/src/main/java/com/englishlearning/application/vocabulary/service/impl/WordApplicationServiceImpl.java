@@ -1,9 +1,6 @@
 package com.englishlearning.application.vocabulary.service.impl;
 
-import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
-import com.englishlearning.application.vocabulary.dto.DeleteWordMeaningSentenceDTO;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
-import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
+import com.englishlearning.application.vocabulary.dto.*;
 import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.mapper.WordMeaningMapper;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
@@ -93,7 +90,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      */
     @Transactional
     @Override
-    public WordDTO addExampleSentence(AddWordMeaningExampleSentenceDTO addSentenceDto) {
+    public WordDTO addExampleSentence(ExampleSentenceDTO addSentenceDto) {
         Word word = wordRepository.findById(addSentenceDto.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + addSentenceDto.getWordId()));
 
@@ -115,7 +112,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
      * @return 更新后的单词实体
      */
     @Transactional
-    public WordMeaningDTO removeExampleSentence(DeleteWordMeaningSentenceDTO deleteWordMeaningSentenceDTO) {
+    public WordMeaningDTO removeExampleSentence(DeleteExampleSentenceDTO deleteWordMeaningSentenceDTO) {
         Word word = wordRepository.findById(deleteWordMeaningSentenceDTO.getWordId())
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + deleteWordMeaningSentenceDTO.getWordId()));
 
@@ -150,7 +147,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (meaningOpt.isEmpty()) {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
-        word.addSynonym(meaningOpt.get().getId(), synonymWordMeaningId);
+        word.addSynonym(meaningOpt.get().getId(),synonymWordId,synonymWordMeaningId);
         Word savedWord = wordRepository.save(word);
         return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
@@ -177,7 +174,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (meaningOpt.isEmpty()) {
             throw new IllegalArgumentException("找不到词性为" + wordMeaningId + "的词义");
         }
-        word.addAntonym(meaningOpt.get().getId(), antonymMeaningId);
+        word.addAntonym(meaningOpt.get().getId(), antonymWordId,antonymMeaningId);
         Word savedWord = wordRepository.save(word);
         return savedWord.findMeaningByMeaningId(wordMeaningId).map(wordMeaningMapper::toDTO).orElse(null);
     }
@@ -241,6 +238,18 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     public WordDTO getWord(String id) {
         Optional<Word> optionalWord = wordRepository.findById(id);
         return optionalWord.map(wordMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public WordDetailDTO getWordDetail(String id) {
+        Word word = wordRepository.findById(id).orElseThrow(() -> new RuntimeException("单词不存在"));
+        WordDetailDTO.builder()
+                .id(word.getId())
+                .spelling(word.getSpelling())
+                .phonetic(word.getPhonetic())
+                .difficultyLevel(word.getDifficultyLevel())
+                .build();
+        return null;
     }
 
     @Override

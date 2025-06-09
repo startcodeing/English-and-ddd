@@ -1,6 +1,6 @@
 package com.englishlearning.application.vocabulary.service;
 
-import com.englishlearning.application.vocabulary.dto.AddWordMeaningExampleSentenceDTO;
+import com.englishlearning.application.vocabulary.dto.ExampleSentenceDTO;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface SentenceProvider {
 
-    List<String> addSentence(List<AddWordMeaningExampleSentenceDTO.AddSentenceDTO> sentenceList);
+    List<String> addSentence(List<ExampleSentenceDTO.SentenceDTO> sentenceList);
 }
