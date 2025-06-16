@@ -1,12 +1,13 @@
 package com.englishlearning.domain.vocabulary.model.valueobject;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.util.Objects;
 
 @Builder
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class SynonymInfo {
 
     /**
@@ -19,21 +20,6 @@ public class SynonymInfo {
      */
     String synonymMeaningId;
 
-    /**
-     * 构造函数
-     */
-    public SynonymInfo(String synonymWordId, String synonymMeaningId) {
-        this.synonymWordId = Objects.requireNonNull(synonymWordId, "synonymWordId不能为空");
-        this.synonymMeaningId = Objects.requireNonNull(synonymMeaningId, "synonymMeaningId不能为空");
-    }
-
-    /**
-     * 验证同义词信息的有效性
-     */
-    public boolean isValid() {
-        return synonymWordId != null && !synonymWordId.trim().isEmpty() &&
-                synonymMeaningId != null && !synonymMeaningId.trim().isEmpty();
-    }
 
     @Override
     public boolean equals(Object o) {

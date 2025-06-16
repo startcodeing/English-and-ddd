@@ -1,5 +1,5 @@
 import axios from './axios';
-import { Word, WordMeaning } from '@/types';
+import { Word, WordMeaning, WordDetail } from '@/types';
 
 const BASE_URL = '/api/v1/vocabulary/word';
 
@@ -11,6 +11,11 @@ export const getAllWords = () => {
 // 根据ID获取单词
 export const getWordById = (id: string) => {
   return axios.get<Word>(`${BASE_URL}/${id}`);
+};
+
+// 根据ID获取单词详情
+export const getWordDetail = (id: string) => {
+  return axios.get<WordDetail>(`${BASE_URL}/detail/${id}`);
 };
 
 // 根据拼写查询单词

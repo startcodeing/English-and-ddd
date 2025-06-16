@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Select, Form, message, Space, Card, Tag, Typography, Drawer, Tabs } from 'antd';
 import { SaveOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getWordById, createWord, updateWord, deleteWordMeaning, addWordMeaning, getAllWords } from '../../../api';
+import {
+  getWordById,
+  getWordDetail,
+  createWord,
+  updateWord,
+  deleteWordMeaning,
+  addWordMeaning,
+  getAllWords
+} from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
-import { Word, WordMeaning, PartOfSpeech } from '../../../types';
+import { Word, WordMeaning, WordDetail, PartOfSpeech, SynonymInfo, AntonymInfo } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import { DifficultyLevel } from '../../../types';
 import './WordDetailDrawer.css';
@@ -259,8 +267,29 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
     setLoading(true);
     try {
-      const response = await getWordById(wordId);
-      setWord(response.data);
+      const response = await getWordDetail(wordId);
+      
+      // 将WordDetail转换为Word格式
+      const wordData: Word = {
+        id: response.data.id,
+        spelling: response.data.spelling,
+        phonetic: response.data.phonetic,
+        difficultyLevel: response.data.difficultyLevel,
+        meanings: response.data.meanings.map(meaning => ({
+          id: meaning.id,
+          wordId: response.data.id,
+          partOfSpeechId: meaning.partOfSpeech,
+          chineseMeaning: meaning.chineseMeaning,
+          exampleSentences: meaning.exampleSentences?.map(sentence => ({
+            id: sentence.id,
+            meaningId: meaning.id,
+            englishSentence: sentence.englishSentence,
+            chineseSentence: sentence.chineseSentence
+          })) || []
+        }))
+      };
+      
+      setWord(wordData);
       
       // 设置基本信息表单
       form.setFieldsValue({
@@ -333,8 +362,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     }
   };
 
-  // 从选择的值中提取词性ID
-  const extractMeaningIds = (selectedValues: string[]) => {
+  // 从选择的值中提取同义词信息
+  const extractSynonymInfos = (selectedValues: string[]): SynonymInfo[] => {
     return selectedValues.map(value => {
       // 解析格式: "单词-词性"
       const [wordSpelling, partOfSpeechName] = value.split('-');
@@ -348,8 +377,33 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         return pos?.englishName === partOfSpeechName;
       });
       
-      return targetMeaning?.id;
-    }).filter(id => id !== null) as string[];
+      return targetMeaning ? {
+        synonymWordId: targetWord.id,
+        synonymMeaningId: targetMeaning.id
+      } : null;
+    }).filter((info): info is SynonymInfo => info !== null);
+  };
+
+  // 从选择的值中提取反义词信息
+  const extractAntonymInfos = (selectedValues: string[]): AntonymInfo[] => {
+    return selectedValues.map(value => {
+      // 解析格式: "单词-词性"
+      const [wordSpelling, partOfSpeechName] = value.split('-');
+      
+      // 找到对应的单词和词性
+      const targetWord = allWords.find(w => w.spelling === wordSpelling);
+      if (!targetWord) return null;
+      
+      const targetMeaning = targetWord.meanings?.find(m => {
+        const pos = partsOfSpeech.find(p => p.id === m.partOfSpeechId);
+        return pos?.englishName === partOfSpeechName;
+      });
+      
+      return targetMeaning ? {
+        antonymWordId: targetWord.id,
+        antonymMeaningId: targetMeaning.id
+      } : null;
+    }).filter((info): info is AntonymInfo => info !== null);
   };
 
   // 添加新词义Tab
@@ -381,9 +435,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         return;
       }
 
-      // 提取同义词和反义词的词性ID
-      const synonymWordMeaningIds = values.synonyms ? extractMeaningIds(values.synonyms) : [];
-      const antonymWordMeaningIds = values.antonyms ? extractMeaningIds(values.antonyms) : [];
+      // 提取同义词和反义词信息
+      const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
+      const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
 
       const newMeaning: Omit<WordMeaning, 'id'> = {
         wordId: word.id,
@@ -455,8 +509,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       }
 
       // 提取同义词和反义词的词性ID
-      const synonymWordMeaningIds = values.synonyms ? extractMeaningIds(values.synonyms) : [];
-      const antonymWordMeaningIds = values.antonyms ? extractMeaningIds(values.antonyms) : [];
+      const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
+        const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
 
       const newMeaning: Omit<WordMeaning, 'id'> = {
         wordId: word.id,
@@ -508,8 +562,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (!word || !editingMeaningId) return;
 
       // 提取同义词和反义词的词性ID
-      const synonymWordMeaningIds = values.synonyms ? extractMeaningIds(values.synonyms) : [];
-      const antonymWordMeaningIds = values.antonyms ? extractMeaningIds(values.antonyms) : [];
+      const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
+      const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
 
       const meaningToUpdate: Omit<WordMeaning, 'createdAt' | 'updatedAt'> = {
         id: editingMeaningId,

@@ -1,5 +1,6 @@
 package com.englishlearning.infrastructure.db.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,8 +52,35 @@ public class WordPO {
     /**
      * 单词词义列表
      */
-    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<WordMeaningPO> meanings = new ArrayList<>();
+    
+    /**
+     * 获取词义列表的只读视图
+     * @return 不可修改的词义列表
+     */
+    public List<WordMeaningPO> getMeanings() {
+        return Collections.unmodifiableList(meanings);
+    }
+    
+    /**
+     * 添加词义
+     * @param meaning 词义对象
+     */
+    public void addMeaning(WordMeaningPO meaning) {
+        meanings.add(meaning);
+        meaning.setWord(this);
+    }
+    
+    /**
+     * 移除词义
+     * @param meaning 词义对象
+     */
+    public void removeMeaning(WordMeaningPO meaning) {
+        meanings.remove(meaning);
+        meaning.setWord(null);
+    }
     
     /**
      * 创建时间

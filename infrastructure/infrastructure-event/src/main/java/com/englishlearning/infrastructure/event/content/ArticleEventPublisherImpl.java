@@ -3,10 +3,10 @@ package com.englishlearning.infrastructure.event.content;
 import com.englishlearning.domain.content.event.ArticleCreatedEvent;
 import com.englishlearning.domain.content.event.ArticleUpdatedEvent;
 import com.englishlearning.domain.content.event.ArticleEventPublisher;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.GenericEventMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ArticleEventPublisherImpl implements ArticleEventPublisher {
 
-    @Autowired
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     @Override
     public void publishArticleCreatedEvent(ArticleCreatedEvent event) {

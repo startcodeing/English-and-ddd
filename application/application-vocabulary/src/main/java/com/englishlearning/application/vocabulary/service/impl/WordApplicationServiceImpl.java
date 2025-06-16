@@ -243,13 +243,7 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     @Override
     public WordDetailDTO getWordDetail(String id) {
         Word word = wordRepository.findById(id).orElseThrow(() -> new RuntimeException("单词不存在"));
-        WordDetailDTO.builder()
-                .id(word.getId())
-                .spelling(word.getSpelling())
-                .phonetic(word.getPhonetic())
-                .difficultyLevel(word.getDifficultyLevel())
-                .build();
-        return null;
+        return wordMapper.toDetailDTO(word);
     }
 
     @Override

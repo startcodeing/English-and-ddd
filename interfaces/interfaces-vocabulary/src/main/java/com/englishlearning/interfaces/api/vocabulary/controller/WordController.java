@@ -113,6 +113,14 @@ public class WordController {
     public Result<WordDTO> getWord(@PathVariable String id) {
         return Result.success(wordService.getWord(id));
     }
+
+    /**
+     * 获取单词详情
+     */
+    @GetMapping("/detail/{id}")
+    public Result<WordDetailDTO> getWordDetail(@PathVariable String id) {
+        return Result.success(wordService.getWordDetail(id));
+    }
     
     /**
      * 根据拼写查找单词

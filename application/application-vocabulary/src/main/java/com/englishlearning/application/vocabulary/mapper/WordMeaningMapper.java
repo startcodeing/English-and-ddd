@@ -3,8 +3,6 @@ package com.englishlearning.application.vocabulary.mapper;
 import com.englishlearning.application.vocabulary.dto.WordMeaningDTO;
 import com.englishlearning.application.vocabulary.dto.WordMeaningDetailDTO;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -12,7 +10,6 @@ import java.util.List;
  * 单词词义映射器
  * 负责WordMeaning实体与WordMeaningDTO之间的转换
  */
-@Mapper(componentModel = "spring")
 public interface WordMeaningMapper {
 
     /**
@@ -20,13 +17,6 @@ public interface WordMeaningMapper {
      * @param meaning 词义领域实体
      * @return 词义DTO
      */
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "wordId", target = "wordId")
-    @Mapping(source = "partOfSpeechId", target = "partOfSpeechId")
-    @Mapping(source = "chineseMeaning", target = "chineseMeaning")
-    @Mapping(source = "synonymWordMeaningIds", target = "synonymWordMeaningIds")
-    @Mapping(source = "antonymWordMeaningIds", target = "antonymWordMeaningIds")
-    @Mapping(source = "exampleSentenceIds", target = "exampleSentenceIds")
     WordMeaningDTO toDTO(WordMeaning meaning);
     
     /**
@@ -49,4 +39,18 @@ public interface WordMeaningMapper {
      * @return 词义领域实体列表
      */
     List<WordMeaning> toEntityList(List<WordMeaningDTO> dtos);
+    
+    /**
+     * 将领域实体转换为详情DTO
+     * @param meaning 词义领域实体
+     * @return 词义详情DTO
+     */
+    WordMeaningDetailDTO toDetailDTO(WordMeaning meaning);
+    
+    /**
+     * 将领域实体列表转换为详情DTO列表
+     * @param meanings 词义领域实体列表
+     * @return 词义详情DTO列表
+     */
+    List<WordMeaningDetailDTO> toDetailDTOList(List<WordMeaning> meanings);
 }

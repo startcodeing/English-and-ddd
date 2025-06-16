@@ -3,6 +3,7 @@ package com.englishlearning.application.content.service.impl;
 import com.englishlearning.application.content.dto.SentenceDTO;
 import com.englishlearning.application.content.service.SentenceApplicationService;
 import com.englishlearning.application.vocabulary.dto.ExampleSentenceDTO;
+import com.englishlearning.application.vocabulary.dto.ExampleSentenceDetailDTO;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -10,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class SentenceProviderImpl implements SentenceProvider {
@@ -40,5 +42,23 @@ public class SentenceProviderImpl implements SentenceProvider {
             }
         });
         return sentenceIdList;
+    }
+
+
+    @Override
+    public List<ExampleSentenceDetailDTO> getSentenceDetail(List<String> sentenceIdList) {
+        if (CollectionUtils.isEmpty(sentenceIdList)) {
+            return List.of();
+        }
+
+        return sentenceIdList.stream().map(sentenceApplicationService::findSentenceById)
+                .flatMap(Optional::stream)
+                .map(sentenceDTO -> ExampleSentenceDetailDTO.builder()
+                        .id(sentenceDTO.getId())
+                        .englishContent(sentenceDTO.getEnglishContent())
+                        .chineseMeaning(sentenceDTO.getChineseMeaning())
+                        .build())
+                .toList();
+
     }
 }

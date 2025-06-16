@@ -46,6 +46,22 @@ export interface WordMeaningAntonym {
 }
 
 /**
+ * 同义词信息接口
+ */
+export interface SynonymInfo {
+  synonymWordId: string;
+  synonymMeaningId: string;
+}
+
+/**
+ * 反义词信息接口
+ */
+export interface AntonymInfo {
+  antonymWordId: string;
+  antonymMeaningId: string;
+}
+
+/**
  * 单词词义接口
  */
 export interface WordMeaning extends BaseEntity {
@@ -53,8 +69,8 @@ export interface WordMeaning extends BaseEntity {
   partOfSpeechId: string;
   partOfSpeech?: PartOfSpeech;
   chineseMeaning: string;
-  synonymWordMeaningIds?: string[];
-  antonymWordMeaningIds?: string[];
+  synonymWordMeaningIds?: SynonymInfo[];
+  antonymWordMeaningIds?: AntonymInfo[];
   exampleSentences?: WordMeaningSentence[];
   synonyms?: WordMeaningSynonym[];
   antonyms?: WordMeaningAntonym[];
@@ -77,6 +93,58 @@ export interface Word extends BaseEntity {
   meanings: WordMeaning[];
   createdAt?: number;
   updatedAt?: number;
+}
+
+/**
+ * 详细同义词信息接口
+ */
+export interface DetailedSynonym {
+  id: string;
+  word: string;
+  partOfSpeech: string;
+  meaning: string;
+}
+
+/**
+ * 详细反义词信息接口
+ */
+export interface DetailedAntonym {
+  id: string;
+  word: string;
+  partOfSpeech: string;
+  meaning: string;
+}
+
+/**
+ * 详细例句信息接口
+ */
+export interface DetailedExampleSentence {
+  id: string;
+  englishSentence: string;
+  chineseSentence: string;
+}
+
+/**
+ * 详细词义接口
+ */
+export interface DetailedWordMeaning {
+  id: string;
+  partOfSpeech: string;
+  chineseMeaning: string;
+  synonyms: DetailedSynonym[];
+  antonyms: DetailedAntonym[];
+  exampleSentences: DetailedExampleSentence[];
+}
+
+/**
+ * 单词详情接口
+ */
+export interface WordDetail {
+  id: string;
+  spelling: string;
+  phonetic?: string;
+  difficultyLevel?: number;
+  meanings: DetailedWordMeaning[];
 }
 
 /**

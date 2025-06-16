@@ -1,12 +1,13 @@
 package com.englishlearning.domain.vocabulary.model.valueobject;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.util.Objects;
 
-@Value
 @Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AntonymInfo {
 
     /**
@@ -19,21 +20,6 @@ public class AntonymInfo {
      */
     String antonymMeaningId;
 
-    /**
-     * 构造函数
-     */
-    public AntonymInfo(String antonymWordId, String antonymMeaningId) {
-        this.antonymWordId = Objects.requireNonNull(antonymWordId, "antonymWordId不能为空");
-        this.antonymMeaningId = Objects.requireNonNull(antonymMeaningId, "antonymMeaningId不能为空");
-    }
-
-    /**
-     * 验证反义词信息的有效性
-     */
-    public boolean isValid() {
-        return antonymWordId != null && !antonymWordId.trim().isEmpty() &&
-                antonymMeaningId != null && !antonymMeaningId.trim().isEmpty();
-    }
 
     @Override
     public boolean equals(Object o) {

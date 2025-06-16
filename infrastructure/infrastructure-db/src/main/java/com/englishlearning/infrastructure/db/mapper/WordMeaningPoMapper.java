@@ -31,6 +31,7 @@ public interface WordMeaningPoMapper {
     /**
      * 将PO转换为领域实体
      */
+    @Mapping(target = "wordId", source = "word.id")
     @Mapping(target = "exampleSentenceIds", source = "exampleSentences", qualifiedByName = "toSentenceIds")
     @Mapping(target = "synonymWordMeaningIds", source = "synonyms", qualifiedByName = "toSynonymIds")
     @Mapping(target = "antonymWordMeaningIds", source = "antonyms", qualifiedByName = "toAntonymIds")
@@ -82,14 +83,15 @@ public interface WordMeaningPoMapper {
      * 将同义词ID列表转换为同义词关联PO列表
      */
     @Named("toSynonymPOs")
-    default List<WordMeaningSynonymPO> toSynonymPOs(List<String> synonymIds,@Context String wordMeaningId) {
-        if (synonymIds == null || synonymIds.isEmpty()) {
+    default List<WordMeaningSynonymPO> toSynonymPOs(List<SynonymInfo> synonyms,@Context String wordMeaningId) {
+        if (synonyms == null || synonyms.isEmpty()) {
             return new ArrayList<>();
         }
         
-        return synonymIds.stream()
-                .map(synonymId -> WordMeaningSynonymPO.builder()
-                        .synonymMeaningId(synonymId)
+        return synonyms.stream()
+                .map(synonymInfo -> WordMeaningSynonymPO.builder()
+                        .synonymWordId(synonymInfo.getSynonymWordId())
+                        .synonymMeaningId(synonymInfo.getSynonymMeaningId())
                         .wordMeaning(WordMeaningPO.builder().id(wordMeaningId).build())
                         .createdAt(System.currentTimeMillis())
                         .build())
@@ -116,14 +118,15 @@ public interface WordMeaningPoMapper {
      * 将反义词ID列表转换为反义词关联PO列表
      */
     @Named("toAntonymPOs")
-    default List<WordMeaningAntonymPO> toAntonymPOs(List<String> antonymIds,@Context String wordMeaningId) {
-        if (antonymIds == null || antonymIds.isEmpty()) {
+    default List<WordMeaningAntonymPO> toAntonymPOs(List<AntonymInfo> antonyms,@Context String wordMeaningId) {
+        if (antonyms == null || antonyms.isEmpty()) {
             return new ArrayList<>();
         }
         
-        return antonymIds.stream()
-                .map(antonymId -> WordMeaningAntonymPO.builder()
-                        .antonymMeaningId(antonymId)
+        return antonyms.stream()
+                .map(antonymInfo -> WordMeaningAntonymPO.builder()
+                        .antonymWordId(antonymInfo.getAntonymWordId())
+                        .antonymMeaningId(antonymInfo.getAntonymMeaningId())
                         .wordMeaning(WordMeaningPO.builder().id(wordMeaningId).build())
                         .createdAt(System.currentTimeMillis())
                         .build())

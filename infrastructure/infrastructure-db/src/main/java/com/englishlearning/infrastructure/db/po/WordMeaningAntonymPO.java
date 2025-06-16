@@ -1,5 +1,6 @@
 package com.englishlearning.infrastructure.db.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class WordMeaningAntonymPO {
 
     @ManyToOne
     @JoinColumn(name = "meaning_id")
+    @JsonIgnore
     private WordMeaningPO wordMeaning;
 
     @Column(name = "antonym_word_id")
