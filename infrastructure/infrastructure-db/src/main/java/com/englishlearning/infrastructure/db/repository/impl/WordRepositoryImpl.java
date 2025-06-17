@@ -74,8 +74,9 @@ public class WordRepositoryImpl implements WordRepository {
         }
         wordPO.setUpdatedAt(now);
         // 设置词义的时间戳和关联关系
-        if (wordPO.getMeanings() != null) {
-            for (WordMeaningPO meaningPO : wordPO.getMeanings()) {
+        List<WordMeaningPO> meanings = wordPO.getMeanings();
+        if (meanings != null && !meanings.isEmpty()) {
+            for (WordMeaningPO meaningPO : meanings) {
                 meaningPO.setWord(wordPO);
                 if (meaningPO.getCreatedAt() == null) {
                     meaningPO.setCreatedAt(now);

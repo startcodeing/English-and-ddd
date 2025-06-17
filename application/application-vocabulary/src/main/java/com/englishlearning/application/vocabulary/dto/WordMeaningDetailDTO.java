@@ -46,5 +46,5 @@ public class WordMeaningDetailDTO {
     /**
      * 例句主键列表
      */
-    private List<ExampleSentenceDetailDTO> exampleSentenceIds;
+    private List<ExampleSentenceDetailDTO> exampleSentences;
 }

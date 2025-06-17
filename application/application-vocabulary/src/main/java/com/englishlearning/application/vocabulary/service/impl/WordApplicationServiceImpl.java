@@ -208,9 +208,11 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .spelling(dto.getSpelling())
                 .phonetic(dto.getPhonetic())
                 .difficultyLevel(dto.getDifficultyLevel() != null ? dto.getDifficultyLevel() : 1)
+                .meanings(new ArrayList<>())
                 .build();
         Word word = Word.builder()
                 .id(UUID.randomUUID().toString())
+                .meanings(new ArrayList<>())
                 .build();
         word.createWord(wordInfo);
         Word savedWord = wordRepository.save(word);

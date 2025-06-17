@@ -99,20 +99,18 @@ export interface Word extends BaseEntity {
  * 详细同义词信息接口
  */
 export interface DetailedSynonym {
-  id: string;
-  word: string;
-  partOfSpeech: string;
-  meaning: string;
+  synonymSpell: string;
+  synonymWordId: string;
+  synonymMeaningId: string;
 }
 
 /**
  * 详细反义词信息接口
  */
 export interface DetailedAntonym {
-  id: string;
-  word: string;
-  partOfSpeech: string;
-  meaning: string;
+  antonymSpell: string;
+  antonymWordId: string;
+  antonymMeaningId: string;
 }
 
 /**
@@ -120,8 +118,8 @@ export interface DetailedAntonym {
  */
 export interface DetailedExampleSentence {
   id: string;
-  englishSentence: string;
-  chineseSentence: string;
+  englishContent: string;
+  chineseMeaning: string;
 }
 
 /**
@@ -129,7 +127,8 @@ export interface DetailedExampleSentence {
  */
 export interface DetailedWordMeaning {
   id: string;
-  partOfSpeech: string;
+  wordId:string;
+  partOfSpeechId: string;
   chineseMeaning: string;
   synonyms: DetailedSynonym[];
   antonyms: DetailedAntonym[];

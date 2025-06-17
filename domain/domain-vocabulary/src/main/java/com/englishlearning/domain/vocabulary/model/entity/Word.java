@@ -42,7 +42,7 @@ public class Word {
     /**
      * 词义列表（不同词性下的含义、同义词、反义词和例句）
      */
-    private List<WordMeaning> meanings;
+    private List<WordMeaning> meanings = new ArrayList<>();
 
     
     /**
@@ -52,6 +52,9 @@ public class Word {
         this.spelling = word.getSpelling();
         this.difficultyLevel = word.getDifficultyLevel();
         this.phonetic = word.getPhonetic();
+        if (this.meanings == null) {
+            this.meanings = new ArrayList<>();
+        }
     }
     
     /**

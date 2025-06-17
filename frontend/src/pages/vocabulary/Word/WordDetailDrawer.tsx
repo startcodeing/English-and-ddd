@@ -268,6 +268,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     setLoading(true);
     try {
       const response = await getWordDetail(wordId);
+      console.log("API Response:", JSON.stringify(response.data, null, 2));
       
       // 将WordDetail转换为Word格式
       const wordData: Word = {
@@ -278,13 +279,35 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         meanings: response.data.meanings.map(meaning => ({
           id: meaning.id,
           wordId: response.data.id,
-          partOfSpeechId: meaning.partOfSpeech,
+          partOfSpeechId: meaning.partOfSpeechId,
           chineseMeaning: meaning.chineseMeaning,
+          synonyms: meaning.synonyms?.map(synonym => ({
+            id: synonym.synonymMeaningId, // 使用synonymMeaningId作为ID
+            meaningId: meaning.id,
+            synonymWordId: synonym.synonymWordId, // 使用正确的synonymWordId
+            synonymWord: {
+              id: synonym.synonymWordId, // 使用正确的synonymWordId作为ID
+              spelling: synonym.synonymSpell, // 使用正确的synonymSpell作为拼写
+              partOfSpeechId: meaning.partOfSpeechId, // 使用当前词义的词性
+              meanings: []
+            }
+          })) || [],
+          antonyms: meaning.antonyms?.map(antonym => ({
+            id: antonym.antonymMeaningId, // 使用antonymMeaningId作为ID
+            meaningId: meaning.id,
+            antonymWordId: antonym.antonymWordId, // 使用正确的antonymWordId
+            antonymWord: {
+              id: antonym.antonymWordId, // 使用正确的antonymWordId作为ID
+              spelling: antonym.antonymSpell, // 使用正确的antonymSpell作为拼写
+              partOfSpeechId: meaning.partOfSpeechId, // 使用当前词义的词性
+              meanings: []
+            }
+          })) || [],
           exampleSentences: meaning.exampleSentences?.map(sentence => ({
             id: sentence.id,
             meaningId: meaning.id,
-            englishSentence: sentence.englishSentence,
-            chineseSentence: sentence.chineseSentence
+            englishSentence: sentence.englishContent,
+            chineseSentence: sentence.chineseMeaning
           })) || []
         }))
       };
@@ -498,57 +521,86 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     }
   };
 
-  // 添加新词性（保留原有逻辑作为备用）
-  const handleAddMeaning = async () => {
-    try {
-      const values = await newMeaningForm.validateFields();
-      
-      if (!word) {
-        message.error('请先保存基本信息');
-        return;
-      }
-
-      // 提取同义词和反义词的词性ID
-      const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
-        const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
-
-      const newMeaning: Omit<WordMeaning, 'id'> = {
-        wordId: word.id,
-        partOfSpeechId: values.partOfSpeechId,
-        chineseMeaning: values.chineseMeaning,
-        synonymWordMeaningIds,
-        antonymWordMeaningIds,
-        exampleSentences: values.exampleSentence ? [{
-          id: '',
-          meaningId: '',
-          englishSentence: values.exampleSentence,
-          chineseSentence: values.chineseTranslation || ''
-        }] : [],
-        sentences: values.exampleSentence ? [{
-          englishContent: values.exampleSentence,
-          chineseMeaning: values.chineseTranslation || ''
-        }] : [],
-        synonyms: [],
-        antonyms: []
-      };
-
-      const response = await addWordMeaning(newMeaning);
-      setWord(response.data);
-      setShowNewMeaning(false);
-      newMeaningForm.resetFields();
-      message.success('词性添加成功');
-    } catch (error) {
-      message.error('添加词性失败');
-      console.error('添加词性失败:', error);
-    }
-  };
-
   // 编辑词性
   const handleEditMeaning = (meaning: WordMeaning) => {
     setEditingMeaningId(meaning.id);
+    
+    // 将同义词转换为Select组件需要的格式："单词-词性"
+    const synonymValues = meaning.synonyms?.map(synonym => {
+      const synonymWord = synonym.synonymWord;
+      if (!synonymWord) return null;
+      
+      // 查找同义词的词性
+      const synonymWordObj = allWords.find(w => w.id === synonym.synonymWordId);
+      if (!synonymWordObj) return null;
+      
+      // 使用synonymMeaningId查找对应的词义
+      const synonymMeaningId = synonym.id; // 这里应该是synonymMeaningId
+      const synonymMeaning = synonymWordObj.meanings?.find(m => m.id === synonymMeaningId);
+      if (!synonymMeaning) {
+        // 如果找不到对应的词义，尝试使用词性来匹配
+        const meaningWithSamePos = synonymWordObj.meanings?.find(m => {
+          const pos = partsOfSpeech.find(p => p.id === m.partOfSpeechId);
+          const meaningPos = partsOfSpeech.find(p => p.id === meaning.partOfSpeechId);
+          return pos?.englishName === meaningPos?.englishName;
+        });
+        if (!meaningWithSamePos) return null;
+        
+        const pos = partsOfSpeech.find(p => p.id === meaningWithSamePos.partOfSpeechId);
+        if (!pos) return null;
+        
+        return `${synonymWord.spelling}-${pos.englishName}`;
+      }
+      
+      const pos = partsOfSpeech.find(p => p.id === synonymMeaning.partOfSpeechId);
+      if (!pos) return null;
+      
+      return `${synonymWord.spelling}-${pos.englishName}`;
+    }).filter(Boolean) || [];
+    
+    // 将反义词转换为Select组件需要的格式："单词-词性"
+    const antonymValues = meaning.antonyms?.map(antonym => {
+      const antonymWord = antonym.antonymWord;
+      if (!antonymWord) return null;
+      
+      // 查找反义词的词性
+      const antonymWordObj = allWords.find(w => w.id === antonym.antonymWordId);
+      if (!antonymWordObj) return null;
+      
+      // 使用antonymMeaningId查找对应的词义
+      const antonymMeaningId = antonym.id; // 这里应该是antonymMeaningId
+      const antonymMeaning = antonymWordObj.meanings?.find(m => m.id === antonymMeaningId);
+      if (!antonymMeaning) {
+        // 如果找不到对应的词义，尝试使用词性来匹配
+        const meaningWithSamePos = antonymWordObj.meanings?.find(m => {
+          const pos = partsOfSpeech.find(p => p.id === m.partOfSpeechId);
+          const meaningPos = partsOfSpeech.find(p => p.id === meaning.partOfSpeechId);
+          return pos?.englishName === meaningPos?.englishName;
+        });
+        if (!meaningWithSamePos) return null;
+        
+        const pos = partsOfSpeech.find(p => p.id === meaningWithSamePos.partOfSpeechId);
+        if (!pos) return null;
+        
+        return `${antonymWord.spelling}-${pos.englishName}`;
+      }
+      
+      const pos = partsOfSpeech.find(p => p.id === antonymMeaning.partOfSpeechId);
+      if (!pos) return null;
+      
+      return `${antonymWord.spelling}-${pos.englishName}`;
+    }).filter(Boolean) || [];
+    
+    console.log('设置编辑表单值:', {
+      synonymValues,
+      antonymValues
+    });
+    
     editMeaningForm.setFieldsValue({
       partOfSpeechId: meaning.partOfSpeechId,
       chineseMeaning: meaning.chineseMeaning,
+      synonyms: synonymValues,
+      antonyms: antonymValues,
       exampleSentence: meaning.exampleSentences?.[0]?.englishSentence || '',
       chineseTranslation: meaning.exampleSentences?.[0]?.chineseSentence || ''
     });
@@ -850,7 +902,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                              </div>
                            )}
                            
-                           {meaning.exampleSentences && meaning.exampleSentences.length > 0 && (
+                           {(meaning.exampleSentences && meaning.exampleSentences.length > 0) ? (
                              <div className="meaning-item">
                                <Text strong>例句：</Text>
                                <div className="example-sentences">
@@ -864,9 +916,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                                  ))}
                                </div>
                              </div>
-                           )}
-                           
-                           {meaning.sentences && meaning.sentences.length > 0 && (
+                           ) : meaning.sentences && meaning.sentences.length > 0 ? (
                              <div className="meaning-item">
                                <Text strong>例句：</Text>
                                <div className="example-sentences">
@@ -880,7 +930,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                                  ))}
                                </div>
                              </div>
-                           )}
+                           ) : null}
                          </div>
                        )}
                      </Card>

@@ -61,6 +61,9 @@ public class WordPO {
      * @return 不可修改的词义列表
      */
     public List<WordMeaningPO> getMeanings() {
+        if (meanings == null) {
+            return Collections.emptyList();
+        }
         return Collections.unmodifiableList(meanings);
     }
     

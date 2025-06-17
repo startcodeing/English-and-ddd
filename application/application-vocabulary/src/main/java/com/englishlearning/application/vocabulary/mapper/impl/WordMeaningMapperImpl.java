@@ -91,7 +91,7 @@ public class WordMeaningMapperImpl implements WordMeaningMapper {
                 .chineseMeaning(meaning.getChineseMeaning())
                 .synonyms(convertSynonymInfosToDetailDTOs(meaning.getSynonymWordMeaningIds(),wordSpelling))
                 .antonyms(convertAntonymInfosToDetailDTOs(meaning.getAntonymWordMeaningIds(),wordSpelling))
-                .exampleSentenceIds(sentenceDetail)
+                .exampleSentences(sentenceDetail)
                 .build();
     }
 
