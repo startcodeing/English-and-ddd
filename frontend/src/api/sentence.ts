@@ -42,6 +42,11 @@ export const deleteSentence = (id: string) => {
   return axios.delete(`${BASE_URL}/${id}`);
 };
 
+// 批量删除句子
+export const batchDeleteSentences = (ids: string[]) => {
+  return axios.delete(`${BASE_URL}/batch`, { data: { ids } });
+};
+
 // 添加陌生单词到句子
 export const addUnfamiliarWordToSentence = (sentenceId: string, wordId: string) => {
   return axios.post(`${BASE_URL}/${sentenceId}/unfamiliar-words/${wordId}`);

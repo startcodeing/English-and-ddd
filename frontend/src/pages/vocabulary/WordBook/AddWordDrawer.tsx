@@ -1,52 +1,41 @@
 import React, { useState, useMemo } from 'react';
-import { Modal, Table, Button, Input, Space, Tag, Tooltip, message } from 'antd';
+import { Drawer, Input, Table, Button, Space, Tag, Tooltip, Row, Col } from 'antd';
 import { SearchOutlined, PlusOutlined, SoundOutlined } from '@ant-design/icons';
-import { WordBook, Word } from '../../../types';
+import { Word } from '../../../types';
 
-interface AddWordModalProps {
+interface AddWordDrawerProps {
   visible: boolean;
-  wordBook: WordBook;
-  allWords: Word[];
   onClose: () => void;
   onAddWord: (wordId: string | string[]) => void;
+  allWords: Word[];
+  wordBookWords: Word[];
 }
 
-const AddWordModal: React.FC<AddWordModalProps> = ({
+const AddWordDrawer: React.FC<AddWordDrawerProps> = ({
   visible,
-  wordBook,
-  allWords,
   onClose,
-  onAddWord
+  onAddWord,
+  allWords,
+  wordBookWords
 }) => {
-  const [searchText, setSearchText] = useState<string>('');
+  const [searchText, setSearchText] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
-  // 获取可添加的单词（排除已在单词本中的单词）
+  // 获取可添加的单词（不在当前单词本中的单词）
   const availableWords = useMemo(() => {
-    const wordBookWordIds = new Set(wordBook.words?.map(word => word.id) || []);
-    return allWords.filter(word => !wordBookWordIds.has(word.id));
-  }, [allWords, wordBook.words]);
+    const wordBookWordIds = wordBookWords.map(word => word.id);
+    return allWords.filter(word => !wordBookWordIds.includes(word.id));
+  }, [allWords, wordBookWords]);
 
-  // 过滤单词
+  // 根据搜索文本过滤单词
   const filteredWords = useMemo(() => {
     if (!searchText) return availableWords;
-    
-    return availableWords.filter(word => {
-      const spelling = word.spelling.toLowerCase();
-      const search = searchText.toLowerCase();
-      
-      // 搜索单词拼写
-      if (spelling.includes(search)) return true;
-      
-      // 搜索中文释义
-      if (word.meanings && word.meanings.length > 0) {
-        return word.meanings.some(meaning => 
-          meaning.chineseMeaning.toLowerCase().includes(search)
-        );
-      }
-      
-      return false;
-    });
+    return availableWords.filter(word => 
+      word.spelling.toLowerCase().includes(searchText.toLowerCase()) ||
+      (word.meanings && word.meanings.some(meaning => 
+        meaning.chineseMeaning.includes(searchText)
+      ))
+    );
   }, [availableWords, searchText]);
 
   // 获取单词的主要词义
@@ -77,21 +66,17 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
     return <Tag color={difficulty.color}>{difficulty.text}</Tag>;
   };
 
-  // 添加单个单词
-  const handleAddSingleWord = (wordId: string) => {
+  // 处理单个添加
+  const handleAdd = (wordId: string) => {
     onAddWord(wordId);
   };
 
-  // 批量添加单词
+  // 处理批量添加
   const handleBatchAdd = () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请选择要添加的单词');
-      return;
+    if (selectedRowKeys.length > 0) {
+      onAddWord(selectedRowKeys);
+      setSelectedRowKeys([]);
     }
-    
-    // 使用批量添加API，一次性添加所有选中的单词
-    onAddWord(selectedRowKeys);
-    setSelectedRowKeys([]);
   };
 
   // 表格列定义
@@ -155,9 +140,9 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
       key: 'action',
       render: (_: any, record: Word) => (
         <Button
-          type="link"
+          type="primary"
           icon={<PlusOutlined />}
-          onClick={() => handleAddSingleWord(record.id)}
+          onClick={() => handleAdd(record.id)}
           size="small"
         >
           添加
@@ -169,77 +154,61 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
   // 行选择配置
   const rowSelection = {
     selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys as string[]);
+    onChange: (selectedKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedKeys as string[]);
     },
   };
 
   return (
-    <Modal
-      title={
+    <Drawer
+      title="添加单词"
+      open={visible}
+      onClose={onClose}
+      width={900}
+      placement="right"
+      extra={
         <Space>
-          <span style={{ fontSize: '18px', fontWeight: 'bold' }}>添加单词到</span>
-          <Tag color="blue">{wordBook.name}</Tag>
+          <Button 
+            type="primary" 
+            onClick={handleBatchAdd} 
+            disabled={selectedRowKeys.length === 0}
+          >
+            批量添加 ({selectedRowKeys.length})
+          </Button>
+          <Button onClick={onClose}>关闭</Button>
         </Space>
       }
-      open={visible}
-      onCancel={() => {
-        onClose();
-        setSearchText('');
-        setSelectedRowKeys([]);
-      }}
-      footer={[
-        <Button key="cancel" onClick={onClose}>
-          取消
-        </Button>,
-        <Button 
-          key="batch-add" 
-          type="primary" 
-          onClick={handleBatchAdd}
-          disabled={selectedRowKeys.length === 0}
-        >
-          批量添加 ({selectedRowKeys.length})
-        </Button>
-      ]}
-      width={900}
-      style={{ top: 20 }}
     >
-      <div style={{ marginBottom: 16 }}>
-        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+      <Row style={{ marginBottom: 16 }}>
+        <Col span={12}>
           <Input
-            placeholder="搜索单词拼写或中文释义"
-            prefix={<SearchOutlined />}
+            placeholder="搜索单词或释义"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 300 }}
+            prefix={<SearchOutlined />}
+            allowClear
           />
-          <div>
-            <span style={{ color: '#666' }}>
-              可添加 {filteredWords.length} 个单词
-            </span>
-          </div>
-        </Space>
-      </div>
+        </Col>
+      </Row>
 
       <Table
+        rowSelection={rowSelection}
         columns={columns}
         dataSource={filteredWords}
         rowKey="id"
-        rowSelection={rowSelection}
         pagination={{
-          pageSize: 8,
+          pageSize: 10,
           showSizeChanger: false,
           showQuickJumper: true,
-          showTotal: (total, range) => 
-            `第 ${range[0]}-${range[1]} 条，共 ${total} 个单词`,
+          showTotal: (total) => `共 ${total} 个单词`,
         }}
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         locale={{
-          emptyText: searchText ? '没有找到匹配的单词' : '暂无可添加的单词'
+          emptyText: '没有可添加的单词'
         }}
       />
-    </Modal>
+    </Drawer>
   );
 };
 
-export default AddWordModal;
+export default AddWordDrawer;

@@ -14,6 +14,7 @@ import { getAllPartOfSpeech } from '../../../api';
 import { Word, WordMeaning, WordDetail, PartOfSpeech, SynonymInfo, AntonymInfo } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import { DifficultyLevel } from '../../../types';
+import MeaningDetailView from './MeaningDetailView';
 import './WordDetailDrawer.css';
 
 const { Option } = Select;
@@ -43,38 +44,38 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
   console.log('NewMeaningTabContent渲染:', { tabKey, partsOfSpeechCount: partsOfSpeech.length, allWordsCount: allWords.length });
 
   return (
-    <div style={{ padding: '20px', minHeight: '400px' }}>
+    <div style={{ padding: '12px', minHeight: '300px' }}>
       <Card 
         title="添加新词性" 
         className="new-meaning-card"
         size="default"
-        style={{ marginBottom: '16px' }}
+        style={{ marginBottom: '10px' }}
         extra={
           <Space>
-            <Button onClick={() => onSave(tabKey, form)} type="primary" size="large">保存</Button>
+            <Button onClick={() => onSave(tabKey, form)} type="primary" size="middle">保存</Button>
             <Button onClick={() => {
               onCancel(tabKey);
               form.resetFields();
-            }} size="large">取消</Button>
+            }} size="middle">取消</Button>
           </Space>
         }
       >
         <Form 
           form={form} 
           layout="vertical" 
-          style={{ marginTop: '20px' }}
-          size="large"
+          style={{ marginTop: '10px' }}
+          size="middle"
         >
           <Form.Item
             name="partOfSpeechId"
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>词性</span>}
             rules={[{ required: true, message: '请选择词性' }]}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <Select 
               placeholder="请选择词性" 
-              style={{ width: '100%', height: '40px' }}
-              size="large"
+              style={{ width: '100%', height: '32px' }}
+              size="middle"
             >
               {partsOfSpeech.map(pos => (
                 <Option key={pos.id} value={pos.id}>{pos.englishName}</Option>
@@ -86,10 +87,10 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
             name="chineseMeaning"
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>中文释义</span>}
             rules={[{ required: true, message: '请输入中文释义' }]}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <TextArea 
-              rows={3} 
+              rows={2} 
               placeholder="请输入中文释义" 
               style={{ fontSize: '14px' }}
             />
@@ -98,7 +99,7 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
           <Form.Item 
             name="synonyms" 
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>近义词</span>}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <WordMeaningSelect 
               allWords={allWords} 
@@ -110,7 +111,7 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
           <Form.Item 
             name="antonyms" 
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>反义词</span>}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <WordMeaningSelect 
               allWords={allWords} 
@@ -122,10 +123,10 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
           <Form.Item
             name="exampleSentence"
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>例句</span>}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <TextArea 
-              rows={3} 
+              rows={2} 
               placeholder="请输入例句" 
               style={{ fontSize: '14px' }}
             />
@@ -134,10 +135,10 @@ const NewMeaningTabContent: React.FC<NewMeaningTabContentProps> = ({
           <Form.Item
             name="chineseTranslation"
             label={<span style={{ fontSize: '14px', fontWeight: 'bold' }}>例句翻译</span>}
-            style={{ marginBottom: '24px' }}
+            style={{ marginBottom: '12px' }}
           >
             <TextArea 
-              rows={3} 
+              rows={2} 
               placeholder="请输入例句翻译" 
               style={{ fontSize: '14px' }}
             />
@@ -270,47 +271,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       const response = await getWordDetail(wordId);
       console.log("API Response:", JSON.stringify(response.data, null, 2));
       
-      // 将WordDetail转换为Word格式
-      const wordData: Word = {
-        id: response.data.id,
-        spelling: response.data.spelling,
-        phonetic: response.data.phonetic,
-        difficultyLevel: response.data.difficultyLevel,
-        meanings: response.data.meanings.map(meaning => ({
-          id: meaning.id,
-          wordId: response.data.id,
-          partOfSpeechId: meaning.partOfSpeechId,
-          chineseMeaning: meaning.chineseMeaning,
-          synonyms: meaning.synonyms?.map(synonym => ({
-            id: synonym.synonymMeaningId, // 使用synonymMeaningId作为ID
-            meaningId: meaning.id,
-            synonymWordId: synonym.synonymWordId, // 使用正确的synonymWordId
-            synonymWord: {
-              id: synonym.synonymWordId, // 使用正确的synonymWordId作为ID
-              spelling: synonym.synonymSpell, // 使用正确的synonymSpell作为拼写
-              partOfSpeechId: meaning.partOfSpeechId, // 使用当前词义的词性
-              meanings: []
-            }
-          })) || [],
-          antonyms: meaning.antonyms?.map(antonym => ({
-            id: antonym.antonymMeaningId, // 使用antonymMeaningId作为ID
-            meaningId: meaning.id,
-            antonymWordId: antonym.antonymWordId, // 使用正确的antonymWordId
-            antonymWord: {
-              id: antonym.antonymWordId, // 使用正确的antonymWordId作为ID
-              spelling: antonym.antonymSpell, // 使用正确的antonymSpell作为拼写
-              partOfSpeechId: meaning.partOfSpeechId, // 使用当前词义的词性
-              meanings: []
-            }
-          })) || [],
-          exampleSentences: meaning.exampleSentences?.map(sentence => ({
-            id: sentence.id,
-            meaningId: meaning.id,
-            englishSentence: sentence.englishContent,
-            chineseSentence: sentence.chineseMeaning
-          })) || []
-        }))
-      };
+      // 使用通用的转换函数将WordDetail转换为Word
+      const wordData = convertWordDetailToWord(response.data);
       
       setWord(wordData);
       
@@ -360,6 +322,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 保存基本信息
   const handleSaveBasicInfo = async () => {
+    // 在查看模式下不允许保存
+    if (mode === 'view') return;
+    
     try {
       const values = await form.validateFields();
       
@@ -374,10 +339,20 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         const response = await createWord(wordData);
         setWord(response.data);
         message.success('单词创建成功');
+        // 调用onSuccess回调刷新单词列表，但不关闭抽屉
+        // 使用自定义事件通知父组件刷新列表
+        // 创建一个自定义事件，表示只需要刷新列表，不需要关闭抽屉
+        const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+        window.dispatchEvent(event);
       } else if (word) {
         const response = await updateWord(word.id, wordData);
         setWord(response.data);
         message.success('基本信息保存成功');
+        // 调用onSuccess回调刷新单词列表，但不关闭抽屉
+        // 使用自定义事件通知父组件刷新列表
+        // 创建一个自定义事件，表示只需要刷新列表，不需要关闭抽屉
+        const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+        window.dispatchEvent(event);
       }
     } catch (error) {
       message.error('保存失败');
@@ -431,6 +406,11 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 添加新词义Tab
   const handleAddNewMeaningTab = () => {
+    // 在查看模式下不允许添加新词义
+    if (mode === 'view') {
+      return;
+    }
+    
     if (!word) {
       message.error('请先保存基本信息');
       return;
@@ -439,7 +419,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     const newTabKey = `new-${Date.now()}`;
     const newTab = {
       key: newTabKey,
-      title: '新添加词性',
+      title: '新添加词义',
       content: null,
       isNew: true
     };
@@ -448,8 +428,63 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     setActiveTabKey(newTabKey);
   };
 
+  // 将WordDetail转换为Word的辅助函数
+  const convertWordDetailToWord = (wordDetail: WordDetail): Word => {
+    return {
+      id: wordDetail.id,
+      spelling: wordDetail.spelling,
+      phonetic: wordDetail.phonetic,
+      difficultyLevel: wordDetail.difficultyLevel,
+      meanings: wordDetail.meanings.map(detailedMeaning => {
+        return {
+          id: detailedMeaning.id,
+          wordId: detailedMeaning.wordId,
+          partOfSpeechId: detailedMeaning.partOfSpeechId,
+          chineseMeaning: detailedMeaning.chineseMeaning,
+          synonyms: detailedMeaning.synonyms.map(syn => ({
+            id: syn.synonymMeaningId, // 使用synonymMeaningId作为ID
+            meaningId: detailedMeaning.id,
+            synonymWordId: syn.synonymWordId,
+            synonymMeaningId: syn.synonymMeaningId,
+            synonymWord: {
+              id: syn.synonymWordId,
+              spelling: syn.synonymSpell,
+              partOfSpeechId: detailedMeaning.partOfSpeechId,
+              meanings: []
+            }
+          })),
+          antonyms: detailedMeaning.antonyms.map(ant => ({
+            id: ant.antonymMeaningId, // 使用antonymMeaningId作为ID
+            meaningId: detailedMeaning.id,
+            antonymWordId: ant.antonymWordId,
+            antonymMeaningId: ant.antonymMeaningId,
+            antonymWord: {
+              id: ant.antonymWordId,
+              spelling: ant.antonymSpell,
+              partOfSpeechId: detailedMeaning.partOfSpeechId,
+              meanings: []
+            }
+          })),
+          exampleSentences: detailedMeaning.exampleSentences.map(es => ({
+            id: es.id,
+            meaningId: detailedMeaning.id,
+            englishSentence: es.englishContent,
+            chineseSentence: es.chineseMeaning
+          })),
+          sentences: detailedMeaning.exampleSentences.map(es => ({
+            englishContent: es.englishContent,
+            chineseMeaning: es.chineseMeaning
+          }))
+        };
+      })
+    };
+  };
+
   // 保存新词义
   const handleSaveNewMeaning = async (tabKey: string, form: any) => {
+    // 在查看模式下不允许保存
+    if (mode === 'view') return;
+    
     try {
       const values = await form.validateFields();
       
@@ -461,6 +496,30 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       // 提取同义词和反义词信息
       const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
       const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
+
+      // 构建同义词数据
+      const synonyms = synonymWordMeaningIds.map(info => {
+        const synonymWord = allWords.find(w => w.id === info.synonymWordId);
+        return {
+          id: '',
+          meaningId: '',
+          synonymWordId: info.synonymWordId,
+          synonymMeaningId: info.synonymMeaningId,
+          synonymWord: synonymWord
+        };
+      });
+
+      // 构建反义词数据
+      const antonyms = antonymWordMeaningIds.map(info => {
+        const antonymWord = allWords.find(w => w.id === info.antonymWordId);
+        return {
+          id: '',
+          meaningId: '',
+          antonymWordId: info.antonymWordId,
+          antonymMeaningId: info.antonymMeaningId,
+          antonymWord: antonymWord
+        };
+      });
 
       const newMeaning: Omit<WordMeaning, 'id'> = {
         wordId: word.id,
@@ -478,18 +537,39 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
           englishContent: values.exampleSentence,
           chineseMeaning: values.chineseTranslation || ''
         }] : [],
-        synonyms: [],
-        antonyms: []
+        synonyms: synonyms,
+        antonyms: antonyms
       };
 
-      const response = await addWordMeaning(newMeaning);
-      setWord(response.data);
+      // 先调用添加词义接口
+      await addWordMeaning(newMeaning);
       
-      // 移除已保存的新tab，因为新词义会自动添加到正常的词义列表中
-      setNewTabs(prev => prev.filter(tab => tab.key !== tabKey));
-      
-      // 切换到第一个tab
-      setActiveTabKey('0');
+      // 然后调用获取单词详情接口，获取完整的单词信息（包括同义词、反义词和例句）
+      if (word.id) {
+        const detailResponse = await getWordDetail(word.id);
+        // 将WordDetail转换为Word
+        const convertedWord = convertWordDetailToWord(detailResponse.data);
+        setWord(convertedWord);
+        
+        // 找到新添加的词义，以便后续设置activeTabKey
+        const newMeaningIndex = convertedWord.meanings.findIndex(
+          m => m.partOfSpeechId === values.partOfSpeechId && m.chineseMeaning === values.chineseMeaning
+        );
+        
+        // 移除已保存的新tab，因为新词义会自动添加到正常的词义列表中
+        setNewTabs(prev => prev.filter(tab => tab.key !== tabKey));
+        
+        // 切换到新添加的词义对应的tab
+        if (newMeaningIndex !== -1) {
+          setActiveTabKey(newMeaningIndex.toString());
+        } else {
+          setActiveTabKey('0'); // 如果找不到，默认切换到第一个tab
+        }
+        
+        // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
+        const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+        window.dispatchEvent(event);
+      }
       
       form.resetFields();
       message.success('词性添加成功');
@@ -501,6 +581,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 取消新词义Tab
   const handleCancelNewMeaning = (tabKey: string) => {
+    // 在查看模式下不允许取消
+    if (mode === 'view') return;
+    
     setNewTabs(prev => prev.filter(tab => tab.key !== tabKey));
     if (activeTabKey === tabKey) {
       setActiveTabKey('0');
@@ -512,6 +595,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     targetKey: string | React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>, 
     action: 'add' | 'remove'
   ) => {
+    // 在查看模式下不允许编辑Tab
+    if (mode === 'view') return;
+    
     if (action === 'remove' && typeof targetKey === 'string') {
       // 只允许关闭新添加的Tab页
       const isNewTab = newTabs.some(tab => tab.key === targetKey);
@@ -523,6 +609,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 编辑词性
   const handleEditMeaning = (meaning: WordMeaning) => {
+    // 在查看模式下不允许编辑
+    if (mode === 'view') return;
+    
     setEditingMeaningId(meaning.id);
     
     // 将同义词转换为Select组件需要的格式："单词-词性"
@@ -535,7 +624,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (!synonymWordObj) return null;
       
       // 使用synonymMeaningId查找对应的词义
-      const synonymMeaningId = synonym.id; // 这里应该是synonymMeaningId
+      const synonymMeaningId = synonym.synonymMeaningId || synonym.id; // 兼容两种数据结构
+      console.log('同义词处理:', { synonymId: synonym.id, synonymMeaningId: synonym.synonymMeaningId, fallbackId: synonym.id });
       const synonymMeaning = synonymWordObj.meanings?.find(m => m.id === synonymMeaningId);
       if (!synonymMeaning) {
         // 如果找不到对应的词义，尝试使用词性来匹配
@@ -568,7 +658,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (!antonymWordObj) return null;
       
       // 使用antonymMeaningId查找对应的词义
-      const antonymMeaningId = antonym.id; // 这里应该是antonymMeaningId
+      const antonymMeaningId = antonym.antonymMeaningId || antonym.id; // 兼容两种数据结构
+      console.log('反义词处理:', { antonymId: antonym.id, antonymMeaningId: antonym.antonymMeaningId, fallbackId: antonym.id });
       const antonymMeaning = antonymWordObj.meanings?.find(m => m.id === antonymMeaningId);
       if (!antonymMeaning) {
         // 如果找不到对应的词义，尝试使用词性来匹配
@@ -608,17 +699,47 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 保存编辑的词性
   const handleSaveEditMeaning = async () => {
+    // 在查看模式下不允许保存
+    if (mode === 'view') return;
+    
     try {
       const values = await editMeaningForm.validateFields();
       
       if (!word || !editingMeaningId) return;
 
+      // 保存当前正在编辑的词义ID，用于后续找到对应的tab
+      const currentEditingMeaningId = editingMeaningId;
+
       // 提取同义词和反义词的词性ID
       const synonymWordMeaningIds = values.synonyms ? extractSynonymInfos(values.synonyms) : [];
       const antonymWordMeaningIds = values.antonyms ? extractAntonymInfos(values.antonyms) : [];
 
+      // 构建同义词数据
+      const synonyms = synonymWordMeaningIds.map(info => {
+        const synonymWord = allWords.find(w => w.id === info.synonymWordId);
+        return {
+          id: '',
+          meaningId: currentEditingMeaningId,
+          synonymWordId: info.synonymWordId,
+          synonymMeaningId: info.synonymMeaningId,
+          synonymWord: synonymWord
+        };
+      });
+
+      // 构建反义词数据
+      const antonyms = antonymWordMeaningIds.map(info => {
+        const antonymWord = allWords.find(w => w.id === info.antonymWordId);
+        return {
+          id: '',
+          meaningId: currentEditingMeaningId,
+          antonymWordId: info.antonymWordId,
+          antonymMeaningId: info.antonymMeaningId,
+          antonymWord: antonymWord
+        };
+      });
+
       const meaningToUpdate: Omit<WordMeaning, 'createdAt' | 'updatedAt'> = {
-        id: editingMeaningId,
+        id: currentEditingMeaningId,
         wordId: word.id,
         partOfSpeechId: values.partOfSpeechId,
         chineseMeaning: values.chineseMeaning,
@@ -626,7 +747,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         antonymWordMeaningIds,
         exampleSentences: values.exampleSentence ? [{
           id: '',
-          meaningId: editingMeaningId,
+          meaningId: currentEditingMeaningId,
           englishSentence: values.exampleSentence,
           chineseSentence: values.chineseTranslation || ''
         }] : [],
@@ -634,12 +755,33 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
           englishContent: values.exampleSentence,
           chineseMeaning: values.chineseTranslation || ''
         }] : [],
-        synonyms: [],
-        antonyms: []
+        synonyms: synonyms,
+        antonyms: antonyms
       };
 
-      const response = await addWordMeaning(meaningToUpdate);
-      setWord(response.data);
+      // 先调用更新词义接口
+      await addWordMeaning(meaningToUpdate);
+      
+      // 然后调用获取单词详情接口，获取完整的单词信息（包括同义词、反义词和例句）
+      if (word.id) {
+        const detailResponse = await getWordDetail(word.id);
+        // 将WordDetail转换为Word
+        const convertedWord = convertWordDetailToWord(detailResponse.data);
+        setWord(convertedWord);
+        
+        // 找到刚才编辑的词义对应的索引
+        const editedMeaningIndex = convertedWord.meanings.findIndex(m => m.id === currentEditingMeaningId);
+        
+        // 切换到编辑的词义对应的tab
+        if (editedMeaningIndex !== -1) {
+          setActiveTabKey(editedMeaningIndex.toString());
+        }
+        
+        // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
+        const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+        window.dispatchEvent(event);
+      }
+      
       setEditingMeaningId(null);
       editMeaningForm.resetFields();
       message.success('词性更新成功');
@@ -651,11 +793,30 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   // 删除词性
   const handleDeleteMeaning = async (meaningId: string) => {
+    // 在查看模式下不允许删除
+    if (mode === 'view') return;
+    
     try {
       if (!word) return;
 
-      const response = await deleteWordMeaning(word.id, meaningId);
-      setWord(response.data);
+      // 先调用删除词义接口
+      await deleteWordMeaning(word.id, meaningId);
+      
+      // 然后调用获取单词详情接口，获取完整的单词信息（包括同义词、反义词和例句）
+      const detailResponse = await getWordDetail(word.id);
+      // 将WordDetail转换为Word
+      const convertedWord = convertWordDetailToWord(detailResponse.data);
+      setWord(convertedWord);
+      
+      // 如果当前没有词义了，或者当前激活的Tab对应的词义被删除了，切换到第一个Tab
+      if (convertedWord.meanings.length === 0 || !convertedWord.meanings[parseInt(activeTabKey)]) {
+        setActiveTabKey('0');
+      }
+      
+      // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
+      const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+      window.dispatchEvent(event);
+      
       message.success('词性删除成功');
     } catch (error) {
       message.error('删除词性失败');
@@ -678,7 +839,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
     <Drawer
       title={getDrawerTitle()}
       placement="right"
-      width={1200}
+      width={1000}
       open={visible}
       onClose={onClose}
       className="word-detail-drawer"
@@ -705,6 +866,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
             form={form}
             layout="vertical"
             disabled={isReadOnly}
+            size="small"
+            style={{ margin: '0 -8px' }}
           >
             <div className="word-info-row">
               <div className="word-info-field">
@@ -712,8 +875,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                   name="spelling"
                   label="拼写"
                   rules={[{ required: true, message: '请输入单词拼写' }]}
+                  style={{ padding: '0 8px', marginBottom: '8px' }}
                 >
-                  <Input placeholder="请输入单词拼写" />
+                  <Input placeholder="请输入单词拼写" size="small" />
                 </Form.Item>
               </div>
               
@@ -722,8 +886,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                   name="phonetic"
                   label="发音"
                   rules={[{ required: true, message: '请输入音标' }]}
+                  style={{ padding: '0 8px', marginBottom: '8px' }}
                 >
-                  <Input placeholder="请输入音标，如：/həˈləʊ/" />
+                  <Input placeholder="请输入音标，如：/həˈləʊ/" size="small" />
                 </Form.Item>
               </div>
               
@@ -732,8 +897,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                   name="difficultyLevel"
                   label="难度级别"
                   rules={[{ required: true, message: '请选择难度级别' }]}
+                  style={{ padding: '0 8px', marginBottom: '8px' }}
                 >
-                  <Select placeholder="请选择难度级别">
+                  <Select placeholder="请选择难度级别" size="small">
                     {difficultyLevelConfigs.map(config => (
                       <Option key={config.value} value={config.value}>
                         <span style={{ color: config.color }}>{config.label}</span>
@@ -749,13 +915,14 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         {/* 词义信息 */}
         <div className="meanings-section">
           <div className="section-header">
-            <Title level={4} className="section-title">词义信息</Title>
+            <Title level={5} className="section-title">词义信息</Title>
             {!isReadOnly && (
               <Button 
                 type="dashed" 
                 icon={<PlusOutlined />} 
                 onClick={handleAddNewMeaningTab}
                 disabled={!word}
+                size="small"
               >
                 添加新词义
               </Button>
@@ -766,14 +933,15 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
           <Tabs
             activeKey={activeTabKey}
             onChange={setActiveTabKey}
-            type="editable-card"
+            type={isReadOnly ? "card" : "editable-card"}
             hideAdd
             onEdit={handleTabEdit}
             items={[
               // 现有词义的Tab页
               ...((word?.meanings || []).map((meaning, index) => {
                 const partOfSpeech = partsOfSpeech.find(pos => pos.id === meaning.partOfSpeechId);
-                const isEditing = editingMeaningId === meaning.id;
+                // 只有在编辑模式下才允许编辑词义
+                const isEditing = mode !== 'view' && editingMeaningId === meaning.id;
                 
                 return {
                   key: index.toString(),
@@ -786,7 +954,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                           <Space>
                             {isEditing ? (
                               <>
-                                <Button size="small" onClick={handleSaveEditMeaning}>保存</Button>
+                                <Button size="small" type="primary" onClick={handleSaveEditMeaning}>保存</Button>
                                 <Button size="small" onClick={() => setEditingMeaningId(null)}>取消</Button>
                               </>
                             ) : (
@@ -813,13 +981,14 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                       }
                     >
                       {isEditing ? (
-                        <Form form={editMeaningForm} layout="vertical">
+                        <Form form={editMeaningForm} layout="vertical" size="small">
                           <Form.Item
                             name="partOfSpeechId"
                             label="词性"
                             rules={[{ required: true, message: '请选择词性' }]}
+                            style={{ marginBottom: '8px' }}
                           >
-                            <Select placeholder="请选择词性">
+                            <Select placeholder="请选择词性" size="small">
                               {partsOfSpeech.map(pos => (
                                 <Option key={pos.id} value={pos.id}>{pos.englishName}</Option>
                               ))}
@@ -830,11 +999,12 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                             name="chineseMeaning"
                             label="中文释义"
                             rules={[{ required: true, message: '请输入中文释义' }]}
+                            style={{ marginBottom: '8px' }}
                           >
                             <TextArea rows={2} placeholder="请输入中文释义" />
                           </Form.Item>
                           
-                          <Form.Item name="synonyms" label="近义词">
+                          <Form.Item name="synonyms" label="近义词" style={{ marginBottom: '8px' }}>
                             <WordMeaningSelect 
                               allWords={allWords} 
                               partsOfSpeech={partsOfSpeech}
@@ -842,7 +1012,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                             />
                           </Form.Item>
                           
-                          <Form.Item name="antonyms" label="反义词">
+                          <Form.Item name="antonyms" label="反义词" style={{ marginBottom: '8px' }}>
                             <WordMeaningSelect 
                               allWords={allWords} 
                               partsOfSpeech={partsOfSpeech}
@@ -853,6 +1023,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                           <Form.Item
                              name="exampleSentence"
                              label="例句"
+                             style={{ marginBottom: '8px' }}
                            >
                              <TextArea rows={2} placeholder="请输入例句" />
                            </Form.Item>
@@ -860,85 +1031,20 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                            <Form.Item
                              name="chineseTranslation"
                              label="例句翻译"
+                             style={{ marginBottom: '8px' }}
                            >
                              <TextArea rows={2} placeholder="请输入例句翻译" />
                            </Form.Item>
                          </Form>
                        ) : (
-                         <div className="meaning-content">
-                           <div className="meaning-item">
-                             <Text strong>词性：</Text>
-                             <span>{partOfSpeech?.englishName || '未知词性'}</span>
-                           </div>
-                           
-                           <div className="meaning-item">
-                             <Text strong>中文释义：</Text>
-                             <span>{meaning.chineseMeaning}</span>
-                           </div>
-                           
-                           {meaning.synonyms && meaning.synonyms.length > 0 && (
-                             <div className="meaning-item">
-                               <Text strong>近义词：</Text>
-                               <div className="synonym-tags">
-                                 {meaning.synonyms.map((synonym, idx) => (
-                                   <Tag key={idx} color="blue">
-                                     {synonym.synonymWord?.spelling || '未知单词'}
-                                   </Tag>
-                                 ))}
-                               </div>
-                             </div>
-                           )}
-                           
-                           {meaning.antonyms && meaning.antonyms.length > 0 && (
-                             <div className="meaning-item">
-                               <Text strong>反义词：</Text>
-                               <div className="antonym-tags">
-                                 {meaning.antonyms.map((antonym, idx) => (
-                                   <Tag key={idx} color="red">
-                                     {antonym.antonymWord?.spelling || '未知单词'}
-                                   </Tag>
-                                 ))}
-                               </div>
-                             </div>
-                           )}
-                           
-                           {(meaning.exampleSentences && meaning.exampleSentences.length > 0) ? (
-                             <div className="meaning-item">
-                               <Text strong>例句：</Text>
-                               <div className="example-sentences">
-                                 {meaning.exampleSentences.map((sentence, idx) => (
-                                   <div key={idx} className="example-sentence">
-                                     <div className="english-sentence">{sentence.englishSentence}</div>
-                                     {sentence.chineseSentence && (
-                                       <div className="chinese-sentence">{sentence.chineseSentence}</div>
-                                     )}
-                                   </div>
-                                 ))}
-                               </div>
-                             </div>
-                           ) : meaning.sentences && meaning.sentences.length > 0 ? (
-                             <div className="meaning-item">
-                               <Text strong>例句：</Text>
-                               <div className="example-sentences">
-                                 {meaning.sentences.map((sentence, idx) => (
-                                   <div key={idx} className="example-sentence">
-                                     <div className="english-sentence">{sentence.englishContent}</div>
-                                     {sentence.chineseMeaning && (
-                                       <div className="chinese-sentence">{sentence.chineseMeaning}</div>
-                                     )}
-                                   </div>
-                                 ))}
-                               </div>
-                             </div>
-                           ) : null}
-                         </div>
+                         <MeaningDetailView meaning={meaning} partOfSpeech={partOfSpeech} />
                        )}
                      </Card>
                    )
                  };
                })),
-               // 新添加的Tab页
-               ...newTabs.map(tab => ({
+               // 新添加的Tab页 - 只在非查看模式下显示
+               ...(isReadOnly ? [] : newTabs.map(tab => ({
                  key: tab.key,
                  label: tab.title,
                  children: (
@@ -951,7 +1057,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
                      isReadOnly={isReadOnly}
                    />
                  )
-               }))
+               })))
              ]}
            />
 

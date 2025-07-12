@@ -1,0 +1,46 @@
+.meaning-content {
+  padding: 6px 0;
+}
+
+.meaning-item {
+  margin-bottom: 8px;
+}
+
+.meaning-item:last-child {
+  margin-bottom: 0;
+}
+
+.synonym-tags, .antonym-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.example-sentences {
+  margin-top: 8px;
+}
+
+.example-sentence {
+  background: #f8f9fa;
+  border-left: 4px solid #409eff;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border-radius: 0 6px 6px 0;
+}
+
+.example-sentence:last-child {
+  margin-bottom: 0;
+}
+
+.english-sentence {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.chinese-sentence {
+  font-size: 13px;
+  color: #909399;
+}

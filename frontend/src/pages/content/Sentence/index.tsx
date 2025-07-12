@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { getAllSentences, createSentence, updateSentence, deleteSentence } from '../../../api/sentence';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { getAllSentences, createSentence, updateSentence, deleteSentence, batchDeleteSentences } from '../../../api/sentence';
 import { Sentence } from '../../../types';
+import SentenceFormDrawer from './SentenceFormDrawer';
 import './style.css';
 
 const { TextArea } = Input;
@@ -11,10 +12,11 @@ const SentencePage: React.FC = () => {
   // 状态定义
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingSentence, setEditingSentence] = useState<Sentence | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [form] = Form.useForm();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   // 获取句子列表
   const fetchSentences = async () => {
@@ -35,22 +37,16 @@ const SentencePage: React.FC = () => {
     fetchSentences();
   }, []);
 
-  // 打开创建句子模态框
+  // 打开创建句子抽屉
   const handleAddSentence = () => {
     setEditingSentence(null);
-    form.resetFields();
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
-  // 打开编辑句子模态框
+  // 打开编辑句子抽屉
   const handleEditSentence = (sentence: Sentence) => {
     setEditingSentence(sentence);
-    form.setFieldsValue({
-      englishContent: sentence.englishContent,
-      chineseMeaning: sentence.chineseMeaning,
-      grammarAnalysis: sentence.grammarAnalysis || ''
-    });
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
   // 删除句子
@@ -71,11 +67,49 @@ const SentencePage: React.FC = () => {
     });
   };
 
+  // 批量删除句子
+  const handleBatchDelete = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请至少选择一个句子');
+      return;
+    }
+
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个句子吗？`,
+      onOk: async () => {
+        try {
+          setDeleteLoading(true);
+          await batchDeleteSentences(selectedRowKeys as string[]);
+          message.success('批量删除成功');
+          setSelectedRowKeys([]);
+          fetchSentences();
+        } catch (error) {
+          message.error('批量删除失败');
+          console.error('批量删除失败:', error);
+        } finally {
+          setDeleteLoading(false);
+        }
+      }
+    });
+  };
+
+  // 行选择配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    }
+  };
+
+  // 清除选择
+  const handleClearSelection = () => {
+    setSelectedRowKeys([]);
+  };
+
   // 保存句子（创建或更新）
-  const handleSaveSentence = async () => {
+  const handleSaveSentence = async (values: { englishContent: string; chineseMeaning: string; grammarAnalysis?: string }) => {
     try {
-      const values = await form.validateFields();
-      
       // 构建句子对象
       const sentenceData: Omit<Sentence, 'id'> = {
         englishContent: values.englishContent,
@@ -95,7 +129,7 @@ const SentencePage: React.FC = () => {
         message.success('创建成功');
       }
       
-      setModalVisible(false);
+      setDrawerVisible(false);
       fetchSentences();
     } catch (error) {
       console.error('保存失败:', error);
@@ -224,7 +258,27 @@ const SentencePage: React.FC = () => {
         </div>
       </div>
       
+      {selectedRowKeys.length > 0 && (
+        <div className="batch-actions-area">
+          <span className="selected-count">
+            已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
+          </span>
+          <Space>
+            <Button size="small" onClick={handleClearSelection}>清除选择</Button>
+            <Button
+              danger
+              icon={<DeleteColumnOutlined />}
+              onClick={handleBatchDelete}
+              loading={deleteLoading}
+            >
+              批量删除
+            </Button>
+          </Space>
+        </div>
+      )}
+      
       <Table
+        rowSelection={rowSelection}
         columns={columns}
         dataSource={sentences}
         rowKey="id"
@@ -232,57 +286,13 @@ const SentencePage: React.FC = () => {
         pagination={{ pageSize: 10 }}
       />
       
-      <Modal
+      <SentenceFormDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        onSubmit={handleSaveSentence}
+        initialValues={editingSentence || undefined}
         title={editingSentence ? '编辑句子' : '添加句子'}
-        open={modalVisible}
-        onOk={handleSaveSentence}
-        onCancel={() => setModalVisible(false)}
-        width={700}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <Form.Item
-            name="englishContent"
-            label="英文内容"
-            rules={[{ required: true, message: '请输入英文内容' }]}
-          >
-            <TextArea 
-              placeholder="请输入英文内容" 
-              rows={3} 
-              showCount 
-              maxLength={500}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="chineseMeaning"
-            label="中文含义"
-            rules={[{ required: true, message: '请输入中文含义' }]}
-          >
-            <TextArea 
-              placeholder="请输入中文含义" 
-              rows={3} 
-              showCount 
-              maxLength={500}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="grammarAnalysis"
-            label="语法分析"
-            tooltip={{ title: '分析句子的语法结构，如时态、语态、从句类型等', icon: <InfoCircleOutlined /> }}
-          >
-            <TextArea 
-              placeholder="请输入语法分析" 
-              rows={4} 
-              showCount 
-              maxLength={1000}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      />
     </div>
   );
 };

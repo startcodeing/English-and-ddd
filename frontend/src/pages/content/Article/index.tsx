@@ -4,6 +4,7 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutline
 import { getAllArticles, createArticle, updateArticle, deleteArticle } from '../../../api/article';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
+import ArticleFormDrawer from './ArticleFormDrawer';
 import dayjs from 'dayjs';
 import './style.css';
 
@@ -14,10 +15,9 @@ const ArticlePage: React.FC = () => {
   // 状态定义
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [form] = Form.useForm();
 
   // 获取文章列表
   const fetchArticles = async () => {
@@ -38,25 +38,16 @@ const ArticlePage: React.FC = () => {
     fetchArticles();
   }, []);
 
-  // 打开创建文章模态框
+  // 打开创建文章抽屉
   const handleAddArticle = () => {
     setEditingArticle(null);
-    form.resetFields();
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
-  // 打开编辑文章模态框
+  // 打开编辑文章抽屉
   const handleEditArticle = (article: Article) => {
     setEditingArticle(article);
-    form.setFieldsValue({
-      title: article.title,
-      content: article.content,
-      source: article.source || '',
-      author: article.author || '',
-      publishDate: article.publishDate ? dayjs(article.publishDate) : null,
-      difficultyLevel: article.difficultyLevel || 3
-    });
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
   // 删除文章
@@ -78,17 +69,22 @@ const ArticlePage: React.FC = () => {
   };
 
   // 保存文章（创建或更新）
-  const handleSaveArticle = async () => {
+  const handleSaveArticle = async (values: { 
+    title: string; 
+    content: string; 
+    source?: string; 
+    author?: string; 
+    publishDate?: dayjs.Dayjs; 
+    difficultyLevel: number 
+  }) => {
     try {
-      const values = await form.validateFields();
-      
       // 构建文章对象
       const articleData: Omit<Article, 'id'> = {
         title: values.title,
         content: values.content,
         source: values.source || undefined,
         author: values.author || undefined,
-        publishDate: values.publishDate ? values.publishDate.format('YYYY-MM-DD') : undefined,
+        publishDate: values.publishDate ? values.publishDate.format('YYYY-MM-DD HH:mm:ss') : undefined,
         difficultyLevel: values.difficultyLevel,
         unfamiliarWords: [],
         sentences: []
@@ -104,7 +100,7 @@ const ArticlePage: React.FC = () => {
         message.success('创建成功');
       }
       
-      setModalVisible(false);
+      setDrawerVisible(false);
       fetchArticles();
     } catch (error) {
       console.error('保存失败:', error);
@@ -280,82 +276,13 @@ const ArticlePage: React.FC = () => {
         pagination={{ pageSize: 10 }}
       />
       
-      <Modal
+      <ArticleFormDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        onSubmit={handleSaveArticle}
+        initialValues={editingArticle || undefined}
         title={editingArticle ? '编辑文章' : '添加文章'}
-        open={modalVisible}
-        onOk={handleSaveArticle}
-        onCancel={() => setModalVisible(false)}
-        width={800}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <Form.Item
-            name="title"
-            label="标题"
-            rules={[{ required: true, message: '请输入文章标题' }]}
-          >
-            <Input placeholder="请输入文章标题" />
-          </Form.Item>
-          
-          <Form.Item
-            name="content"
-            label="内容"
-            rules={[{ required: true, message: '请输入文章内容' }]}
-          >
-            <TextArea 
-              placeholder="请输入文章内容" 
-              rows={10} 
-              showCount 
-            />
-          </Form.Item>
-          
-          <div className="form-row">
-            <Form.Item
-              name="source"
-              label="来源"
-              className="form-col"
-            >
-              <Input placeholder="请输入文章来源" />
-            </Form.Item>
-            
-            <Form.Item
-              name="author"
-              label="作者"
-              className="form-col"
-            >
-              <Input placeholder="请输入文章作者" />
-            </Form.Item>
-          </div>
-          
-          <div className="form-row">
-            <Form.Item
-              name="publishDate"
-              label="发布日期"
-              className="form-col"
-            >
-              <DatePicker placeholder="选择发布日期" style={{ width: '100%' }} />
-            </Form.Item>
-            
-            <Form.Item
-              name="difficultyLevel"
-              label="难度级别"
-              className="form-col"
-              rules={[{ required: true, message: '请选择难度级别' }]}
-              initialValue={3}
-            >
-              <Select placeholder="请选择难度级别">
-                {difficultyLevelConfigs.map(config => (
-                  <Option key={config.value} value={config.value}>
-                    <Tag color={config.color}>{config.label}</Tag>
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </div>
-        </Form>
-      </Modal>
+      />
     </div>
   );
 };

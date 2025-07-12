@@ -132,6 +132,7 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
+      // 测试组件路由
       // 错误页面路由
       {
         path: '*',

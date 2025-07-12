@@ -78,6 +78,23 @@ const WordPage: React.FC = () => {
   useEffect(() => {
     fetchWords();
     fetchPartsOfSpeech();
+    
+    // 添加自定义事件监听器，用于刷新单词列表但不关闭抽屉
+    const handleRefreshWordList = (event: CustomEvent) => {
+      fetchWords();
+      // 如果需要关闭抽屉，则调用handleCloseDrawer
+      if (event.detail?.closeDrawer !== false) {
+        handleCloseDrawer();
+      }
+    };
+    
+    // 添加事件监听器
+    window.addEventListener('refreshWordList', handleRefreshWordList as EventListener);
+    
+    // 组件卸载时移除事件监听器
+    return () => {
+      window.removeEventListener('refreshWordList', handleRefreshWordList as EventListener);
+    };
   }, []);
 
   // 打开创建单词抽屉
@@ -250,6 +267,8 @@ const WordPage: React.FC = () => {
         wordId={editingWord?.id}
         onClose={handleCloseDrawer}
         onSuccess={() => {
+          // 这里保留原有的行为，用于其他操作（如添加词义、删除词义等）完成后的处理
+          // 基本信息保存会通过自定义事件处理
           fetchWords();
           handleCloseDrawer();
         }}

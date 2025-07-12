@@ -1,16 +1,16 @@
 import React from 'react';
-import { Modal, Table, Button, Space, Tag, Tooltip } from 'antd';
+import { Drawer, Table, Button, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined, SoundOutlined } from '@ant-design/icons';
 import { WordBook, Word } from '../../../types';
 
-interface WordBookDetailModalProps {
+interface WordBookDetailDrawerProps {
   visible: boolean;
   wordBook: WordBook;
   onClose: () => void;
   onRemoveWord: (wordId: string) => void;
 }
 
-const WordBookDetailModal: React.FC<WordBookDetailModalProps> = ({
+const WordBookDetailDrawer: React.FC<WordBookDetailDrawerProps> = ({
   visible,
   wordBook,
   onClose,
@@ -118,7 +118,7 @@ const WordBookDetailModal: React.FC<WordBookDetailModalProps> = ({
   ];
 
   return (
-    <Modal
+    <Drawer
       title={
         <Space>
           <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
@@ -128,14 +128,14 @@ const WordBookDetailModal: React.FC<WordBookDetailModalProps> = ({
         </Space>
       }
       open={visible}
-      onCancel={onClose}
-      footer={[
-        <Button key="close" onClick={onClose}>
+      onClose={onClose}
+      width={900}
+      placement="right"
+      extra={
+        <Button onClick={onClose}>
           关闭
         </Button>
-      ]}
-      width={900}
-      style={{ top: 20 }}
+      }
     >
       <div style={{ marginBottom: 16 }}>
         {wordBook.description && (
@@ -155,18 +155,18 @@ const WordBookDetailModal: React.FC<WordBookDetailModalProps> = ({
         dataSource={wordBook.words || []}
         rowKey="id"
         pagination={{
-          pageSize: 8,
+          pageSize: 10,
           showSizeChanger: false,
           showQuickJumper: true,
           showTotal: (total) => `共 ${total} 个单词`,
         }}
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         locale={{
           emptyText: '该单词本暂无单词'
         }}
       />
-    </Modal>
+    </Drawer>
   );
 };
 
-export default WordBookDetailModal;
+export default WordBookDetailDrawer;

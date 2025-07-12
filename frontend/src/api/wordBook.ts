@@ -29,8 +29,10 @@ export const deleteWordBook = (id: string) => {
 };
 
 // 向单词本添加单词
-export const addWordToWordBook = (wordBookId: string, wordId: string) => {
-  return axios.post(`${BASE_URL}/${wordBookId}/words/${wordId}`);
+export const addWordToWordBook = (wordBookId: string, wordIds: string | string[]) => {
+  // 如果是单个wordId，转换为数组
+  const wordIdList = Array.isArray(wordIds) ? wordIds : [wordIds];
+  return axios.post(`${BASE_URL}/${wordBookId}/words`, wordIdList);
 };
 
 // 从单词本移除单词

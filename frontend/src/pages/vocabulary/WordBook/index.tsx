@@ -4,17 +4,18 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutline
 import { getAllWordBooks, createWordBook, updateWordBook, deleteWordBook, addWordToWordBook, removeWordFromWordBook } from '../../../api/wordBook';
 import { getAllWords } from '../../../api';
 import { WordBook, Word } from '../../../types';
-import WordBookDetailModal from './WordBookDetailModal';
-import AddWordModal from './AddWordModal';
+import WordBookDetailDrawer from './WordBookDetailDrawer';
+import AddWordDrawer from './AddWordDrawer';
+import WordBookFormDrawer from './WordBookFormDrawer';
 import './style.css';
 
 const WordBookPage: React.FC = () => {
   // 状态定义
   const [wordBooks, setWordBooks] = useState<WordBook[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-  const [addWordModalVisible, setAddWordModalVisible] = useState<boolean>(false);
+  const [formDrawerVisible, setFormDrawerVisible] = useState<boolean>(false);
+  const [detailDrawerVisible, setDetailDrawerVisible] = useState<boolean>(false);
+  const [addWordDrawerVisible, setAddWordDrawerVisible] = useState<boolean>(false);
   const [editingWordBook, setEditingWordBook] = useState<WordBook | null>(null);
   const [selectedWordBook, setSelectedWordBook] = useState<WordBook | null>(null);
   const [searchText, setSearchText] = useState<string>('');
@@ -52,21 +53,16 @@ const WordBookPage: React.FC = () => {
     fetchAllWords();
   }, []);
 
-  // 打开创建单词本模态框
+  // 打开创建单词本抽屉
   const handleAddWordBook = () => {
     setEditingWordBook(null);
-    form.resetFields();
-    setModalVisible(true);
+    setFormDrawerVisible(true);
   };
 
-  // 打开编辑单词本模态框
+  // 打开编辑单词本抽屉
   const handleEditWordBook = (wordBook: WordBook) => {
     setEditingWordBook(wordBook);
-    form.setFieldsValue({
-      name: wordBook.name,
-      description: wordBook.description || ''
-    });
-    setModalVisible(true);
+    setFormDrawerVisible(true);
   };
 
   // 删除单词本
@@ -88,10 +84,8 @@ const WordBookPage: React.FC = () => {
   };
 
   // 保存单词本（创建或更新）
-  const handleSaveWordBook = async () => {
+  const handleSaveWordBook = async (values: { name: string; description?: string }) => {
     try {
-      const values = await form.validateFields();
-      
       const wordBookData = {
         name: values.name,
         description: values.description || undefined,
@@ -108,42 +102,37 @@ const WordBookPage: React.FC = () => {
         message.success('创建成功');
       }
       
-      setModalVisible(false);
-      form.resetFields();
+      setFormDrawerVisible(false);
       fetchWordBooks();
     } catch (error: any) {
-      if (error.errorFields) {
-        message.error('请检查表单输入');
-      } else {
-        message.error(editingWordBook ? '更新失败' : '创建失败');
-        console.error('保存失败:', error);
-      }
+      message.error(editingWordBook ? '更新失败' : '创建失败');
+      console.error('保存失败:', error);
     }
   };
 
   // 查看单词本详情
   const handleViewWordBook = (wordBook: WordBook) => {
     setSelectedWordBook(wordBook);
-    setDetailModalVisible(true);
+    setDetailDrawerVisible(true);
   };
 
-  // 打开添加单词模态框
+  // 打开添加单词抽屉
   const handleAddWordToBook = (wordBook: WordBook) => {
     setSelectedWordBook(wordBook);
-    setAddWordModalVisible(true);
+    setAddWordDrawerVisible(true);
   };
 
   // 添加单词到单词本
-  const handleAddWord = async (wordId: string) => {
+  const handleAddWord = async (wordIds: string | string[]) => {
     if (!selectedWordBook) return;
     
     try {
-      await addWordToWordBook(selectedWordBook.id, wordId);
-      message.success('添加单词成功');
-      setAddWordModalVisible(false);
+      await addWordToWordBook(selectedWordBook.id, wordIds);
+      message.success(Array.isArray(wordIds) ? '批量添加单词成功' : '添加单词成功');
+      setAddWordDrawerVisible(false);
       fetchWordBooks(); // 刷新列表
     } catch (error) {
-      message.error('添加单词失败');
+      message.error(Array.isArray(wordIds) ? '批量添加单词失败' : '添加单词失败');
       console.error('添加单词失败:', error);
     }
   };
@@ -159,7 +148,7 @@ const WordBookPage: React.FC = () => {
       // 更新详情模态框中的数据
       const updatedWordBook = {
         ...selectedWordBook,
-        words: selectedWordBook.words.filter(word => word.id !== wordId)
+        words: selectedWordBook.words?.filter(word => word.id !== wordId) || []
       };
       setSelectedWordBook(updatedWordBook);
     } catch (error) {
@@ -170,8 +159,8 @@ const WordBookPage: React.FC = () => {
 
   // 过滤单词本
   const filteredWordBooks = wordBooks.filter(wordBook =>
-    wordBook.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    (wordBook.description && wordBook.description.toLowerCase().includes(searchText.toLowerCase()))
+    wordBook?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    (wordBook?.description && wordBook.description.toLowerCase().includes(searchText.toLowerCase()))
   );
 
   // 表格列定义
@@ -203,11 +192,14 @@ const WordBookPage: React.FC = () => {
       title: '单词数量',
       dataIndex: 'words',
       key: 'wordCount',
-      render: (words: Word[]) => (
-        <Tag color={words.length > 0 ? 'blue' : 'default'}>
-          {words.length} 个单词
-        </Tag>
-      ),
+      render: (words: Word[] | null) => {
+        const wordCount = words?.length || 0;
+        return (
+          <Tag color={wordCount > 0 ? 'blue' : 'default'}>
+            {wordCount} 个单词
+          </Tag>
+        );
+      },
     },
     {
       title: '操作',
@@ -294,68 +286,33 @@ const WordBookPage: React.FC = () => {
       </div>
 
       {/* 创建/编辑单词本模态框 */}
-      <Modal
+      {/* 单词本表单抽屉 */}
+      <WordBookFormDrawer
+        visible={formDrawerVisible}
+        onClose={() => setFormDrawerVisible(false)}
+        onSubmit={handleSaveWordBook}
+        initialValues={editingWordBook || undefined}
         title={editingWordBook ? '编辑单词本' : '创建单词本'}
-        open={modalVisible}
-        onOk={handleSaveWordBook}
-        onCancel={() => {
-          setModalVisible(false);
-          form.resetFields();
-        }}
-        width={600}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{
-            name: '',
-            description: ''
-          }}
-        >
-          <Form.Item
-            label="单词本名称"
-            name="name"
-            rules={[
-              { required: true, message: '请输入单词本名称' },
-              { max: 50, message: '单词本名称不能超过50个字符' }
-            ]}
-          >
-            <Input placeholder="请输入单词本名称" />
-          </Form.Item>
-          
-          <Form.Item
-            label="描述"
-            name="description"
-            rules={[
-              { max: 200, message: '描述不能超过200个字符' }
-            ]}
-          >
-            <Input.TextArea
-              placeholder="请输入单词本描述（可选）"
-              rows={4}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      />
 
-      {/* 单词本详情模态框 */}
+      {/* 单词本详情抽屉 */}
       {selectedWordBook && (
-        <WordBookDetailModal
-          visible={detailModalVisible}
+        <WordBookDetailDrawer
+          visible={detailDrawerVisible}
           wordBook={selectedWordBook}
-          onClose={() => setDetailModalVisible(false)}
+          onClose={() => setDetailDrawerVisible(false)}
           onRemoveWord={handleRemoveWord}
         />
       )}
 
-      {/* 添加单词模态框 */}
+      {/* 添加单词抽屉 */}
       {selectedWordBook && (
-        <AddWordModal
-          visible={addWordModalVisible}
-          wordBook={selectedWordBook}
-          allWords={allWords}
-          onClose={() => setAddWordModalVisible(false)}
+        <AddWordDrawer
+          visible={addWordDrawerVisible}
+          onClose={() => setAddWordDrawerVisible(false)}
           onAddWord={handleAddWord}
+          allWords={allWords}
+          wordBookWords={selectedWordBook.words || []}
         />
       )}
     </div>

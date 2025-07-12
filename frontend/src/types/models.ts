@@ -32,6 +32,7 @@ export interface WordMeaningSynonym {
   id: string;
   meaningId: string;
   synonymWordId: string;
+  synonymMeaningId?: string; // 添加同义词词义ID字段
   synonymWord?: Word;
 }
 
@@ -42,6 +43,7 @@ export interface WordMeaningAntonym {
   id: string;
   meaningId: string;
   antonymWordId: string;
+  antonymMeaningId?: string; // 添加反义词词义ID字段
   antonymWord?: Word;
 }
 
