@@ -148,8 +148,11 @@ public class WordRepositoryImpl implements WordRepository {
     
     @Override
     public void deleteById(String id) {
-        // 先删除单词的所有词义
-        meaningJpaRepository.deleteByWordId(id);
+        // 先查询出所有词义，然后逐个删除，以确保级联删除生效
+        List<WordMeaningPO> meanings = meaningJpaRepository.findByWordId(id);
+        for (WordMeaningPO meaning : meanings) {
+            meaningJpaRepository.delete(meaning); // 使用JPA的delete方法触发级联删除
+        }
         // 再删除单词本身
         jpaRepository.deleteById(id);
     }

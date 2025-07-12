@@ -53,4 +53,12 @@ public interface WordMeaningMapper {
      * @return 词义详情DTO列表
      */
     List<WordMeaningDetailDTO> toDetailDTOList(List<WordMeaning> meanings);
+    
+    /**
+     * 将领域实体转换为详情DTO，并指定单词拼写
+     * @param meaning 词义领域实体
+     * @param spell 单词拼写
+     * @return 词义详情DTO
+     */
+    WordMeaningDetailDTO toWordMeaningDetailDTO(WordMeaning meaning, String spell);
 }

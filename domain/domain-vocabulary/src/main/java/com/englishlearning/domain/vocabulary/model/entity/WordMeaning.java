@@ -91,9 +91,9 @@ public class WordMeaning {
         if (this.antonymWordMeaningIds == null) {
             this.antonymWordMeaningIds = new ArrayList<>();
         }
-        SynonymInfo synonymInfo = SynonymInfo.builder().synonymWordId(antonymWordId).synonymMeaningId(antonymMeaningId).build();
-        if (!this.synonymWordMeaningIds.contains(synonymInfo)) {
-            this.synonymWordMeaningIds.add(synonymInfo);
+        AntonymInfo antonymInfo = AntonymInfo.builder().antonymWordId(antonymWordId).antonymMeaningId(antonymMeaningId).build();
+        if (!this.antonymWordMeaningIds.contains(antonymInfo)) {
+            this.antonymWordMeaningIds.add(antonymInfo);
         }
     }
     

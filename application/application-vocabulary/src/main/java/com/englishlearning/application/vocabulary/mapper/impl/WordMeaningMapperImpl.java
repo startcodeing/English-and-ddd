@@ -103,7 +103,22 @@ public class WordMeaningMapperImpl implements WordMeaningMapper {
         return meanings.stream().map(this::toDetailDTO).collect(Collectors.toList());
     }
 
-
+    @Override
+    public WordMeaningDetailDTO toWordMeaningDetailDTO(WordMeaning meaning, String spell) {
+        if (meaning == null) {
+            return null;
+        }
+        List<ExampleSentenceDetailDTO> sentenceDetail = sentenceProvider.getSentenceDetail(meaning.getExampleSentenceIds());
+        return WordMeaningDetailDTO.builder()
+                .id(meaning.getId())
+                .wordId(meaning.getWordId())
+                .partOfSpeechId(meaning.getPartOfSpeechId())
+                .chineseMeaning(meaning.getChineseMeaning())
+                .synonyms(convertSynonymInfosToDetailDTOs(meaning.getSynonymWordMeaningIds(), spell))
+                .antonyms(convertAntonymInfosToDetailDTOs(meaning.getAntonymWordMeaningIds(), spell))
+                .exampleSentences(sentenceDetail)
+                .build();
+    }
 
     // 辅助方法：将SynonymInfo列表转换为SynonymDetailDTO列表
     private List<SynonymDetailDTO> convertSynonymInfosToDetailDTOs(List<SynonymInfo> synonymInfos,String spell) {
@@ -111,11 +126,16 @@ public class WordMeaningMapperImpl implements WordMeaningMapper {
             return new ArrayList<>();
         }
         return synonymInfos.stream()
-                .map(info -> SynonymDetailDTO.builder()
-                        .synonymWordId(info.getSynonymWordId())
-                        .synonymMeaningId(info.getSynonymMeaningId())
-                        .synonymSpell(spell)
-                        .build())
+                .map(info -> {
+                    String synonymSpell = wordRepository.findById(info.getSynonymWordId())
+                            .map(Word::getSpelling)
+                            .orElse("未知单词");
+                    return SynonymDetailDTO.builder()
+                            .synonymWordId(info.getSynonymWordId())
+                            .synonymMeaningId(info.getSynonymMeaningId())
+                            .synonymSpell(synonymSpell)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -125,11 +145,16 @@ public class WordMeaningMapperImpl implements WordMeaningMapper {
             return new ArrayList<>();
         }
         return antonymInfos.stream()
-                .map(info -> AntonymDetailDTO.builder()
-                        .antonymWordId(info.getAntonymWordId())
-                        .antonymMeaningId(info.getAntonymMeaningId())
-                        .antonymSpell(spell)
-                        .build())
+                .map(info -> {
+                    String antonymSpell = wordRepository.findById(info.getAntonymWordId())
+                            .map(Word::getSpelling)
+                            .orElse("未知单词");
+                    return AntonymDetailDTO.builder()
+                            .antonymWordId(info.getAntonymWordId())
+                            .antonymMeaningId(info.getAntonymMeaningId())
+                            .antonymSpell(antonymSpell)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 }
