@@ -5,7 +5,7 @@ import { getAllArticles, createArticle, updateArticle, deleteArticle, batchDelet
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import ArticleFormDrawer from './ArticleFormDrawer';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjs';
 import './style.css';
 
 const { TextArea } = Input;
@@ -122,12 +122,19 @@ const ArticlePage: React.FC = () => {
   }) => {
     try {
       // 构建文章对象
+      // 确保日期有效
+      let formattedDate = undefined;
+      if (values.publishDate) {
+        // 使用dayjs内置方法验证日期
+        formattedDate = values.publishDate.format('YYYY-MM-DD');
+      }
+      
       const articleData: Omit<Article, 'id'> = {
         title: values.title,
         content: values.content,
         source: values.source || undefined,
         author: values.author || undefined,
-        publishDate: values.publishDate ? values.publishDate.format('YYYY-MM-DD HH:mm:ss') : undefined,
+        publishDate: formattedDate,
         difficultyLevel: values.difficultyLevel,
         unfamiliarWords: [],
         sentences: []

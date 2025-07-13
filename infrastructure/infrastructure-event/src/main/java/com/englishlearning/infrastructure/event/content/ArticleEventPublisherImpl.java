@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ArticleEventPublisherImpl implements ArticleEventPublisher {
 
-    //private final EventBus eventBus;
     private DomainEventPublisher eventBus;
 
     @Autowired
@@ -39,12 +38,6 @@ public class ArticleEventPublisherImpl implements ArticleEventPublisher {
     public void publishArticleUpdatedEvent(ArticleUpdatedEvent event) {
         log.info("Publishing article updated event: {}", event);
         eventBus.publish(event);
-    }
-    
-    @Override
-    public void publishArticleDeletedEvent(String articleId) {
-        log.info("Publishing article deleted event for id: {}", articleId);
-        eventBus.publish(articleId);
     }
     
     @Override

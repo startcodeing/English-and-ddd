@@ -3,7 +3,7 @@ import { Card, List, Typography, Spin, Empty, Tabs, DatePicker, Select, Row, Col
 import { ClockCircleOutlined, FilterOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import dayjs from 'dayjs';
+import dayjs from '../../utils/dayjs';
 import type { Dayjs } from 'dayjs';
 import { UserActivity, getUserRecentActivities, getUserActivitiesByType, getUserActivitiesByTimeRange } from '../../api/userActivityApi';
 import UserActivityIcon from '../../components/UserActivityIcon';
@@ -139,6 +139,7 @@ const UserActivityPage: React.FC = () => {
               style={{ width: '100%' }} 
               value={dateRange}
               onChange={handleDateRangeChange}
+              format="YYYY-MM-DD"
             />
           </Col>
           <Col xs={24} sm={12} md={8} lg={6}>

@@ -8,6 +8,7 @@ import com.englishlearning.infrastructure.db.mapper.WordMeaningPoMapper;
 import com.englishlearning.infrastructure.db.mapper.WordPoMapper;
 import com.englishlearning.infrastructure.db.po.WordMeaningPO;
 import com.englishlearning.infrastructure.db.po.WordPO;
+import com.englishlearning.infrastructure.db.repository.jpa.WordBookWordJpaRepository;
 import com.englishlearning.infrastructure.db.repository.jpa.WordJpaRepository;
 import com.englishlearning.infrastructure.db.repository.jpa.WordMeaningJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class WordRepositoryImpl implements WordRepository {
     
     private final WordJpaRepository jpaRepository;
     private final WordMeaningJpaRepository meaningJpaRepository;
+    private final WordBookWordJpaRepository wordBookWordJpaRepository;
     private final WordPoMapper mapper;
     private final UUIDGenerator uuidGenerator;
     
@@ -148,12 +150,15 @@ public class WordRepositoryImpl implements WordRepository {
     
     @Override
     public void deleteById(String id) {
-        // 先查询出所有词义，然后逐个删除，以确保级联删除生效
+        // 先删除单词本-单词关联表中的记录
+        wordBookWordJpaRepository.deleteByWordId(id);
+        
+        // 再查询出所有词义，然后逐个删除，以确保级联删除生效
         List<WordMeaningPO> meanings = meaningJpaRepository.findByWordId(id);
         for (WordMeaningPO meaning : meanings) {
             meaningJpaRepository.delete(meaning); // 使用JPA的delete方法触发级联删除
         }
-        // 再删除单词本身
+        // 最后删除单词本身
         jpaRepository.deleteById(id);
     }
     

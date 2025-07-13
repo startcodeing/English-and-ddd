@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// 导入dayjs配置，确保全局可用
+import './utils/dayjs';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

@@ -465,12 +465,6 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
               meanings: []
             }
           })),
-          exampleSentences: detailedMeaning.exampleSentences.map(es => ({
-            id: es.id,
-            meaningId: detailedMeaning.id,
-            englishSentence: es.englishContent,
-            chineseSentence: es.chineseMeaning
-          })),
           sentences: detailedMeaning.exampleSentences.map(es => ({
             englishContent: es.englishContent,
             chineseMeaning: es.chineseMeaning
@@ -527,18 +521,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         chineseMeaning: values.chineseMeaning,
         synonymWordMeaningIds,
         antonymWordMeaningIds,
-        exampleSentences: values.exampleSentence ? [{
-          id: '',
-          meaningId: '',
-          englishSentence: values.exampleSentence,
-          chineseSentence: values.chineseTranslation || ''
-        }] : [],
         sentences: values.exampleSentence ? [{
           englishContent: values.exampleSentence,
           chineseMeaning: values.chineseTranslation || ''
-        }] : [],
-        synonyms: synonyms,
-        antonyms: antonyms
+        }] : []
       };
 
       // 先调用添加词义接口
@@ -692,8 +678,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       chineseMeaning: meaning.chineseMeaning,
       synonyms: synonymValues,
       antonyms: antonymValues,
-      exampleSentence: meaning.exampleSentences?.[0]?.englishSentence || '',
-      chineseTranslation: meaning.exampleSentences?.[0]?.chineseSentence || ''
+      exampleSentence: meaning.sentences?.[0]?.englishContent || '',
+      chineseTranslation: meaning.sentences?.[0]?.chineseMeaning || ''
     });
   };
 
@@ -745,18 +731,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         chineseMeaning: values.chineseMeaning,
         synonymWordMeaningIds,
         antonymWordMeaningIds,
-        exampleSentences: values.exampleSentence ? [{
-          id: '',
-          meaningId: currentEditingMeaningId,
-          englishSentence: values.exampleSentence,
-          chineseSentence: values.chineseTranslation || ''
-        }] : [],
         sentences: values.exampleSentence ? [{
           englishContent: values.exampleSentence,
           chineseMeaning: values.chineseTranslation || ''
-        }] : [],
-        synonyms: synonyms,
-        antonyms: antonyms
+        }] : []
       };
 
       // 先调用更新词义接口

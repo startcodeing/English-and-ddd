@@ -5,6 +5,7 @@ import com.englishlearning.application.content.mapper.ArticleMapper;
 import com.englishlearning.application.content.service.ArticleApplicationService;
 import com.englishlearning.domain.content.dto.CreateArticleDTO;
 import com.englishlearning.domain.content.dto.UpdateArticleDTO;
+import com.englishlearning.domain.content.event.ArticleBatchDeletedEvent;
 import com.englishlearning.domain.content.event.ArticleCreatedEvent;
 import com.englishlearning.domain.content.event.ArticleDeletedEvent;
 import com.englishlearning.domain.content.event.ArticleEventPublisher;
@@ -244,6 +245,14 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
             return;
         }
         articleRepository.deleteAllById(ids);
+        
+        // 发布文章批量删除事件
+        ArticleBatchDeletedEvent event = ArticleBatchDeletedEvent.builder()
+                .userId("system") // 临时设置，等用户功能添加后修改
+                .username("system") // 临时设置，等用户功能添加后修改
+                .articleIds(ids)
+                .build();
+        articleEventPublisher.publishArticleBatchDeletedEvent(event);
     }
 
     /**

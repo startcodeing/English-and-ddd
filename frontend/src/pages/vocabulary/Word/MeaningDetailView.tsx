@@ -49,21 +49,7 @@ const MeaningDetailView: React.FC<MeaningDetailViewProps> = ({ meaning, partOfSp
         </div>
       )}
       
-      {(meaning.exampleSentences && meaning.exampleSentences.length > 0) ? (
-        <div className="meaning-item">
-          <Text strong>例句：</Text>
-          <div className="example-sentences">
-            {meaning.exampleSentences.map((sentence, idx) => (
-              <div key={idx} className="example-sentence">
-                <div className="english-sentence">{sentence.englishSentence}</div>
-                {sentence.chineseSentence && (
-                  <div className="chinese-sentence">{sentence.chineseSentence}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : meaning.sentences && meaning.sentences.length > 0 ? (
+      {meaning.sentences && meaning.sentences.length > 0 ? (
         <div className="meaning-item">
           <Text strong>例句：</Text>
           <div className="example-sentences">

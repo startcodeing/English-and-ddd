@@ -50,6 +50,28 @@
   display: inline-block;
 }
 
+/* 词性列样式 */
+.part-of-speech-item {
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dashed #f0f0f0;
+}
+
+.part-of-speech-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.part-of-speech-name {
+  font-weight: 500;
+  color: #1890ff;
+  margin-bottom: 2px;
+}
+
+.part-of-speech-meaning {
+  color: #333;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .word-page-header {

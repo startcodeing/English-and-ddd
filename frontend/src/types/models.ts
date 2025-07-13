@@ -73,9 +73,9 @@ export interface WordMeaning extends BaseEntity {
   chineseMeaning: string;
   synonymWordMeaningIds?: SynonymInfo[];
   antonymWordMeaningIds?: AntonymInfo[];
-  exampleSentences?: WordMeaningSentence[];
-  synonyms?: WordMeaningSynonym[];
-  antonyms?: WordMeaningAntonym[];
+  // 以下字段仅用于前端展示，不会发送到后端
+  synonyms?: WordMeaningSynonym[]; // 仅用于前端展示，不会发送到后端
+  antonyms?: WordMeaningAntonym[]; // 仅用于前端展示，不会发送到后端
   sentences?: Array<{
     englishContent: string;
     chineseMeaning: string;
@@ -134,7 +134,7 @@ export interface DetailedWordMeaning {
   chineseMeaning: string;
   synonyms: DetailedSynonym[];
   antonyms: DetailedAntonym[];
-  exampleSentences: DetailedExampleSentence[];
+  exampleSentences: DetailedExampleSentence[]; // 保留此字段用于接收后端数据
 }
 
 /**

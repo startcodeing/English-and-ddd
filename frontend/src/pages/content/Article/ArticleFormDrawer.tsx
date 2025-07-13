@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Drawer, Form, Input, Button, Space, DatePicker, Select, Tag } from 'antd';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjs';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -40,7 +40,7 @@ const ArticleFormDrawer: React.FC<ArticleFormDrawerProps> = ({
           content: initialValues.content,
           source: initialValues.source || '',
           author: initialValues.author || '',
-          publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : null,
+          publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate, 'YYYY-MM-DD') : null,
           difficultyLevel: initialValues.difficultyLevel || 3
         });
       } else {
@@ -123,7 +123,13 @@ const ArticleFormDrawer: React.FC<ArticleFormDrawerProps> = ({
             label="发布日期"
             className="form-col"
           >
-            <DatePicker placeholder="选择发布日期" style={{ width: '100%' }} />
+            <DatePicker 
+              placeholder="选择发布日期" 
+              style={{ width: '100%' }} 
+              format="YYYY-MM-DD"
+              allowClear
+              inputReadOnly
+            />
           </Form.Item>
           
           <Form.Item

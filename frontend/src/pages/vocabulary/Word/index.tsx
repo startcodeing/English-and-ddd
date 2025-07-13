@@ -3,7 +3,7 @@ import { Table, Space, Button, Input, message, Modal } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { getAllWords, createWord, updateWord, deleteWord, batchDeleteWords } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
-import { Word, PartOfSpeech } from '../../../types';
+import { Word, PartOfSpeech, WordMeaning } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import {DifficultyLevel} from '../../../types';
 import WordDetailDrawer from './WordDetailDrawer';
@@ -20,6 +20,7 @@ interface SimpleWord {
   meaning: string;
   difficultyLevel: DifficultyLevel;
   example: string;
+  meanings: WordMeaning[];
 }
 
 const WordPage: React.FC = () => {
@@ -44,9 +45,10 @@ const WordPage: React.FC = () => {
       partOfSpeechId: mainMeaning?.partOfSpeechId || '',
       meaning: mainMeaning?.chineseMeaning || '',
       difficultyLevel: word.difficultyLevel || DifficultyLevel.MEDIUM,
-      example: mainMeaning?.exampleSentences && mainMeaning.exampleSentences.length > 0 
-        ? mainMeaning.exampleSentences[0].englishSentence 
-        : ''
+      example: mainMeaning?.sentences && mainMeaning.sentences.length > 0 
+        ? mainMeaning.sentences[0].englishContent 
+        : '',
+      meanings: word.meanings || []
     };
   };
 
@@ -205,20 +207,30 @@ const WordPage: React.FC = () => {
       dataIndex: 'phonetic',
       key: 'phonetic'
     },
-    // {
-    //   title: '词性',
-    //   dataIndex: 'partOfSpeechId',
-    //   key: 'partOfSpeechId',
-    //   render: (partOfSpeechId: string) => {
-    //     const partOfSpeech = partsOfSpeech.find(pos => pos.id === partOfSpeechId);
-    //     return partOfSpeech ? partOfSpeech.englishName : '未知';
-    //   }
-    // },
-    // {
-    //   title: '含义',
-    //   dataIndex: 'meaning',
-    //   key: 'meaning'
-    // },
+    {
+      title: '词性',
+      key: 'partsOfSpeech',
+      width: 250,
+      render: (record: SimpleWord) => {
+        if (!record.meanings || record.meanings.length === 0) {
+          return '无';
+        }
+        
+        return (
+          <div>
+            {record.meanings.map((meaning, index) => {
+              const partOfSpeech = partsOfSpeech.find(pos => pos.id === meaning.partOfSpeechId);
+              return (
+                <div key={meaning.id || index} className="part-of-speech-item">
+                  <div className="part-of-speech-name">{partOfSpeech ? partOfSpeech.chineseMeaning : '未知'}</div>
+                  <div className="part-of-speech-meaning">{meaning.chineseMeaning}</div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+    },
     {
       title: '难度',
       dataIndex: 'difficultyLevel',
