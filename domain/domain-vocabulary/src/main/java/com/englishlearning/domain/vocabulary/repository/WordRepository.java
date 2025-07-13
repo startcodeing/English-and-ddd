@@ -49,4 +49,9 @@ public interface WordRepository {
      * 删除单词
      */
     void deleteById(String id);
-} 
+    
+    /**
+     * 批量删除单词
+     */
+    void deleteAllById(List<String> ids);
+}

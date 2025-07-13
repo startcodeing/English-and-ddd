@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, EyeOutlined } from '@ant-design/icons';
-import { getAllWordBooks, createWordBook, updateWordBook, deleteWordBook, addWordToWordBook, removeWordFromWordBook } from '../../../api/wordBook';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, EyeOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { getAllWordBooks, createWordBook, updateWordBook, deleteWordBook, addWordToWordBook, removeWordFromWordBook, batchDeleteWordBooks } from '../../../api/wordBook';
 import { getAllWords } from '../../../api';
 import { WordBook, Word } from '../../../types';
 import WordBookDetailDrawer from './WordBookDetailDrawer';
@@ -20,6 +20,8 @@ const WordBookPage: React.FC = () => {
   const [selectedWordBook, setSelectedWordBook] = useState<WordBook | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [allWords, setAllWords] = useState<Word[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   // 获取单词本列表
@@ -81,6 +83,46 @@ const WordBookPage: React.FC = () => {
         }
       }
     });
+  };
+  
+  // 批量删除单词本
+  const handleBatchDelete = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请至少选择一个单词本');
+      return;
+    }
+
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个单词本吗？删除后无法恢复。`,
+      onOk: async () => {
+        try {
+          setDeleteLoading(true);
+          await batchDeleteWordBooks(selectedRowKeys as string[]);
+          message.success('批量删除成功');
+          setSelectedRowKeys([]);
+          fetchWordBooks();
+        } catch (error) {
+          message.error('批量删除失败');
+          console.error('批量删除失败:', error);
+        } finally {
+          setDeleteLoading(false);
+        }
+      }
+    });
+  };
+  
+  // 清除选择
+  const handleClearSelection = () => {
+    setSelectedRowKeys([]);
+  };
+  
+  // 行选择配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    }
   };
 
   // 保存单词本（创建或更新）
@@ -270,8 +312,29 @@ const WordBookPage: React.FC = () => {
           </div>
         </div>
 
+        {/* 批量操作区域 */}
+        {selectedRowKeys.length > 0 && (
+          <div className="batch-actions-area">
+            <span className="selected-count">
+              已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
+            </span>
+            <Space>
+              <Button size="small" onClick={handleClearSelection}>清除选择</Button>
+              <Button
+                danger
+                icon={<DeleteColumnOutlined />}
+                onClick={handleBatchDelete}
+                loading={deleteLoading}
+              >
+                批量删除
+              </Button>
+            </Space>
+          </div>
+        )}
+        
         {/* 单词本表格 */}
         <Table
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={filteredWordBooks}
           rowKey="id"

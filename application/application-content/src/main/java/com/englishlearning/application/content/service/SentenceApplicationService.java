@@ -66,4 +66,9 @@ public interface SentenceApplicationService {
      * 删除句子
      */
     void deleteSentence(String id);
+    
+    /**
+     * 批量删除句子
+     */
+    void batchDeleteSentences(List<String> ids);
 }

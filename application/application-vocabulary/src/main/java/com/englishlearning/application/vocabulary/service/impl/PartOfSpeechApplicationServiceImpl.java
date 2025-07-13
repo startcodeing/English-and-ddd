@@ -73,6 +73,15 @@ public class PartOfSpeechApplicationServiceImpl implements PartOfSpeechApplicati
     public void deletePartOfSpeech(String id) {
         partOfSpeechRepository.deleteById(id);
     }
+    
+    @Transactional
+    @Override
+    public void batchDeletePartOfSpeech(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        partOfSpeechRepository.deleteAllById(ids);
+    }
 
 
     @Override

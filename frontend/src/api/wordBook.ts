@@ -28,6 +28,11 @@ export const deleteWordBook = (id: string) => {
   return axios.delete(`${BASE_URL}/${id}`);
 };
 
+// 批量删除单词本
+export const batchDeleteWordBooks = (ids: string[]) => {
+  return axios.delete(`${BASE_URL}/batch`, { data: { ids } });
+};
+
 // 向单词本添加单词
 export const addWordToWordBook = (wordBookId: string, wordIds: string | string[]) => {
   // 如果是单个wordId，转换为数组

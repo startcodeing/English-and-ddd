@@ -1,0 +1,64 @@
+.recent-activities-container {
+  height: 100%;
+}
+
+.activity-item {
+  padding: 12px 0;
+  transition: background-color 0.3s;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.activity-item:hover {
+  background-color: #f9f9f9;
+}
+
+.activity-item:active {
+  background-color: #f0f0f0;
+}
+
+.activity-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.activity-description {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.activity-icon {
+  font-size: 16px;
+}
+
+.empty-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 768px) {
+  .activity-description {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .activity-time {
+    margin-top: 4px;
+    margin-left: 0;
+  }
+}

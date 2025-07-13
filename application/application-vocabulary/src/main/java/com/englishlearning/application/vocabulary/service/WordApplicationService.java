@@ -88,6 +88,11 @@ public interface WordApplicationService {
      * 删除单词
      */
     void deleteWord(String id);
+    
+    /**
+     * 批量删除单词
+     */
+    void batchDeleteWords(List<String> ids);
 
     /**
      * 删除词性例句

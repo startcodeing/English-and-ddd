@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Avatar, Dropdown, Button, theme } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -20,6 +20,7 @@ const { Header, Sider, Content } = Layout;
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -113,6 +114,11 @@ const MainLayout: React.FC = () => {
         label: '个人资料',
       },
       {
+        key: 'activities',
+        icon: <BookOutlined />,
+        label: '我的活动',
+      },
+      {
         key: 'logout',
         icon: <LogoutOutlined />,
         label: '退出登录',
@@ -125,6 +131,9 @@ const MainLayout: React.FC = () => {
       } else if (key === 'profile') {
         // 处理个人资料逻辑
         navigate('/profile');
+      } else if (key === 'activities') {
+        // 跳转到用户活动页面
+        navigate('/user/activities');
       }
     },
   };
@@ -157,6 +166,17 @@ const MainLayout: React.FC = () => {
     
     return [];
   };
+  
+  // 当路由变化时更新openKeys
+  useEffect(() => {
+    const currentOpenKeys = getOpenKeys();
+    setOpenKeys(currentOpenKeys);
+  }, [location.pathname]);
+  
+  // 处理子菜单展开/收起
+  const handleOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
+  };
 
   return (
     <Layout className="main-layout">
@@ -167,8 +187,9 @@ const MainLayout: React.FC = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={getSelectedKeys()}
-          defaultOpenKeys={getOpenKeys()}
+          selectedKeys={getSelectedKeys()}
+          openKeys={openKeys}
+          onOpenChange={handleOpenChange}
           items={menuItems}
         />
       </Sider>

@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../../store/authSlice';
 import { appConfig } from '../../../config';
+import { saveToken, saveUserInfo } from '../../../utils/auth';
 import './style.css';
 
 interface LoginFormValues {
@@ -14,6 +17,7 @@ interface LoginFormValues {
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
@@ -24,11 +28,32 @@ const Login: React.FC = () => {
       
       // 模拟登录成功
       // 在实际应用中，这里应该保存从后端获取的token
-      localStorage.setItem(appConfig.tokenKey, 'mock-token');
-      localStorage.setItem(
-        appConfig.tokenExpiryKey, 
-        (Date.now() + 24 * 60 * 60 * 1000).toString()
-      );
+      const token = 'mock-token';
+      const expiryTime = Date.now() + 24 * 60 * 60 * 1000;
+      
+      // 使用auth工具函数保存token
+      saveToken(token, expiryTime);
+      
+      // 模拟用户信息
+      const mockUser = {
+        id: '1',
+        username: values.username,
+        email: `${values.username}@example.com`,
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+      
+      // 保存用户信息到localStorage，使用UserInfo格式
+      saveUserInfo({
+        id: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+        roles: [mockUser.role]
+      });
+      
+      // 更新Redux状态
+      dispatch(loginSuccess({ user: mockUser, token }));
       
       message.success('登录成功');
       navigate('/');

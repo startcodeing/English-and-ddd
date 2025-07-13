@@ -4,4 +4,5 @@ public interface SentenceEventPublisher {
     void publishSentenceCreatedEvent(SentenceCreatedEvent event);
     void publishSentenceUpdatedEvent(SentenceUpdatedEvent event);
     void publishSentenceDeletedEvent(String sentenceId);
+    void publishSentenceDeletedEvent(SentenceDeletedEvent event);
 }

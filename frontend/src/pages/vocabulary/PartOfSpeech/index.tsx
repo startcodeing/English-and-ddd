@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech } from '../../../api/partOfSpeech';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech, batchDeletePartOfSpeech } from '../../../api/partOfSpeech';
 import { PartOfSpeech } from '@/types';
 import './style.css';
 
@@ -13,6 +13,8 @@ const PartOfSpeechPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingPartOfSpeech, setEditingPartOfSpeech] = useState<PartOfSpeech | null>(null);
   const [searchText, setSearchText] = useState<string>('');
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   // 获取词性列表
@@ -107,6 +109,38 @@ const PartOfSpeechPage: React.FC = () => {
     }
   };
 
+  // 批量删除词性
+  const handleBatchDelete = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请至少选择一个词性');
+      return;
+    }
+
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个词性吗？`,
+      onOk: async () => {
+        try {
+          setDeleteLoading(true);
+          await batchDeletePartOfSpeech(selectedRowKeys as string[]);
+          message.success('批量删除成功');
+          setSelectedRowKeys([]);
+          fetchPartsOfSpeech();
+        } catch (error) {
+          message.error('批量删除失败');
+          console.error('批量删除失败:', error);
+        } finally {
+          setDeleteLoading(false);
+        }
+      }
+    });
+  };
+
+  // 清除选择
+  const handleClearSelection = () => {
+    setSelectedRowKeys([]);
+  };
+
   // 搜索词性
   const handleSearch = (value: string) => {
     setSearchText(value);
@@ -196,12 +230,41 @@ const PartOfSpeechPage: React.FC = () => {
         </div>
       </div>
       
+      {/* 批量操作区域 */}
+      {selectedRowKeys.length > 0 && (
+        <div className="batch-actions-area">
+          <div className="selected-count">
+            已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
+          </div>
+          <Button 
+            onClick={handleClearSelection} 
+            icon={<CloseCircleOutlined />}
+            style={{ marginRight: 8 }}
+          >
+            清除选择
+          </Button>
+          <Button 
+            type="primary" 
+            danger 
+            onClick={handleBatchDelete} 
+            loading={deleteLoading}
+            icon={<DeleteOutlined />}
+          >
+            批量删除
+          </Button>
+        </div>
+      )}
+      
       <Table
         columns={columns}
         dataSource={filteredPartsOfSpeech}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 10 }}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (keys) => setSelectedRowKeys(keys),
+        }}
       />
       
       <Modal

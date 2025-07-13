@@ -6,6 +6,10 @@ import com.englishlearning.application.content.mapper.SentenceMapper;
 import com.englishlearning.application.content.service.SentenceApplicationService;
 import com.englishlearning.domain.content.dto.CreateSentenceDomainDTO;
 import com.englishlearning.domain.content.dto.UpdateSentenceDTO;
+import com.englishlearning.domain.content.event.SentenceCreatedEvent;
+import com.englishlearning.domain.content.event.SentenceDeletedEvent;
+import com.englishlearning.domain.content.event.SentenceEventPublisher;
+import com.englishlearning.domain.content.event.SentenceUpdatedEvent;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.model.entity.SentenceVariant;
 import com.englishlearning.domain.content.repository.SentenceRepository;
@@ -30,6 +34,7 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     private final SentenceRepository sentenceRepository;
     private final WordRepository wordRepository;
     private final SentenceMapper sentenceMapper;
+    private final SentenceEventPublisher sentenceEventPublisher;
 
     /**
      * 创建句子
@@ -48,6 +53,14 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                 .build();
         newSentence.create(sentenceInfo);
         Sentence savedSentence = sentenceRepository.save(newSentence);
+        
+        // 发布句子创建事件
+        SentenceCreatedEvent event = new SentenceCreatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setSentence(savedSentence);
+        sentenceEventPublisher.publishSentenceCreatedEvent(event);
+        
         return sentenceMapper.toDTO(savedSentence);
     }
     
@@ -69,6 +82,14 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
 
         sentence.update(updateInfo);
         Sentence savedSentence = sentenceRepository.save(sentence);
+        
+        // 发布句子更新事件
+        SentenceUpdatedEvent event = new SentenceUpdatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setSentence(savedSentence);
+        sentenceEventPublisher.publishSentenceUpdatedEvent(event);
+        
         return sentenceMapper.toDTO(savedSentence);
     }
 
@@ -134,7 +155,18 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
     @Transactional
     @Override
     public void deleteSentence(String id) {
+        // 在删除前获取句子信息，用于事件发布
+        Sentence sentence = sentenceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + id));
+        
         sentenceRepository.deleteById(id);
+        
+        // 发布句子删除事件
+        SentenceDeletedEvent event = new SentenceDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setSentence(sentence);
+        sentenceEventPublisher.publishSentenceDeletedEvent(event);
     }
     
     /**
@@ -174,5 +206,17 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
         return sentenceRepository.findByChineseMeaningLike(chineseMeaning).stream()
                 .map(sentenceMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * 批量删除句子
+     */
+    @Transactional
+    @Override
+    public void batchDeleteSentences(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        sentenceRepository.deleteAllById(ids);
     }
 }

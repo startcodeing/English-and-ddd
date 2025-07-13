@@ -1,5 +1,6 @@
 package com.englishlearning.domain.content.event;
 
+import com.englishlearning.domain.content.model.entity.Article;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,22 +14,17 @@ import lombok.NoArgsConstructor;
 public class ArticleCreatedEvent {
     
     /**
-     * 文章ID
+     * 用户ID
      */
-    private String articleId;
+    private String userId;
     
     /**
-     * 文章标题
+     * 用户名
      */
-    private String title;
+    private String username;
     
     /**
-     * 文章难度级别
+     * 文章
      */
-    private Integer difficultyLevel;
-    
-    /**
-     * 文章句子数量
-     */
-    private Integer sentenceCount;
-} 
+    private Article article;
+}

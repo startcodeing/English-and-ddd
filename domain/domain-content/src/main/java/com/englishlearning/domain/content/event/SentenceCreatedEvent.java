@@ -15,17 +15,17 @@ import lombok.NoArgsConstructor;
 public class SentenceCreatedEvent {
     
     /**
-     * 句子ID
+     * 用户ID
      */
-    private String sentenceId;
+    private String userId;
     
     /**
-     * 句子英文内容
+     * 用户名
      */
-    private String englishContent;
+    private String username;
     
     /**
-     * 句子中文意思
+     * 句子
      */
-    private String chineseMeaning;
-} 
+    private com.englishlearning.domain.content.model.entity.Sentence sentence;
+}

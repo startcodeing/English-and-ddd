@@ -1,0 +1,4 @@
+com\englishlearning\infrastructure\activity\repository\jpa\UserActivityJpaRepository.class
+com\englishlearning\infrastructure\activity\repository\UserActivityRepositoryImpl.class
+com\englishlearning\infrastructure\activity\po\UserActivityPO$UserActivityPOBuilder.class
+com\englishlearning\infrastructure\activity\po\UserActivityPO.class

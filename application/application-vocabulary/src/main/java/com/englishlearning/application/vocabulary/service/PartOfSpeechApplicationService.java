@@ -34,7 +34,11 @@ public interface PartOfSpeechApplicationService {
      * 删除词性
      */
     void deletePartOfSpeech(String id);
-
+    
+    /**
+     * 批量删除词性
+     */
+    void batchDeletePartOfSpeech(List<String> ids);
 
     /**
      * 添加常用短语

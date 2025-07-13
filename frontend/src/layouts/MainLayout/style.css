@@ -57,20 +57,29 @@
 }
 
 .main-content {
-  margin: 24px 16px;
-  padding: 24px;
-  min-height: 280px;
+  margin: 16px;
+  padding: 16px;
+  height: calc(100vh - 64px - 32px); /* 视口高度减去头部高度和边距 */
   overflow: auto;
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
   .main-content {
-    margin: 16px 8px;
-    padding: 16px;
+    margin: 8px;
+    padding: 12px;
+    height: calc(100vh - 64px - 16px);
   }
   
   .username {
     display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-content {
+    margin: 4px;
+    padding: 8px;
+    height: calc(100vh - 64px - 8px);
   }
 }

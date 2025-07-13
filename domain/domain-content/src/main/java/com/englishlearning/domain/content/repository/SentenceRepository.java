@@ -44,4 +44,9 @@ public interface SentenceRepository {
      * 删除句子
      */
     void deleteById(String id);
-} 
+    
+    /**
+     * 批量删除句子
+     */
+    void deleteAllById(List<String> ids);
+}

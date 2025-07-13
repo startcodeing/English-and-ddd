@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, message, Modal } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { getAllWords, createWord, updateWord, deleteWord } from '../../../api';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { getAllWords, createWord, updateWord, deleteWord, batchDeleteWords } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
 import { Word, PartOfSpeech } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
@@ -31,6 +31,8 @@ const WordPage: React.FC = () => {
   const [editingWord, setEditingWord] = useState<SimpleWord | null>(null);
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [searchText, setSearchText] = useState<string>('');
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   // 将API返回的Word转换为SimpleWord
   const convertToSimpleWord = (word: Word): SimpleWord => {
@@ -140,6 +142,35 @@ const WordPage: React.FC = () => {
         }
       }
     });
+  };
+  
+  // 批量删除单词
+  const handleBatchDelete = async () => {
+    if (!selectedRowKeys.length) return;
+    
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个单词吗？`,
+      onOk: async () => {
+        try {
+          setDeleteLoading(true);
+          await batchDeleteWords(selectedRowKeys as string[]);
+          message.success('批量删除成功');
+          setSelectedRowKeys([]);
+          fetchWords();
+        } catch (error) {
+          message.error('批量删除失败');
+          console.error('批量删除失败:', error);
+        } finally {
+          setDeleteLoading(false);
+        }
+      }
+    });
+  };
+  
+  // 清除选择
+  const handleClearSelection = () => {
+    setSelectedRowKeys([]);
   };
 
 
@@ -253,12 +284,40 @@ const WordPage: React.FC = () => {
         </div>
       </div>
       
+      {selectedRowKeys.length > 0 && (
+        <div className="batch-actions-area">
+          <span className="selected-count">已选择 {selectedRowKeys.length} 项</span>
+          <Button 
+            icon={<CloseCircleOutlined />} 
+            onClick={handleClearSelection}
+            style={{ marginRight: 8 }}
+          >
+            清除选择
+          </Button>
+          <Button 
+            type="primary" 
+            danger 
+            icon={<DeleteOutlined />} 
+            onClick={handleBatchDelete}
+            loading={deleteLoading}
+          >
+            批量删除
+          </Button>
+        </div>
+      )}
+      
       <Table
         columns={columns}
         dataSource={words}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 10 }}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (selectedKeys) => {
+            setSelectedRowKeys(selectedKeys);
+          }
+        }}
       />
       
       <WordDetailDrawer

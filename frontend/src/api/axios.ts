@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import { appConfig } from '../config';
 
 // 创建axios实例
 const instance = axios.create({
@@ -13,7 +14,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 从localStorage获取token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(appConfig.tokenKey);
     if (token) {
       // 设置Authorization头
       config.headers.set('Authorization', `Bearer ${token}`);
@@ -37,7 +38,7 @@ instance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           // 未授权，清除token并跳转到登录页
-          localStorage.removeItem('token');
+          localStorage.removeItem(appConfig.tokenKey);
           window.location.href = '/login';
           break;
         case 403:

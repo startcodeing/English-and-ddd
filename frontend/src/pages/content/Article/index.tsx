@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip, DatePicker, Select } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, FileTextOutlined } from '@ant-design/icons';
-import { getAllArticles, createArticle, updateArticle, deleteArticle } from '../../../api/article';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, FileTextOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { getAllArticles, createArticle, updateArticle, deleteArticle, batchDeleteArticles } from '../../../api/article';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import ArticleFormDrawer from './ArticleFormDrawer';
@@ -12,12 +12,13 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const ArticlePage: React.FC = () => {
-  // 状态定义
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [searchText, setSearchText] = useState<string>('');
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   // 获取文章列表
   const fetchArticles = async () => {
@@ -66,6 +67,48 @@ const ArticlePage: React.FC = () => {
         }
       }
     });
+  };
+
+  // 批量删除文章
+  const handleBatchDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请至少选择一篇文章');
+      return;
+    }
+
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 篇文章吗？删除后将无法恢复。`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          setDeleteLoading(true);
+          await batchDeleteArticles(selectedRowKeys as string[]);
+          message.success('批量删除成功');
+          setSelectedRowKeys([]);
+          fetchArticles();
+        } catch (error) {
+          message.error('批量删除失败，请重试');
+          console.error('批量删除文章失败:', error);
+        } finally {
+          setDeleteLoading(false);
+        }
+      }
+    });
+  };
+
+  // 清除选择
+  const handleClearSelection = () => {
+    setSelectedRowKeys([]);
+  };
+
+  // 行选择配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    }
   };
 
   // 保存文章（创建或更新）
@@ -268,12 +311,32 @@ const ArticlePage: React.FC = () => {
         </div>
       </div>
       
+      {selectedRowKeys.length > 0 && (
+        <div className="batch-actions-area">
+          <span className="selected-count">
+            已选择 <span className="count-number">{selectedRowKeys.length}</span> 篇文章
+          </span>
+          <Space>
+            <Button size="small" onClick={handleClearSelection}>清除选择</Button>
+            <Button
+              danger
+              icon={<DeleteColumnOutlined />}
+              onClick={handleBatchDelete}
+              loading={deleteLoading}
+            >
+              批量删除
+            </Button>
+          </Space>
+        </div>
+      )}
+      
       <Table
         columns={columns}
         dataSource={articles}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 10 }}
+        rowSelection={rowSelection}
       />
       
       <ArticleFormDrawer

@@ -76,4 +76,12 @@ public class SentenceRepositoryImpl implements SentenceRepository {
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
     }
-} 
+    
+    @Override
+    public void deleteAllById(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        jpaRepository.deleteAllById(ids);
+    }
+}

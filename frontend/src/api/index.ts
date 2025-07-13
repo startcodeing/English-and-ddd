@@ -7,3 +7,5 @@ export * from './sentence';
 export * from './article';
 export * from './dictation';
 export * from './writing';
+export * from './userApi';
+export * from './userActivityApi';

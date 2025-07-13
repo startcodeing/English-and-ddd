@@ -76,6 +76,11 @@ public interface ArticleApplicationService {
      * 删除文章
      */
     void deleteArticle(String id);
+    
+    /**
+     * 批量删除文章
+     */
+    void batchDeleteArticles(List<String> ids);
 
     /**
      * 识别文章中不认识的单词

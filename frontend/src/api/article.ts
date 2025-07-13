@@ -80,3 +80,8 @@ export const addUnfamiliarWordToArticle = (articleId: string, wordId: string) =>
 export const removeUnfamiliarWordFromArticle = (articleId: string, wordId: string) => {
   return axios.delete(`${BASE_URL}/${articleId}/unfamiliar-words/${wordId}`);
 };
+
+// 批量删除文章
+export const batchDeleteArticles = (ids: string[]) => {
+  return axios.delete(`${BASE_URL}/batch`, { data: { ids } });
+};

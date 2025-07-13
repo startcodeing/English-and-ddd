@@ -34,4 +34,9 @@ public interface PartOfSpeechRepository {
      * 删除词性
      */
     void deleteById(String id);
-} 
+    
+    /**
+     * 批量删除词性
+     */
+    void deleteAllById(List<String> ids);
+}

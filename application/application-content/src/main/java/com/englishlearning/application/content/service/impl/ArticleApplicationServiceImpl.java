@@ -5,6 +5,10 @@ import com.englishlearning.application.content.mapper.ArticleMapper;
 import com.englishlearning.application.content.service.ArticleApplicationService;
 import com.englishlearning.domain.content.dto.CreateArticleDTO;
 import com.englishlearning.domain.content.dto.UpdateArticleDTO;
+import com.englishlearning.domain.content.event.ArticleCreatedEvent;
+import com.englishlearning.domain.content.event.ArticleDeletedEvent;
+import com.englishlearning.domain.content.event.ArticleEventPublisher;
+import com.englishlearning.domain.content.event.ArticleUpdatedEvent;
 import com.englishlearning.domain.content.model.entity.Article;
 import com.englishlearning.domain.content.model.entity.Sentence;
 import com.englishlearning.domain.content.repository.ArticleRepository;
@@ -32,6 +36,7 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     private final SentenceRepository sentenceRepository;
     private final WordRepository wordRepository;
     private final ArticleMapper articleMapper;
+    private final ArticleEventPublisher articleEventPublisher;
 
     // 用于句子切分的正则表达式
     private static final Pattern SENTENCE_PATTERN = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)");
@@ -55,8 +60,15 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                 .build();
         article.create(command);
         Article saved = articleRepository.save(article);
+        
+        // 发布文章创建事件
+        ArticleCreatedEvent event = new ArticleCreatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setArticle(saved);
+        articleEventPublisher.publishArticleCreatedEvent(event);
+        
         return articleMapper.toDTO(saved);
-
     }
     
     /**
@@ -79,6 +91,14 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
 
         article.update(command);
         Article saved = articleRepository.save(article);
+        
+        // 发布文章更新事件
+        ArticleUpdatedEvent event = new ArticleUpdatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setArticle(saved);
+        articleEventPublisher.publishArticleUpdatedEvent(event);
+        
         return articleMapper.toDTO(saved);
     }
 
@@ -200,7 +220,30 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
     @Transactional
     @Override
     public void deleteArticle(String id) {
+        // 在删除前获取文章信息，用于事件发布
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("文章不存在: " + id));
+        
         articleRepository.deleteById(id);
+        
+        // 发布文章删除事件
+        ArticleDeletedEvent event = new ArticleDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setArticle(article);
+        articleEventPublisher.publishArticleDeletedEvent(event);
+    }
+    
+    /**
+     * 批量删除文章
+     */
+    @Transactional
+    @Override
+    public void batchDeleteArticles(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        articleRepository.deleteAllById(ids);
     }
 
     /**

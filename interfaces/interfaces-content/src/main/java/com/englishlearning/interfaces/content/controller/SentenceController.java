@@ -112,5 +112,21 @@ public class SentenceController {
     public Result<List<SentenceDTO>> searchByChineseMeaning(@RequestParam String meaning) {
         return Result.success(sentenceService.findSentencesByChineseMeaning(meaning));
     }
-
-} 
+    
+    /**
+     * 批量删除句子
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeleteSentences(@RequestBody BatchDeleteRequest request) {
+        sentenceService.batchDeleteSentences(request.getIds());
+        return Result.success();
+    }
+    
+    /**
+     * 批量删除请求对象
+     */
+    @lombok.Data
+    public static class BatchDeleteRequest {
+        private List<String> ids;
+    }
+}

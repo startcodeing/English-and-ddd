@@ -68,6 +68,11 @@
                 <artifactId>domain-writing</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>domain-activity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
             <!-- 应用模块 -->
             <dependency>
@@ -107,11 +112,21 @@
                 <artifactId>infrastructure-message</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>infrastructure-activity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
             <!-- 接口模块 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
                 <artifactId>interfaces-vocabulary</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>interfaces-activity</artifactId>
                 <version>${project.version}</version>
             </dependency>
             
@@ -169,4 +184,4 @@
             </plugins>
         </pluginManagement>
     </build>
-</project> 
+</project>

@@ -20,12 +20,12 @@ public interface WordBookApplicationService {
     WordBookDTO updateWordBook(String id, WordBookDTO dto);
     
     /**
-     * 获取单词本详情
+     * 获取单词本
      */
     WordBookDTO getWordBook(String id);
     
     /**
-     * 根据名称查找单词本
+     * 根据名称获取单词本
      */
     WordBookDTO getWordBookByName(String name);
     
@@ -40,7 +40,12 @@ public interface WordBookApplicationService {
     void deleteWordBook(String id);
     
     /**
-     * 向单词本添加单词
+     * 批量删除单词本
+     */
+    void batchDeleteWordBooks(List<String> ids);
+    
+    /**
+     * 添加单词到单词本
      */
     void addWordsToWordBook(String wordBookId, List<String> wordIds);
     
@@ -50,7 +55,7 @@ public interface WordBookApplicationService {
     void removeWordFromWordBook(String wordBookId, String wordId);
     
     /**
-     * 获取单词本中的所有单词
+     * 获取单词本中的单词
      */
     List<WordBookDTO> getWordsInWordBook(String wordBookId);
 }

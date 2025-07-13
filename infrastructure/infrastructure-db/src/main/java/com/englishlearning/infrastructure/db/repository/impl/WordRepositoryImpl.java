@@ -156,4 +156,16 @@ public class WordRepositoryImpl implements WordRepository {
         // 再删除单词本身
         jpaRepository.deleteById(id);
     }
+    
+    @Override
+    public void deleteAllById(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        
+        // 对每个ID执行删除操作
+        for (String id : ids) {
+            deleteById(id);
+        }
+    }
 }

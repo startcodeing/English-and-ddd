@@ -82,4 +82,18 @@ public class PartOfSpeechController {
         partOfSpeechService.deletePartOfSpeech(id);
         return Result.success();
     }
-} 
+    
+    /**
+     * 批量删除词性
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeletePartOfSpeech(@RequestBody BatchDeleteRequest request) {
+        partOfSpeechService.batchDeletePartOfSpeech(request.getIds());
+        return Result.success();
+    }
+    
+    @lombok.Data
+    public static class BatchDeleteRequest {
+        private List<String> ids;
+    }
+}

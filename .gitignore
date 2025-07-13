@@ -10,3 +10,8 @@
 /interfaces/interfaces-content/target/
 /.idea/
 /interfaces/interfaces-vocabulary/target/
+/domain/domain-activity/target/
+/infrastructure/infrastructure-activity/target/
+/interfaces/interfaces-activity/target/
+/frontend/node_modules/
+/frontend/build

@@ -34,4 +34,9 @@ public interface WordBookRepository {
      * 删除单词本
      */
     void deleteById(String id);
+    
+    /**
+     * 批量删除单词本
+     */
+    void deleteAllById(List<String> ids);
 }

@@ -15,6 +15,7 @@
     <modules>
         <module>infrastructure-db</module>
         <module>infrastructure-event</module>
+        <module>infrastructure-activity</module>
         <!-- 更多基础设施模块将在后续添加 -->
     </modules>
 
@@ -24,4 +25,4 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
-</project> 
+</project>

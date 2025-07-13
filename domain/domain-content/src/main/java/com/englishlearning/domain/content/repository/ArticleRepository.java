@@ -64,4 +64,9 @@ public interface ArticleRepository {
      * 删除文章
      */
     void deleteById(String id);
-} 
+    
+    /**
+     * 批量删除文章
+     */
+    void deleteAllById(List<String> ids);
+}

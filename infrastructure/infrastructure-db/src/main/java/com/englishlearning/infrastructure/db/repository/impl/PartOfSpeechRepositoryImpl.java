@@ -70,4 +70,12 @@ public class PartOfSpeechRepositoryImpl implements PartOfSpeechRepository {
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
     }
+    
+    /**
+     * 批量删除词性
+     */
+    @Override
+    public void deleteAllById(List<String> ids) {
+        ids.forEach(this::deleteById);
+    }
 }

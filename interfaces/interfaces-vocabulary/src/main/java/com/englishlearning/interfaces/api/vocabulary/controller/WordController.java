@@ -154,5 +154,13 @@ public class WordController {
         return Result.success(wordService.getAllWords());
     }
     
+    /**
+     * 批量删除单词
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeleteWords(@RequestBody List<String> ids) {
+        wordService.batchDeleteWords(ids);
+        return Result.success();
+    }
 
 }

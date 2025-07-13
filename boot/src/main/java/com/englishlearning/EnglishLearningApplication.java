@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 /**
  * 英语学习平台启动类
  */
-@SpringBootApplication
-@EntityScan(basePackages = "com.englishlearning.infrastructure.db.po")
-@EnableJpaRepositories(basePackages = "com.englishlearning.infrastructure.db.repository")
+@SpringBootApplication(scanBasePackages = {"com.englishlearning"})
+@EntityScan(basePackages = {"com.englishlearning.infrastructure.db.po", "com.englishlearning.infrastructure.activity.po"})
+@EnableJpaRepositories(basePackages = {"com.englishlearning.infrastructure.db.repository", "com.englishlearning.infrastructure.activity.repository.jpa"})
 @Import({AxonConfig.class, CorsConfig.class})
 public class EnglishLearningApplication {
     

@@ -1,5 +1,6 @@
 package com.englishlearning.domain.vocabulary.event;
 
+import com.englishlearning.domain.vocabulary.model.entity.Word;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,17 +14,17 @@ import lombok.NoArgsConstructor;
 public class WordCreatedEvent {
     
     /**
-     * 单词ID
+     * 用户ID
      */
-    private String wordId;
+    private String userId;
     
     /**
-     * 单词拼写
+     * 用户名
      */
-    private String spelling;
+    private String username;
     
     /**
-     * 词性ID
+     * 单词
      */
-    private String partOfSpeechId;
-} 
+    private Word word;
+}

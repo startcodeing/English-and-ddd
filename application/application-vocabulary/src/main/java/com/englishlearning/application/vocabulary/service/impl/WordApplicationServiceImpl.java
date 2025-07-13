@@ -5,6 +5,11 @@ import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.mapper.WordMeaningMapper;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
+import com.englishlearning.domain.vocabulary.event.WordCreatedEvent;
+import com.englishlearning.domain.vocabulary.event.WordDeletedEvent;
+import com.englishlearning.domain.vocabulary.event.WordEventPublisher;
+import com.englishlearning.domain.vocabulary.event.WordMeaningAddedEvent;
+import com.englishlearning.domain.vocabulary.event.WordUpdatedEvent;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordMeaning;
 import com.englishlearning.domain.vocabulary.repository.WordRepository;
@@ -28,16 +33,19 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     private final SentenceProvider sentenceProvider;
     private final WordMapper wordMapper;
     private final WordMeaningMapper wordMeaningMapper;
+    private final WordEventPublisher wordEventPublisher;
 
     @Autowired
     public WordApplicationServiceImpl(WordRepository wordRepository,
                                       WordMapper wordMapper,
                                       SentenceProvider sentenceProvider,
-                                      WordMeaningMapper wordMeaningMapper) {
+                                      WordMeaningMapper wordMeaningMapper,
+                                      WordEventPublisher wordEventPublisher) {
         this.wordRepository = wordRepository;
         this.wordMapper = wordMapper;
         this.sentenceProvider = sentenceProvider;
         this.wordMeaningMapper = wordMeaningMapper;
+        this.wordEventPublisher = wordEventPublisher;
     }
 
     /**
@@ -65,11 +73,24 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .build();
         if (Objects.isNull(wordMeaningId)) {
             word.addMeaning(meaning);
-        }else {
+            
+            // 只有新增词义时才发布事件
+            Word wordPo = wordRepository.save(word);
+            
+            // 发布词义添加事件
+            WordMeaningAddedEvent event = new WordMeaningAddedEvent();
+            event.setUserId("system"); // 临时设置，等用户功能添加后修改
+            event.setUsername("system"); // 临时设置，等用户功能添加后修改
+            event.setWord(wordPo);
+            event.setWordMeaning(meaning);
+            wordEventPublisher.publishWordMeaningAddedEvent(event);
+            
+            return wordMapper.toDTO(wordPo);
+        } else {
             word.updateMeaning(meaning);
+            Word wordPo = wordRepository.save(word);
+            return wordMapper.toDTO(wordPo);
         }
-        Word wordPo = wordRepository.save(word);
-        return wordMapper.toDTO(wordPo);
     }
 
 
@@ -216,8 +237,15 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .build();
         word.createWord(wordInfo);
         Word savedWord = wordRepository.save(word);
+        
+        // 发布单词创建事件
+        WordCreatedEvent event = new WordCreatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWord(savedWord);
+        wordEventPublisher.publishWordCreatedEvent(event);
+        
         return wordMapper.toDTO(savedWord);
-
     }
 
     @Transactional
@@ -233,6 +261,14 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + command.getId()));
         word.updateWord(command);
         Word updatedWord = wordRepository.save(word);
+        
+        // 发布单词更新事件
+        WordUpdatedEvent event = new WordUpdatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWord(updatedWord);
+        wordEventPublisher.publishWordUpdatedEvent(event);
+        
         return wordMapper.toDTO(updatedWord);
     }
 
@@ -275,6 +311,26 @@ public class WordApplicationServiceImpl implements WordApplicationService {
     @Transactional
     @Override
     public void deleteWord(String id) {
+        // 在删除前获取单词信息，用于事件发布
+        Word word = wordRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + id));
+        
         wordRepository.deleteById(id);
+        
+        // 发布单词删除事件
+        WordDeletedEvent event = new WordDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWord(word);
+        wordEventPublisher.publishWordDeletedEvent(event);
+    }
+    
+    @Transactional
+    @Override
+    public void batchDeleteWords(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        wordRepository.deleteAllById(ids);
     }
 }

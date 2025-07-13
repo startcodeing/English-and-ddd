@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 单词本控制器
@@ -69,6 +70,23 @@ public class WordBookController {
     public Result<Void> deleteWordBook(@PathVariable String id) {
         wordBookService.deleteWordBook(id);
         return Result.success();
+    }
+    
+    /**
+     * 批量删除单词本
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeleteWordBooks(@RequestBody BatchDeleteRequest request) {
+        wordBookService.batchDeleteWordBooks(request.getIds());
+        return Result.success();
+    }
+    
+    /**
+     * 批量删除请求对象
+     */
+    @lombok.Data
+    public static class BatchDeleteRequest {
+        private List<String> ids;
     }
     
     /**

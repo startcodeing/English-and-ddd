@@ -15,6 +15,7 @@
     <modules>
         <module>domain-vocabulary</module>
         <module>domain-content</module>
+        <module>domain-activity</module>
         <!-- 其他领域模块将在后续添加 -->
     </modules>
 

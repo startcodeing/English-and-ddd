@@ -22,6 +22,14 @@ public class WordBookRepositoryImpl implements WordBookRepository {
     private final WordBookPoMapper mapper;
     
     /**
+     * 批量删除单词本
+     */
+    @Override
+    public void deleteAllById(List<String> ids) {
+        jpaRepository.deleteAllById(ids);
+    }
+    
+    /**
      * 保存单词本
      */
     @Override

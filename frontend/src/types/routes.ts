@@ -31,6 +31,10 @@ export enum RoutePath {
   WRITING_EXERCISE = '/practice/writings/:id/exercise',
   WRITING_RESULT = '/practice/writings/:id/result',
   
+  // 用户相关
+  USER = '/user',
+  USER_ACTIVITIES = '/user/activities',
+  
   // 设置
   SETTINGS = '/settings',
   

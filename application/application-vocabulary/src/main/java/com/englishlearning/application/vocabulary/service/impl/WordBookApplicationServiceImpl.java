@@ -113,6 +113,15 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                 .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + command.getId()));
         wordBookRepository.deleteById(command.getId());
     }
+    
+    @Transactional
+    @Override
+    public void batchDeleteWordBooks(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        wordBookRepository.deleteAllById(ids);
+    }
 
     @Transactional
     @Override

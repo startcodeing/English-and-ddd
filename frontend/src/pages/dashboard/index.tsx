@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Progress, List, Typography } from 'antd';
-import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Statistic, Progress, Typography } from 'antd';
+import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { getAllPartOfSpeech } from '../../api/partOfSpeech';
+import { getAllWords } from '../../api/word';
+import { getAllWordBooks } from '../../api/wordBook';
+import { getAllSentences } from '../../api/sentence';
+import { getAllArticles } from '../../api/article';
+import { getDictationStatistics } from '../../api/dictation';
+import { getWritingStatistics } from '../../api/writing';
+import RecentActivities from '../../components/RecentActivities';
 import './style.css';
 
 const { Title, Paragraph } = Typography;
@@ -10,46 +21,69 @@ interface StatData {
   value: number;
   icon: React.ReactNode;
   color: string;
+  route: string;
 }
 
-interface RecentActivity {
-  id: string;
-  title: string;
-  type: string;
-  time: string;
-}
+
 
 const Dashboard: React.FC = () => {
-  // 模拟统计数据
+  const navigate = useNavigate();
+  
+  // 初始化统计数据
   const [stats, setStats] = useState<StatData[]>([
+    {
+      title: '词性总数',
+      value: 0,
+      icon: <TagsOutlined />,
+      color: '#eb2f96',
+      route: '/vocabulary/part-of-speech'
+    },
     {
       title: '单词总数',
       value: 0,
       icon: <BookOutlined />,
-      color: '#1890ff'
+      color: '#1890ff',
+      route: '/vocabulary/word'
+    },
+    {
+      title: '单词本总数',
+      value: 0,
+      icon: <BookFilled />,
+      color: '#13c2c2',
+      route: '/vocabulary/word-book'
+    },
+    {
+      title: '句子总数',
+      value: 0,
+      icon: <FileTextOutlined />,
+      color: '#faad14',
+      route: '/content/sentence'
     },
     {
       title: '文章总数',
       value: 0,
       icon: <ReadOutlined />,
-      color: '#52c41a'
+      color: '#52c41a',
+      route: '/content/article'
     },
     {
-      title: '听写练习',
+      title: '听写总数',
       value: 0,
       icon: <SoundOutlined />,
-      color: '#722ed1'
+      color: '#722ed1',
+      route: '/practice/dictation'
     },
     {
-      title: '写作练习',
+      title: '写作总数',
       value: 0,
       icon: <EditOutlined />,
-      color: '#fa8c16'
+      color: '#fa8c16',
+      route: '/practice/writing'
     }
   ]);
 
-  // 模拟最近活动
-  const [activities, setActivities] = useState<RecentActivity[]>([]);
+  // 用户信息
+  const user = useSelector((state: RootState) => state.auth.user);
 
   // 模拟学习进度
   const [progress, setProgress] = useState({
@@ -59,96 +93,110 @@ const Dashboard: React.FC = () => {
     writing: 0
   });
 
-  // 模拟加载数据
+  // 加载真实数据
   useEffect(() => {
-    // 模拟API请求延迟
-    const timer = setTimeout(() => {
-      // 更新统计数据
-      setStats([
-        {
-          title: '单词总数',
-          value: 1250,
-          icon: <BookOutlined />,
-          color: '#1890ff'
-        },
-        {
-          title: '文章总数',
-          value: 48,
-          icon: <ReadOutlined />,
-          color: '#52c41a'
-        },
-        {
-          title: '听写练习',
-          value: 32,
-          icon: <SoundOutlined />,
-          color: '#722ed1'
-        },
-        {
-          title: '写作练习',
-          value: 16,
-          icon: <EditOutlined />,
-          color: '#fa8c16'
-        }
-      ]);
+    const fetchData = async () => {
+      try {
+        // 获取词性总数
+        const partsOfSpeechResponse = await getAllPartOfSpeech();
+        const partsOfSpeechCount = partsOfSpeechResponse.data.length;
+        
+        // 获取单词总数
+        const wordsResponse = await getAllWords();
+        const wordsCount = wordsResponse.data.length;
+        
+        // 获取单词本总数
+        const wordBooksResponse = await getAllWordBooks();
+        const wordBooksCount = wordBooksResponse.data.length;
+        
+        // 获取句子总数
+        const sentencesResponse = await getAllSentences();
+        const sentencesCount = sentencesResponse.data.length;
+        
+        // 获取文章总数
+        const articlesResponse = await getAllArticles();
+        const articlesCount = articlesResponse.data.length;
+        
+        // 听写练习和写作练习使用模拟数据
+        const dictationCount = 32;
+        const writingCount = 16;
+        
+        // 更新统计数据
+        setStats(prevStats => {
+          const newStats = [...prevStats];
+          // 更新词性总数
+          newStats[0] = {
+            ...newStats[0],
+            value: partsOfSpeechCount
+          };
+          // 更新单词总数
+          newStats[1] = {
+            ...newStats[1],
+            value: wordsCount
+          };
+          // 更新单词本总数
+          newStats[2] = {
+            ...newStats[2],
+            value: wordBooksCount
+          };
+          // 更新句子总数
+          newStats[3] = {
+            ...newStats[3],
+            value: sentencesCount
+          };
+          // 更新文章总数
+          newStats[4] = {
+            ...newStats[4],
+            value: articlesCount
+          };
+          // 更新听写练习数量（模拟数据）
+          newStats[5] = {
+            ...newStats[5],
+            value: dictationCount
+          };
+          // 更新写作练习数量（模拟数据）
+          newStats[6] = {
+            ...newStats[6],
+            value: writingCount
+          };
+          return newStats;
+        });
 
-      // 更新最近活动
-      setActivities([
-        {
-          id: '1',
-          title: '完成了"日常用语"单词本学习',
-          type: '单词学习',
-          time: '10分钟前'
-        },
-        {
-          id: '2',
-          title: '添加了新文章"The Importance of Reading"',
-          type: '内容管理',
-          time: '30分钟前'
-        },
-        {
-          id: '3',
-          title: '完成了听写练习"基础单词第一课"',
-          type: '听写练习',
-          time: '2小时前'
-        },
-        {
-          id: '4',
-          title: '提交了写作"My Favorite Book"',
-          type: '写作练习',
-          time: '昨天'
-        },
-        {
-          id: '5',
-          title: '创建了新的单词本"旅游英语"',
-          type: '单词管理',
-          time: '2天前'
-        }
-      ]);
+        // 最近活动通过 RecentActivities 组件获取
 
-      // 更新学习进度
-      setProgress({
-        vocabulary: 65,
-        listening: 48,
-        speaking: 30,
-        writing: 52
-      });
-    }, 1000);
+        // 更新学习进度（保持模拟数据）
+        setProgress({
+          vocabulary: 65,
+          listening: 48,
+          speaking: 30,
+          writing: 52
+        });
+      } catch (error) {
+        console.error('获取数据失败:', error);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchData();
   }, []);
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <Title level={2}>仪表盘</Title>
+        <Title level={3}>仪表盘</Title>
         <Paragraph>欢迎使用英语学习平台，这里是您的学习概览</Paragraph>
       </div>
 
-      {/* 统计卡片 */}
+      {/* 统计卡片 - 所有放在同一行 */}
       <Row gutter={[16, 16]} className="stat-row">
         {stats.map((stat, index) => (
-          <Col xs={24} sm={12} md={6} key={index}>
-            <Card className="stat-card" bordered={false}>
+          <Col xs={12} sm={6} md={3} lg={3} xl={3} key={index}>
+            <Card 
+              className="stat-card" 
+              bordered={false} 
+              hoverable 
+              onClick={() => navigate(stat.route)}
+              size="small"
+            >
               <Statistic
                 title={stat.title}
                 value={stat.value}
@@ -163,76 +211,59 @@ const Dashboard: React.FC = () => {
       {/* 学习进度和最近活动 */}
       <Row gutter={[16, 16]} className="detail-row">
         {/* 学习进度 */}
-        <Col xs={24} md={12}>
-          <Card title="学习进度" bordered={false} className="progress-card">
+        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
+          <Card title="学习进度" bordered={false} className="progress-card" size="small" style={{ flex: 1 }}>
             <div className="progress-item">
               <span className="progress-label">词汇量</span>
-              <Progress percent={progress.vocabulary} strokeColor="#1890ff" />
+              <Progress percent={progress.vocabulary} strokeColor="#1890ff" size="small" />
             </div>
             <div className="progress-item">
               <span className="progress-label">听力</span>
-              <Progress percent={progress.listening} strokeColor="#52c41a" />
+              <Progress percent={progress.listening} strokeColor="#52c41a" size="small" />
             </div>
             <div className="progress-item">
               <span className="progress-label">口语</span>
-              <Progress percent={progress.speaking} strokeColor="#722ed1" />
+              <Progress percent={progress.speaking} strokeColor="#722ed1" size="small" />
             </div>
             <div className="progress-item">
               <span className="progress-label">写作</span>
-              <Progress percent={progress.writing} strokeColor="#fa8c16" />
+              <Progress percent={progress.writing} strokeColor="#fa8c16" size="small" />
             </div>
           </Card>
         </Col>
 
         {/* 最近活动 */}
-        <Col xs={24} md={12}>
-          <Card title="最近活动" bordered={false} className="activity-card">
-            <List
-              itemLayout="horizontal"
-              dataSource={activities}
-              renderItem={(item) => (
-                <List.Item>
-                  <List.Item.Meta
-                    title={item.title}
-                    description={
-                      <div className="activity-meta">
-                        <span className="activity-type">{item.type}</span>
-                        <span className="activity-time">{item.time}</span>
-                      </div>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
+        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* 不再依赖于user?.id，直接使用RecentActivities组件 */}
+          <RecentActivities userId="system" limit={5} />
         </Col>
       </Row>
 
       {/* 快速入口 */}
       <Row gutter={[16, 16]} className="shortcut-row">
         <Col span={24}>
-          <Card title="快速入口" bordered={false}>
+          <Card title="快速入口" bordered={false} size="small">
             <Row gutter={[16, 16]}>
               <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => window.location.href = '/vocabulary/word'}>
+                <Card className="shortcut-card" hoverable onClick={() => navigate('/vocabulary/word')}>
                   <BookOutlined className="shortcut-icon" />
                   <div className="shortcut-title">单词学习</div>
                 </Card>
               </Col>
               <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => window.location.href = '/content/article'}>
+                <Card className="shortcut-card" hoverable onClick={() => navigate('/content/article')}>
                   <ReadOutlined className="shortcut-icon" />
                   <div className="shortcut-title">阅读文章</div>
                 </Card>
               </Col>
               <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => window.location.href = '/practice/dictation'}>
+                <Card className="shortcut-card" hoverable onClick={() => navigate('/practice/dictation')}>
                   <SoundOutlined className="shortcut-icon" />
                   <div className="shortcut-title">听写练习</div>
                 </Card>
               </Col>
               <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => window.location.href = '/practice/writing'}>
+                <Card className="shortcut-card" hoverable onClick={() => navigate('/practice/writing')}>
                   <EditOutlined className="shortcut-icon" />
                   <div className="shortcut-title">写作练习</div>
                 </Card>

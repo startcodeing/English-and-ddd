@@ -98,4 +98,9 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
     }
-} 
+    
+    @Override
+    public void deleteAllById(List<String> ids) {
+        jpaRepository.deleteAllById(ids);
+    }
+}

@@ -43,6 +43,11 @@ export const deleteWord = (id: string) => {
   return axios.delete(`${BASE_URL}/${id}`);
 };
 
+// 批量删除单词
+export const batchDeleteWords = (ids: string[]) => {
+  return axios.delete(`${BASE_URL}/batch`, { data: ids });
+};
+
 // 添加词性
 export const addWordMeaning = (wordMeaning: Omit<WordMeaning, 'id'>) => {
   return axios.post<Word>(`${BASE_URL}/wordMeaning`, wordMeaning);

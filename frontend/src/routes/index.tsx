@@ -23,6 +23,9 @@ const Writing = React.lazy(() => import('../pages/dashboard')); // 临时占位
 // 注意：以下组件尚未实现，使用占位组件
 const Comprehensive = React.lazy(() => import('../pages/dashboard')); // 临时占位
 
+// 用户相关页面
+const UserActivity = React.lazy(() => import('../pages/user/UserActivityPage'));
+
 // 认证页面
 const Login = React.lazy(() => import('../pages/auth/Login'));
 // 注意：Register组件尚未实现，使用Login组件临时占位
@@ -132,7 +135,15 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
-      // 测试组件路由
+      // 用户相关路由
+      {
+        path: '/user/activities',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <UserActivity />
+          </React.Suspense>
+        ),
+      },
       // 错误页面路由
       {
         path: '*',

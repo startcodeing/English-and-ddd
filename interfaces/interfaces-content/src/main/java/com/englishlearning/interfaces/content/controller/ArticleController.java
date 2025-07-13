@@ -144,5 +144,18 @@ public class ArticleController {
     public Result<List<ArticleDTO>> searchByDifficultyLevel(@RequestParam Integer level) {
         return Result.success(articleService.findArticlesByDifficultyLevel(level));
     }
-
-} 
+    
+    /**
+     * 批量删除文章
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeleteArticles(@RequestBody BatchDeleteRequest request) {
+        articleService.batchDeleteArticles(request.getIds());
+        return Result.success();
+    }
+    
+    @lombok.Data
+    public static class BatchDeleteRequest {
+        private List<String> ids;
+    }
+}

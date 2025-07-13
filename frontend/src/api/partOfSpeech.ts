@@ -27,3 +27,8 @@ export const updatePartOfSpeech = (id: string, partOfSpeech: Partial<PartOfSpeec
 export const deletePartOfSpeech = (id: string) => {
   return axios.delete(`${BASE_URL}/${id}`);
 };
+
+// 批量删除词性
+export const batchDeletePartOfSpeech = (ids: string[]) => {
+  return axios.delete(`${BASE_URL}/batch`, { data: { ids } });
+};
