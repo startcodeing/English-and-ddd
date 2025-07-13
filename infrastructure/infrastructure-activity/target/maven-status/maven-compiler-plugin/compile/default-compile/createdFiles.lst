@@ -1,4 +1,6 @@
-com\englishlearning\infrastructure\activity\repository\jpa\UserActivityJpaRepository.class
 com\englishlearning\infrastructure\activity\repository\UserActivityRepositoryImpl.class
-com\englishlearning\infrastructure\activity\po\UserActivityPO$UserActivityPOBuilder.class
 com\englishlearning\infrastructure\activity\po\UserActivityPO.class
+com\englishlearning\infrastructure\activity\repository\jpa\UserActivityJpaRepository.class
+com\englishlearning\infrastructure\activity\config\EventHandlerConfig.class
+com\englishlearning\infrastructure\activity\handler\AxonUserActivityEventHandler.class
+com\englishlearning\infrastructure\activity\po\UserActivityPO$UserActivityPOBuilder.class

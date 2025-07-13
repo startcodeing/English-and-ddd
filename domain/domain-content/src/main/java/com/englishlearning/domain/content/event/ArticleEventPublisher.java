@@ -5,4 +5,5 @@ public interface ArticleEventPublisher {
     void publishArticleUpdatedEvent(ArticleUpdatedEvent event);
     void publishArticleDeletedEvent(String articleId);
     void publishArticleDeletedEvent(ArticleDeletedEvent event);
+    void publishArticleBatchDeletedEvent(ArticleBatchDeletedEvent event);
 }

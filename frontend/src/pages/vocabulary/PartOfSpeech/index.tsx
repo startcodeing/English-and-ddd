@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, message } from 'antd';
+import { Table, Space, Button, Input, Modal, message } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech, batchDeletePartOfSpeech } from '../../../api/partOfSpeech';
 import { PartOfSpeech } from '@/types';
+import PartOfSpeechFormDrawer from './PartOfSpeechFormDrawer';
 import './style.css';
 
 const PartOfSpeechPage: React.FC = () => {
@@ -10,12 +11,11 @@ const PartOfSpeechPage: React.FC = () => {
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [filteredPartsOfSpeech, setFilteredPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingPartOfSpeech, setEditingPartOfSpeech] = useState<PartOfSpeech | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [form] = Form.useForm();
 
   // 获取词性列表
   const fetchPartsOfSpeech = async () => {
@@ -37,23 +37,16 @@ const PartOfSpeechPage: React.FC = () => {
     fetchPartsOfSpeech();
   }, []);
 
-  // 打开创建词性模态框
+  // 打开创建词性抽屉
   const handleAddPartOfSpeech = () => {
     setEditingPartOfSpeech(null);
-    form.resetFields();
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
-  // 打开编辑词性模态框
+  // 打开编辑词性抽屉
   const handleEditPartOfSpeech = (partOfSpeech: PartOfSpeech) => {
     setEditingPartOfSpeech(partOfSpeech);
-    form.setFieldsValue({
-      englishName: partOfSpeech.englishName,
-      chineseMeaning: partOfSpeech.chineseMeaning,
-      usageSummary: partOfSpeech.usageSummary || '',
-      commonPhrases: partOfSpeech.commonPhrases ? partOfSpeech.commonPhrases.join('\n') : ''
-    });
-    setModalVisible(true);
+    setDrawerVisible(true);
   };
 
   // 删除词性
@@ -75,10 +68,8 @@ const PartOfSpeechPage: React.FC = () => {
   };
 
   // 保存词性（创建或更新）
-  const handleSavePartOfSpeech = async () => {
+  const handleSavePartOfSpeech = async (values: { englishName: string; chineseMeaning: string; usageSummary?: string; commonPhrases?: string }) => {
     try {
-      const values = await form.validateFields();
-      
       // 处理常用短语，将文本框中的换行符分割为数组
       const commonPhrases = values.commonPhrases
         ? values.commonPhrases.split('\n').filter((phrase: string) => phrase.trim() !== '')
@@ -102,7 +93,7 @@ const PartOfSpeechPage: React.FC = () => {
         message.success('创建成功');
       }
       
-      setModalVisible(false);
+      setDrawerVisible(false);
       fetchPartsOfSpeech();
     } catch (error) {
       console.error('保存失败:', error);
@@ -267,55 +258,13 @@ const PartOfSpeechPage: React.FC = () => {
         }}
       />
       
-      <Modal
+      <PartOfSpeechFormDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        onSubmit={handleSavePartOfSpeech}
+        initialValues={editingPartOfSpeech || undefined}
         title={editingPartOfSpeech ? '编辑词性' : '添加词性'}
-        open={modalVisible}
-        onOk={handleSavePartOfSpeech}
-        onCancel={() => setModalVisible(false)}
-        width={600}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <Form.Item
-            name="englishName"
-            label="英文名称"
-            rules={[{ required: true, message: '请输入词性英文名称' }]}
-          >
-            <Input placeholder="请输入词性英文名称，如：noun, verb" />
-          </Form.Item>
-          
-          <Form.Item
-            name="chineseMeaning"
-            label="中文含义"
-            rules={[{ required: true, message: '请输入词性中文含义' }]}
-          >
-            <Input placeholder="请输入词性中文含义，如：名词、动词" />
-          </Form.Item>
-          
-          <Form.Item
-            name="usageSummary"
-            label="用法概述"
-          >
-            <Input.TextArea 
-              placeholder="请输入词性用法概述" 
-              rows={3} 
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="commonPhrases"
-            label="常用短语"
-            extra="每行一个短语"
-          >
-            <Input.TextArea 
-              placeholder="请输入常用短语，每行一个" 
-              rows={4} 
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      />
     </div>
   );
 };

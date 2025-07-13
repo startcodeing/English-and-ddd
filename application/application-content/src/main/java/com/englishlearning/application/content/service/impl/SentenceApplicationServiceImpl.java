@@ -160,7 +160,6 @@ public class SentenceApplicationServiceImpl implements SentenceApplicationServic
                 .orElseThrow(() -> new IllegalArgumentException("句子不存在: " + id));
         
         sentenceRepository.deleteById(id);
-        
         // 发布句子删除事件
         SentenceDeletedEvent event = new SentenceDeletedEvent();
         event.setUserId("system"); // 临时设置，等用户功能添加后修改

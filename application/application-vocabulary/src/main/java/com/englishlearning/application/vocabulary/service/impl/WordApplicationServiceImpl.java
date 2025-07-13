@@ -5,6 +5,7 @@ import com.englishlearning.application.vocabulary.mapper.WordMapper;
 import com.englishlearning.application.vocabulary.mapper.WordMeaningMapper;
 import com.englishlearning.application.vocabulary.service.SentenceProvider;
 import com.englishlearning.application.vocabulary.service.WordApplicationService;
+import com.englishlearning.domain.vocabulary.event.WordBatchDeletedEvent;
 import com.englishlearning.domain.vocabulary.event.WordCreatedEvent;
 import com.englishlearning.domain.vocabulary.event.WordDeletedEvent;
 import com.englishlearning.domain.vocabulary.event.WordEventPublisher;
@@ -331,6 +332,14 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (ids == null || ids.isEmpty()) {
             return;
         }
+        
+
         wordRepository.deleteAllById(ids);
+        // 发布单词批量删除事件
+        WordBatchDeletedEvent event = new WordBatchDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWordIds(ids);
+        wordEventPublisher.publishWordBatchDeletedEvent(event);
     }
 }

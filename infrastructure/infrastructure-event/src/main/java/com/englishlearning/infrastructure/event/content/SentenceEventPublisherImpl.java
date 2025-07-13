@@ -1,5 +1,6 @@
 package com.englishlearning.infrastructure.event.content;
 
+import com.englishlearning.domain.content.event.SentenceBatchDeletedEvent;
 import com.englishlearning.domain.content.event.SentenceCreatedEvent;
 import com.englishlearning.domain.content.event.SentenceDeletedEvent;
 import com.englishlearning.domain.content.event.SentenceEventPublisher;
@@ -46,6 +47,12 @@ public class SentenceEventPublisherImpl implements SentenceEventPublisher {
     
     public void publishSentenceDeletedEvent(SentenceDeletedEvent event) {
         log.info("Publishing sentence deleted event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishSentenceBatchDeletedEvent(SentenceBatchDeletedEvent event) {
+        log.info("Publishing sentence batch deleted event: {}", event);
         eventBus.publish(event);
     }
 }

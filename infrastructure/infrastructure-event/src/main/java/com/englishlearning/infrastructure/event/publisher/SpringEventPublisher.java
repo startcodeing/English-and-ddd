@@ -1,12 +1,14 @@
 package com.englishlearning.infrastructure.event.publisher;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * 基于Spring的事件发布器实现
  */
 @Component
+@Profile("spring-event-handler")
 public class SpringEventPublisher implements DomainEventPublisher {
     
     private final ApplicationEventPublisher eventPublisher;
@@ -19,4 +21,4 @@ public class SpringEventPublisher implements DomainEventPublisher {
     public void publish(Object event) {
         eventPublisher.publishEvent(event);
     }
-} 
+}

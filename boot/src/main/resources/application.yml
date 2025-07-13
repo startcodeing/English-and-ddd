@@ -8,6 +8,9 @@ spring:
     name: english-learning-platform
   main:
     allow-bean-definition-overriding: true
+  # 引入事件配置文件
+  profiles:
+    active: spring-event-handler
   datasource:
     #内存数据库，服务停止数据会丢失
     #url: jdbc:h2:mem:englishdb

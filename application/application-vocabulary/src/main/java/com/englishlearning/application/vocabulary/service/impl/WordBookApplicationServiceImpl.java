@@ -8,6 +8,11 @@ import com.englishlearning.domain.vocabulary.dto.CreateWordBookDTO;
 import com.englishlearning.domain.vocabulary.dto.DeleteWordBookDomainDTO;
 import com.englishlearning.domain.vocabulary.dto.RemoveWordFromWordBookDomainDTO;
 import com.englishlearning.domain.vocabulary.dto.UpdateWordBookDomainDTO;
+import com.englishlearning.domain.vocabulary.event.WordBookBatchDeletedEvent;
+import com.englishlearning.domain.vocabulary.event.WordBookCreatedEvent;
+import com.englishlearning.domain.vocabulary.event.WordBookDeletedEvent;
+import com.englishlearning.domain.vocabulary.event.WordBookEventPublisher;
+import com.englishlearning.domain.vocabulary.event.WordBookUpdatedEvent;
 import com.englishlearning.domain.vocabulary.model.entity.Word;
 import com.englishlearning.domain.vocabulary.model.entity.WordBook;
 import com.englishlearning.domain.vocabulary.repository.WordBookRepository;
@@ -31,14 +36,17 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
     private final WordBookRepository wordBookRepository;
     private final WordMapper wordMapper;
     private final WordRepository wordRepository;
+    private final WordBookEventPublisher wordBookEventPublisher;
 
     @Autowired
     public WordBookApplicationServiceImpl(WordBookRepository wordBookRepository, 
                                          WordMapper wordMapper,
-                                         WordRepository wordRepository) {
+                                         WordRepository wordRepository,
+                                         WordBookEventPublisher wordBookEventPublisher) {
         this.wordBookRepository = wordBookRepository;
         this.wordMapper = wordMapper;
         this.wordRepository = wordRepository;
+        this.wordBookEventPublisher = wordBookEventPublisher;
     }
 
     @Transactional
@@ -59,6 +67,14 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
         wordBook.create(command);
 
         WordBook savedWordBook = wordBookRepository.save(wordBook);
+        
+        // 发布单词本创建事件
+        WordBookCreatedEvent event = new WordBookCreatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWordBook(savedWordBook);
+        wordBookEventPublisher.publishWordBookCreatedEvent(event);
+        
         return convertToDTO(savedWordBook);
     }
 
@@ -79,6 +95,14 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
         }
         wordBook.update(command);
         WordBook updatedWordBook = wordBookRepository.save(wordBook);
+        
+        // 发布单词本更新事件
+        WordBookUpdatedEvent event = new WordBookUpdatedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWordBook(updatedWordBook);
+        wordBookEventPublisher.publishWordBookUpdatedEvent(event);
+        
         return convertToDTO(updatedWordBook);
     }
 
@@ -109,9 +133,17 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
                 .id(id)
                 .build();
         command.validate();
-        wordBookRepository.findById(command.getId())
+        WordBook wordBook = wordBookRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("单词本不存在: " + command.getId()));
+        
         wordBookRepository.deleteById(command.getId());
+        
+        // 发布单词本删除事件
+        WordBookDeletedEvent event = new WordBookDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWordBook(wordBook);
+        wordBookEventPublisher.publishWordBookDeletedEvent(event);
     }
     
     @Transactional
@@ -120,7 +152,14 @@ public class WordBookApplicationServiceImpl implements WordBookApplicationServic
         if (ids == null || ids.isEmpty()) {
             return;
         }
+
         wordBookRepository.deleteAllById(ids);
+        // 发布单词本批量删除事件
+        WordBookBatchDeletedEvent event = new WordBookBatchDeletedEvent();
+        event.setUserId("system"); // 临时设置，等用户功能添加后修改
+        event.setUsername("system"); // 临时设置，等用户功能添加后修改
+        event.setWordBookIds(ids);
+        wordBookEventPublisher.publishWordBookBatchDeletedEvent(event);
     }
 
     @Transactional

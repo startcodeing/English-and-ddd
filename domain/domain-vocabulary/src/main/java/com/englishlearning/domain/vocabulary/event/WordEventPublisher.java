@@ -21,6 +21,11 @@ public interface WordEventPublisher {
     void publishWordDeletedEvent(WordDeletedEvent event);
     
     /**
+     * 发布单词批量删除事件
+     */
+    void publishWordBatchDeletedEvent(WordBatchDeletedEvent event);
+    
+    /**
      * 发布单词词义添加事件
      */
     void publishWordMeaningAddedEvent(WordMeaningAddedEvent event);

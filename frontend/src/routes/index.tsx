@@ -15,13 +15,11 @@ const Sentence = React.lazy(() => import('../pages/content/Sentence'));
 const Article = React.lazy(() => import('../pages/content/Article'));
 
 // 练习模块页面
-// 注意：以下组件尚未实现，使用占位组件
-const Dictation = React.lazy(() => import('../pages/dashboard')); // 临时占位
-const Writing = React.lazy(() => import('../pages/dashboard')); // 临时占位
+const Dictation = React.lazy(() => import('../pages/practice/dictation'));
+const Writing = React.lazy(() => import('../pages/practice/writing'));
 
 // 测试模块页面
-// 注意：以下组件尚未实现，使用占位组件
-const Comprehensive = React.lazy(() => import('../pages/dashboard')); // 临时占位
+const Comprehensive = React.lazy(() => import('../pages/test/comprehensive'));
 
 // 用户相关页面
 const UserActivity = React.lazy(() => import('../pages/user/UserActivityPage'));

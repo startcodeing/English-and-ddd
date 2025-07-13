@@ -1,6 +1,5 @@
 package com.englishlearning;
 
-import com.englishlearning.config.AxonConfig;
 import com.englishlearning.config.CorsConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = {"com.englishlearning"})
 @EntityScan(basePackages = {"com.englishlearning.infrastructure.db.po", "com.englishlearning.infrastructure.activity.po"})
 @EnableJpaRepositories(basePackages = {"com.englishlearning.infrastructure.db.repository", "com.englishlearning.infrastructure.activity.repository.jpa"})
-@Import({AxonConfig.class, CorsConfig.class})
+@Import({CorsConfig.class})
 public class EnglishLearningApplication {
     
     public static void main(String[] args) {

@@ -1,5 +1,6 @@
 package com.englishlearning.infrastructure.event.vocabulary;
 
+import com.englishlearning.domain.vocabulary.event.WordBatchDeletedEvent;
 import com.englishlearning.domain.vocabulary.event.WordCreatedEvent;
 import com.englishlearning.domain.vocabulary.event.WordDeletedEvent;
 import com.englishlearning.domain.vocabulary.event.WordEventPublisher;
@@ -48,6 +49,12 @@ public class WordEventPublisherImpl implements WordEventPublisher {
     @Override
     public void publishWordMeaningAddedEvent(WordMeaningAddedEvent event) {
         log.info("Publishing word meaning added event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishWordBatchDeletedEvent(WordBatchDeletedEvent event) {
+        log.info("Publishing word batch deleted event: {}", event);
         eventBus.publish(event);
     }
 }

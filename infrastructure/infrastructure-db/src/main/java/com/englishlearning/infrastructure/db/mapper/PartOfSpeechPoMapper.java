@@ -57,7 +57,7 @@ public interface PartOfSpeechPoMapper {
             return null;
         }
 
-        String id = po.getId() != null ? po.getId().toString() : null;
+        String id = po.getId() != null ? po.getId() : null;
 
         return PartOfSpeech.reconstitute(
                 id,

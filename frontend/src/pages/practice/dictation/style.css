@@ -1,0 +1,78 @@
+.dictation-container {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dictation-header {
+  margin-bottom: 16px;
+}
+
+.menu-title {
+  background-color: #f5222d;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.menu-title h4 {
+  color: white;
+  margin: 0;
+}
+
+.dictation-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.developing-card {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #f5222d;
+  border-radius: 4px;
+}
+
+.developing-message {
+  font-size: 24px;
+  color: #f5222d;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .dictation-container {
+    padding: 12px;
+  }
+  
+  .menu-title h4 {
+    font-size: 16px;
+  }
+  
+  .developing-message {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dictation-container {
+    padding: 8px;
+  }
+  
+  .menu-title {
+    padding: 6px 12px;
+  }
+  
+  .menu-title h4 {
+    font-size: 14px;
+  }
+  
+  .developing-message {
+    font-size: 18px;
+  }
+}
