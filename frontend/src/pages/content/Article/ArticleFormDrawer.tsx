@@ -40,7 +40,7 @@ const ArticleFormDrawer: React.FC<ArticleFormDrawerProps> = ({
           content: initialValues.content,
           source: initialValues.source || '',
           author: initialValues.author || '',
-          publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate, 'YYYY-MM-DD') : null,
+          publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : null,
           difficultyLevel: initialValues.difficultyLevel || 3
         });
       } else {
@@ -126,7 +126,8 @@ const ArticleFormDrawer: React.FC<ArticleFormDrawerProps> = ({
             <DatePicker 
               placeholder="选择发布日期" 
               style={{ width: '100%' }} 
-              format="YYYY-MM-DD"
+              format="YYYY-MM-DD HH:mm:ss"
+              showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
               allowClear
               inputReadOnly
             />

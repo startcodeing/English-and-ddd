@@ -111,7 +111,6 @@ public class WordRepositoryImpl implements WordRepository {
     public List<Word> findByChineseMeaningLike(String chineseMeaning) {
         // 查找包含特定中文意思的词义
         List<WordMeaningPO> meaningPOs = meaningJpaRepository.findByChineseMeaningContaining(chineseMeaning);
-        
         // 获取这些词义对应的单词ID
         List<String> wordIds = new ArrayList<>();
         for (WordMeaningPO meaningPO : meaningPOs) {
@@ -119,7 +118,6 @@ public class WordRepositoryImpl implements WordRepository {
                 wordIds.add(meaningPO.getWord().getId());
             }
         }
-        
         // 查询这些单词
         List<WordPO> wordPOs = jpaRepository.findAllById(wordIds);
         return mapper.toEntityList(wordPOs);
@@ -155,9 +153,8 @@ public class WordRepositoryImpl implements WordRepository {
         
         // 再查询出所有词义，然后逐个删除，以确保级联删除生效
         List<WordMeaningPO> meanings = meaningJpaRepository.findByWordId(id);
-        for (WordMeaningPO meaning : meanings) {
-            meaningJpaRepository.delete(meaning); // 使用JPA的delete方法触发级联删除
-        }
+        // 使用JPA的delete方法触发级联删除
+        meaningJpaRepository.deleteAll(meanings);
         // 最后删除单词本身
         jpaRepository.deleteById(id);
     }

@@ -125,8 +125,8 @@ const ArticlePage: React.FC = () => {
       // 确保日期有效
       let formattedDate = undefined;
       if (values.publishDate) {
-        // 使用dayjs内置方法验证日期
-        formattedDate = values.publishDate.format('YYYY-MM-DD');
+        // 使用dayjs内置方法验证日期，并添加时间部分以符合后端LocalDateTime格式
+        formattedDate = values.publishDate.format('YYYY-MM-DD HH:mm:ss');
       }
       
       const articleData: Omit<Article, 'id'> = {
