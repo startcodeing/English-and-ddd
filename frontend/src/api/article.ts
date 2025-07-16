@@ -9,7 +9,7 @@ export const getAllArticles = () => {
 };
 
 // 根据ID获取文章
-export const getArticleById = (id: string) => {
+export const getArticleById = (id: number | string) => {
   return axios.get<Article>(`${BASE_URL}/${id}`);
 };
 

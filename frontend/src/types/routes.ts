@@ -19,6 +19,7 @@ export enum RoutePath {
   SENTENCE_DETAIL = '/content/sentences/:id',
   ARTICLES = '/content/articles',
   ARTICLE_DETAIL = '/content/articles/:id',
+  ARTICLE_READ = '/content/article/read/:id',
   
   // 练习模块
   PRACTICE = '/practice',

@@ -35,12 +35,35 @@ const ArticleFormDrawer: React.FC<ArticleFormDrawerProps> = ({
     if (visible) {
       // 如果是编辑模式，设置表单初始值
       if (initialValues) {
+        // 处理日期，确保只有有效的日期字符串才会被传递给 dayjs
+        let publishDateValue = null;
+        if (initialValues.publishDate && typeof initialValues.publishDate === 'string') {
+          try {
+            // 首先检查日期字符串是否为有效格式
+            if (initialValues.publishDate.match(/^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}(:\d{2})?/)) {
+              // 使用 try-catch 包裹日期解析，防止无效日期导致错误
+              try {
+                const dateObj = dayjs(initialValues.publishDate);
+                // 检查日期是否有效（通过检查日期对象是否为有效日期）
+                // 使用 toString() 方法检查，避免使用 isValid 方法
+                if (dateObj.toString() !== 'Invalid Date') {
+                  publishDateValue = dateObj;
+                }
+              } catch (parseError) {
+                console.error('日期解析错误:', parseError);
+              }
+            }
+          } catch (error) {
+            console.error('日期格式检查错误:', error);
+          }
+        }
+        
         form.setFieldsValue({
           title: initialValues.title,
           content: initialValues.content,
           source: initialValues.source || '',
           author: initialValues.author || '',
-          publishDate: initialValues.publishDate ? dayjs(initialValues.publishDate) : null,
+          publishDate: publishDateValue,
           difficultyLevel: initialValues.difficultyLevel || 3
         });
       } else {

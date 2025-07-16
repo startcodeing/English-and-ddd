@@ -317,7 +317,6 @@ public class WordApplicationServiceImpl implements WordApplicationService {
                 .orElseThrow(() -> new IllegalArgumentException("单词不存在: " + id));
         
         wordRepository.deleteById(id);
-        
         // 发布单词删除事件
         WordDeletedEvent event = new WordDeletedEvent();
         event.setUserId("system"); // 临时设置，等用户功能添加后修改
@@ -332,8 +331,6 @@ public class WordApplicationServiceImpl implements WordApplicationService {
         if (ids == null || ids.isEmpty()) {
             return;
         }
-        
-
         wordRepository.deleteAllById(ids);
         // 发布单词批量删除事件
         WordBatchDeletedEvent event = new WordBatchDeletedEvent();

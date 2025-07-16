@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip, DatePicker, Select } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, FileTextOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, FileTextOutlined, DeleteColumnOutlined, ReadOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { getAllArticles, createArticle, updateArticle, deleteArticle, batchDeleteArticles } from '../../../api/article';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
@@ -12,6 +13,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const ArticlePage: React.FC = () => {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
@@ -19,6 +21,11 @@ const ArticlePage: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  
+  // 处理阅读按钮点击
+  const handleReadArticle = (id: string) => {
+    navigate(`/content/article/read/${id}`);
+  };
 
   // 获取文章列表
   const fetchArticles = async () => {
@@ -198,13 +205,9 @@ const ArticlePage: React.FC = () => {
       dataIndex: 'content',
       key: 'content',
       width: '30%',
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: true,
       render: (text: string) => (
-        <Tooltip placement="topLeft" title={text}>
-          <div className="article-content">{text}</div>
-        </Tooltip>
+        <div className="article-content">{text}</div>
       )
     },
     {
@@ -273,11 +276,18 @@ const ArticlePage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: '15%',
+      width: '25%',
       render: (_: any, record: Article) => (
         <Space size="middle">
           <Button 
             type="primary" 
+            icon={<ReadOutlined />} 
+            onClick={() => handleReadArticle(record.id)}
+          >
+            阅读
+          </Button>
+          <Button 
+            type="default" 
             icon={<EditOutlined />} 
             onClick={() => handleEditArticle(record)}
           >
