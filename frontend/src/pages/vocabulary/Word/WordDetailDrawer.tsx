@@ -354,8 +354,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
         window.dispatchEvent(event);
       }
-    } catch (error) {
-      message.error('保存失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '保存失败';
+      message.error(`保存失败: ${errorMessage}`);
       console.error('保存失败:', error);
     }
   };
@@ -559,8 +561,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       
       form.resetFields();
       message.success('词性添加成功');
-    } catch (error) {
-      message.error('添加词性失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '添加词性失败';
+      message.error(`添加词性失败: ${errorMessage}`);
       console.error('添加词性失败:', error);
     }
   };
@@ -763,8 +767,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       setEditingMeaningId(null);
       editMeaningForm.resetFields();
       message.success('词性更新成功');
-    } catch (error) {
-      message.error('更新词性失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '更新词性失败';
+      message.error(`更新词性失败: ${errorMessage}`);
       console.error('更新词性失败:', error);
     }
   };
@@ -796,8 +802,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       window.dispatchEvent(event);
       
       message.success('词性删除成功');
-    } catch (error) {
-      message.error('删除词性失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '删除词性失败';
+      message.error(`删除词性失败: ${errorMessage}`);
       console.error('删除词性失败:', error);
     }
   };
@@ -813,13 +821,22 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
   const isReadOnly = mode === 'view';
 
+  // 处理抽屉关闭事件
+  const handleDrawerClose = () => {
+    // 重置新词义Tab状态
+    setNewTabs([]);
+    setActiveTabKey('0');
+    // 调用父组件的onClose回调
+    onClose();
+  };
+
   return (
     <Drawer
       title={getDrawerTitle()}
       placement="right"
       width={1000}
       open={visible}
-      onClose={onClose}
+      onClose={handleDrawerClose}
       className="word-detail-drawer"
     >
       <div className="word-detail-drawer-content">

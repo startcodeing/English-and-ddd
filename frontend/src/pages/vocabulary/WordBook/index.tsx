@@ -30,8 +30,10 @@ const WordBookPage: React.FC = () => {
     try {
       const response = await getAllWordBooks();
       setWordBooks(response.data);
-    } catch (error) {
-      message.error('获取单词本列表失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '获取单词本列表失败';
+      message.error(`获取单词本列表失败: ${errorMessage}`);
       console.error('获取单词本列表失败:', error);
     } finally {
       setLoading(false);
@@ -43,8 +45,10 @@ const WordBookPage: React.FC = () => {
     try {
       const response = await getAllWords();
       setAllWords(response.data);
-    } catch (error) {
-      message.error('获取单词列表失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '获取单词列表失败';
+      message.error(`获取单词列表失败: ${errorMessage}`);
       console.error('获取单词列表失败:', error);
     }
   };
@@ -77,8 +81,10 @@ const WordBookPage: React.FC = () => {
           await deleteWordBook(id);
           message.success('删除成功');
           fetchWordBooks();
-        } catch (error) {
-          message.error('删除失败');
+        } catch (error: any) {
+          // 从错误对象中提取错误信息
+          const errorMessage = error.errorMessage || '删除失败';
+          message.error(`删除失败: ${errorMessage}`);
           console.error('删除失败:', error);
         }
       }
@@ -102,8 +108,10 @@ const WordBookPage: React.FC = () => {
           message.success('批量删除成功');
           setSelectedRowKeys([]);
           fetchWordBooks();
-        } catch (error) {
-          message.error('批量删除失败');
+        } catch (error: any) {
+          // 从错误对象中提取错误信息
+          const errorMessage = error.errorMessage || '批量删除失败';
+          message.error(`批量删除失败: ${errorMessage}`);
           console.error('批量删除失败:', error);
         } finally {
           setDeleteLoading(false);
@@ -147,7 +155,9 @@ const WordBookPage: React.FC = () => {
       setFormDrawerVisible(false);
       fetchWordBooks();
     } catch (error: any) {
-      message.error(editingWordBook ? '更新失败' : '创建失败');
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || (editingWordBook ? '更新失败' : '创建失败');
+      message.error(`${editingWordBook ? '更新' : '创建'}失败: ${errorMessage}`);
       console.error('保存失败:', error);
     }
   };
@@ -173,8 +183,10 @@ const WordBookPage: React.FC = () => {
       message.success(Array.isArray(wordIds) ? '批量添加单词成功' : '添加单词成功');
       setAddWordDrawerVisible(false);
       fetchWordBooks(); // 刷新列表
-    } catch (error) {
-      message.error(Array.isArray(wordIds) ? '批量添加单词失败' : '添加单词失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || (Array.isArray(wordIds) ? '批量添加单词失败' : '添加单词失败');
+      message.error(`${Array.isArray(wordIds) ? '批量添加单词' : '添加单词'}失败: ${errorMessage}`);
       console.error('添加单词失败:', error);
     }
   };
@@ -193,8 +205,10 @@ const WordBookPage: React.FC = () => {
         words: selectedWordBook.words?.filter(word => word.id !== wordId) || []
       };
       setSelectedWordBook(updatedWordBook);
-    } catch (error) {
-      message.error('移除单词失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '移除单词失败';
+      message.error(`移除单词失败: ${errorMessage}`);
       console.error('移除单词失败:', error);
     }
   };

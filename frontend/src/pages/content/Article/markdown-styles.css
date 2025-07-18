@@ -1,0 +1,183 @@
+/* Markdown 样式 */
+
+/* 基础样式 */
+.markdown-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+  line-height: 1.8;
+  word-wrap: break-word;
+}
+
+/* 标题样式 */
+.markdown-content h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  margin: 0.83em 0;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.markdown-content h3 {
+  font-size: 1.25em;
+  margin: 1em 0;
+  font-weight: 600;
+}
+
+.markdown-content h4 {
+  font-size: 1em;
+  margin: 1.33em 0;
+  font-weight: 600;
+}
+
+.markdown-content h5 {
+  font-size: 0.875em;
+  margin: 1.67em 0;
+  font-weight: 600;
+}
+
+.markdown-content h6 {
+  font-size: 0.85em;
+  margin: 2.33em 0;
+  font-weight: 600;
+  color: #6a737d;
+}
+
+/* 段落样式 */
+.markdown-content p {
+  margin: 1em 0;
+}
+
+/* 列表样式 */
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.markdown-content li {
+  margin: 0.5em 0;
+}
+
+.markdown-content ul li {
+  list-style-type: disc;
+}
+
+.markdown-content ol li {
+  list-style-type: decimal;
+}
+
+/* 代码样式 */
+.markdown-content code {
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+}
+
+.markdown-content pre {
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  overflow: visible;
+}
+
+/* 引用样式 */
+.markdown-content blockquote {
+  margin: 1em 0;
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+}
+
+/* 表格样式 */
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+.markdown-content table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+.markdown-content table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.markdown-content table th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+}
+
+/* 链接样式 */
+.markdown-content a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* 图片样式 */
+.markdown-content img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+
+/* 水平线样式 */
+.markdown-content hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+
+/* 强调样式 */
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+/* 删除线样式 */
+.markdown-content del {
+  text-decoration: line-through;
+}

@@ -5,9 +5,21 @@ import { ArrowLeftOutlined, BookOutlined, FileTextOutlined } from '@ant-design/i
 import { getArticleById } from '../../../api/article';
 import { Article } from '../../../types/models';
 import { difficultyLevelConfigs } from '../../../config/app.config';
+import MarkdownIt from 'markdown-it';
+import '../Article/markdown-styles.css'; // 导入Markdown样式
 import './style.css';
 
 const { Title, Text, Paragraph } = Typography;
+
+// 配置 MarkdownIt 以支持更多特性
+const mdParser = new MarkdownIt({
+  html: true,        // 启用 HTML 标签
+  xhtmlOut: true,    // 使用 '/' 关闭单标签
+  breaks: true,      // 转换段落里的 '\n' 到 <br>
+  linkify: true,     // 自动将 URL 转换为链接
+  typographer: true, // 启用一些语言中立的替换 + 引号美化
+  quotes: ["\u201c", "\u201d", "\u2018", "\u2019"]
+});
 
 const ArticleReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,10 +101,8 @@ const ArticleReader: React.FC = () => {
           
           <Divider />
           
-          <div className="article-reader-content">
-            <Paragraph>
-              {article.content}
-            </Paragraph>
+          <div className="article-reader-content markdown-content">
+            <div dangerouslySetInnerHTML={{ __html: mdParser.render(article.content || '') }} />
           </div>
           
           <Divider />

@@ -44,7 +44,7 @@ const UserActivityPage: React.FC = () => {
       let data: UserActivity[] = [];
       
       // 根据筛选条件获取数据
-      if (dateRange && dateRange[0] && dateRange[1]) {
+      if (dateRange && dateRange[0] && dateRange[1] && dateRange[0].isValid() && dateRange[1].isValid()) {
         // 如果有日期范围，优先按日期范围查询
         const startTime = dateRange[0].valueOf();
         const endTime = dateRange[1].valueOf();

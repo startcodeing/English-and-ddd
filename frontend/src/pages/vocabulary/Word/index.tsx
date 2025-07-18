@@ -59,8 +59,10 @@ const WordPage: React.FC = () => {
       const response = await getAllWords();
       const simpleWords = response.data.map(convertToSimpleWord);
       setWords(simpleWords);
-    } catch (error) {
-      message.error('获取单词列表失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '获取单词列表失败';
+      message.error(`获取单词列表失败: ${errorMessage}`);
       console.error('获取单词列表失败:', error);
     } finally {
       setLoading(false);
@@ -72,8 +74,10 @@ const WordPage: React.FC = () => {
     try {
       const response = await getAllPartOfSpeech();
       setPartsOfSpeech(response.data);
-    } catch (error) {
-      message.error('获取词性列表失败');
+    } catch (error: any) {
+      // 从错误对象中提取错误信息
+      const errorMessage = error.errorMessage || '获取词性列表失败';
+      message.error(`获取词性列表失败: ${errorMessage}`);
       console.error('获取词性列表失败:', error);
     }
   };
@@ -138,8 +142,10 @@ const WordPage: React.FC = () => {
           await deleteWord(id);
           message.success('删除成功');
           fetchWords();
-        } catch (error) {
-          message.error('删除失败');
+        } catch (error: any) {
+          // 从错误对象中提取错误信息
+          const errorMessage = error.errorMessage || '删除失败';
+          message.error(`删除失败: ${errorMessage}`);
           console.error('删除失败:', error);
         }
       }
@@ -160,8 +166,10 @@ const WordPage: React.FC = () => {
           message.success('批量删除成功');
           setSelectedRowKeys([]);
           fetchWords();
-        } catch (error) {
-          message.error('批量删除失败');
+        } catch (error: any) {
+          // 从错误对象中提取错误信息
+          const errorMessage = error.errorMessage || '批量删除失败';
+          message.error(`批量删除失败: ${errorMessage}`);
           console.error('批量删除失败:', error);
         } finally {
           setDeleteLoading(false);

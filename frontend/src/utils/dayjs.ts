@@ -22,6 +22,7 @@ import minMax from 'dayjs/plugin/minMax';
 import dayOfYear from 'dayjs/plugin/dayOfYear';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import buddhistEra from 'dayjs/plugin/buddhistEra';
+// isValid 是 dayjs 内置方法，不需要导入插件
 
 // 扩展dayjs插件
 dayjs.extend(customParseFormat);
@@ -46,6 +47,7 @@ dayjs.extend(minMax);
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 dayjs.extend(buddhistEra);
+// isValid 是 dayjs 内置方法，不需要扩展
 
 // 设置默认语言为中文
 dayjs.locale('zh-cn');

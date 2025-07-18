@@ -1,16 +1,37 @@
-import React, { useEffect } from 'react';
-import { Drawer, Form, Input, Button, Space, Tooltip } from 'antd';
+﻿import React, { useEffect, useState } from 'react';
+import { Drawer, Form, Input, Button, Space, Tooltip, Typography, Card } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Sentence } from '../../../types';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
+import './markdown-styles.css'; // 导入自定义的 Markdown 样式
+
+const { Title, Paragraph } = Typography;
 
 const { TextArea } = Input;
+// 配置 MarkdownIt 以支持更多特性
+const mdParser = new MarkdownIt({
+  html: true,        // 启用 HTML 标签
+  xhtmlOut: true,    // 使用 '/' 关闭单标签
+  breaks: true,      // 转换段落里的 '\n' 到 <br>
+  linkify: true,     // 自动将 URL 转换为链接
+  typographer: true, // 启用一些语言中立的替换 + 引号美化
+  quotes: ["\u201c", "\u201d", "\u2018", "\u2019"]
+});
 
 interface SentenceFormDrawerProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (values: { englishContent: string; chineseMeaning: string; grammarAnalysis?: string }) => void;
+  onSubmit: (values: { id?: number; englishContent: string; chineseMeaning: string; grammarAnalysis?: string }) => void;
   initialValues?: Sentence;
   title: string;
+  mode?: 'create' | 'edit' | 'view';
+}
+
+interface EditorResult {
+  text: string;
+  html: string;
 }
 
 const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
@@ -18,32 +39,82 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
   onClose,
   onSubmit,
   initialValues,
-  title
+  title,
+  mode = 'create'
 }) => {
   const [form] = Form.useForm();
+  const [englishContent, setEnglishContent] = useState('');
+  const [chineseMeaning, setChineseMeaning] = useState('');
+  const [grammarAnalysis, setGrammarAnalysis] = useState('');
 
   useEffect(() => {
     if (visible) {
-      // 如果是编辑模式，设置表单初始值
-      if (initialValues) {
+      if ((mode === 'edit' || mode === 'view') && initialValues) {
+        // 如果是编辑或查看模式，设置表单初始值
         form.setFieldsValue({
-          englishContent: initialValues.englishContent,
-          chineseMeaning: initialValues.chineseMeaning,
+          englishContent: initialValues.englishContent || '',
+          chineseMeaning: initialValues.chineseMeaning || '',
           grammarAnalysis: initialValues.grammarAnalysis || ''
         });
+        setEnglishContent(initialValues.englishContent || '');
+        setChineseMeaning(initialValues.chineseMeaning || '');
+        setGrammarAnalysis(initialValues.grammarAnalysis || '');
       } else {
         // 如果是创建模式，重置表单
         form.resetFields();
+        setEnglishContent('');
+        setChineseMeaning('');
+        setGrammarAnalysis('');
       }
     }
-  }, [visible, initialValues, form]);
+  }, [visible, initialValues, form, mode]);
 
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
-      onSubmit(values);
-    }).catch(error => {
+  const handleSubmit = async () => {
+    try {
+      await form.validateFields();
+      onSubmit({
+        id: initialValues?.id ? Number(initialValues.id) : undefined,
+        englishContent,
+        chineseMeaning,
+        grammarAnalysis
+      });
+    } catch (error) {
       console.error('表单验证失败:', error);
-    });
+    }
+  };
+  
+  const handleEnglishContentChange = ({ text }: EditorResult) => {
+    setEnglishContent(text);
+    form.setFieldsValue({ englishContent: text });
+  };
+  
+  const handleChineseMeaningChange = ({ text }: EditorResult) => {
+    setChineseMeaning(text);
+    form.setFieldsValue({ chineseMeaning: text });
+  };
+  
+  const handleGrammarAnalysisChange = ({ text }: EditorResult) => {
+    setGrammarAnalysis(text);
+    form.setFieldsValue({ grammarAnalysis: text });
+  };
+
+  // 渲染查看模式下的内容
+  const renderViewContent = (content: string, title: string) => {
+    return (
+      <Card 
+        title={title} 
+        style={{ marginBottom: 16 }}
+        bordered={false}
+        className="sentence-view-card"
+        headStyle={{ fontSize: '16px', fontWeight: 'bold' }}
+        bodyStyle={{ padding: '16px' }}
+      >
+        <div 
+          className="markdown-content" 
+          dangerouslySetInnerHTML={{ __html: mdParser.render(content || '') }}
+        />
+      </Card>
+    );
   };
 
   return (
@@ -51,61 +122,83 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
       title={title}
       open={visible}
       onClose={onClose}
-      width={700}
+      width={900}
       placement="right"
       extra={
         <Space>
-          <Button onClick={onClose}>取消</Button>
-          <Button type="primary" onClick={handleSubmit}>
-            保存
-          </Button>
+          <Button onClick={onClose}>{mode === 'view' ? '关闭' : '取消'}</Button>
+          {mode !== 'view' && (
+            <Button type="primary" onClick={handleSubmit}>
+              保存
+            </Button>
+          )}
         </Space>
       }
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={initialValues}
-      >
-        <Form.Item
-          name="englishContent"
-          label="英文内容"
-          rules={[{ required: true, message: '请输入英文内容' }]}
+      {mode === 'view' ? (
+        <div 
+          className="sentence-view-container"
+          style={{
+            padding: '16px',
+            backgroundColor: '#f5f5f5',
+            borderRadius: '8px',
+            overflow: 'auto',
+            maxHeight: 'calc(100vh - 120px)'
+          }}
         >
-          <TextArea 
-            placeholder="请输入英文内容" 
-            rows={3} 
-            showCount 
-            maxLength={500}
-          />
-        </Form.Item>
-        
-        <Form.Item
-          name="chineseMeaning"
-          label="中文含义"
-          rules={[{ required: true, message: '请输入中文含义' }]}
+          {renderViewContent(englishContent, '英文内容')}
+          {renderViewContent(chineseMeaning, '中文含义')}
+          {grammarAnalysis && renderViewContent(grammarAnalysis, '语法分析')}
+        </div>
+      ) : (
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={initialValues}
         >
-          <TextArea 
-            placeholder="请输入中文含义" 
-            rows={3} 
-            showCount 
-            maxLength={500}
-          />
-        </Form.Item>
-        
-        <Form.Item
-          name="grammarAnalysis"
-          label="语法分析"
-          tooltip={{ title: '分析句子的语法结构，如时态、语态、从句类型等', icon: <InfoCircleOutlined /> }}
-        >
-          <TextArea 
-            placeholder="请输入语法分析" 
-            rows={4} 
-            showCount 
-            maxLength={1000}
-          />
-        </Form.Item>
-      </Form>
+          <Form.Item
+            name="englishContent"
+            label="英文内容"
+            rules={[{ required: true, message: '请输入英文内容' }]}
+          >
+            <MdEditor
+              style={{ height: '250px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入英文内容"
+              onChange={handleEnglishContentChange}
+              value={englishContent}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="chineseMeaning"
+            label="中文含义"
+            rules={[{ required: true, message: '请输入中文含义' }]}
+          >
+            <MdEditor
+              style={{ height: '250px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入中文含义"
+              onChange={handleChineseMeaningChange}
+              value={chineseMeaning}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="grammarAnalysis"
+            label="语法分析"
+            tooltip={{ title: '分析句子的语法结构，如时态、语态、从句类型等', icon: <InfoCircleOutlined /> }}
+          >
+            <MdEditor
+              style={{ height: '300px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入语法分析"
+              onChange={handleGrammarAnalysisChange}
+              value={grammarAnalysis}
+            />
+          </Form.Item>
+        </Form>
+       )}
     </Drawer>
   );
 };

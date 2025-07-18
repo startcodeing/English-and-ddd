@@ -24,9 +24,11 @@ const PartOfSpeechPage: React.FC = () => {
       const response = await getAllPartOfSpeech();
       setPartsOfSpeech(response.data);
       setFilteredPartsOfSpeech(response.data);
-    } catch (error) {
-      message.error('获取词性列表失败');
+    } catch (error: any) {
       console.error('获取词性列表失败:', error);
+      // 从错误对象中提取错误信息
+      const errorMessage = error.response?.data?.message || '操作失败';
+      message.error('获取词性列表失败: ' + errorMessage);
     } finally {
       setLoading(false);
     }
@@ -59,9 +61,11 @@ const PartOfSpeechPage: React.FC = () => {
           await deletePartOfSpeech(id);
           message.success('删除成功');
           fetchPartsOfSpeech();
-        } catch (error) {
-          message.error('删除失败');
+        } catch (error: any) {
           console.error('删除失败:', error);
+          // 从错误对象中提取错误信息
+          const errorMessage = error.response?.data?.message || '操作失败';
+          message.error('删除失败: ' + errorMessage);
         }
       }
     });
@@ -95,8 +99,15 @@ const PartOfSpeechPage: React.FC = () => {
       
       setDrawerVisible(false);
       fetchPartsOfSpeech();
-    } catch (error) {
+    } catch (error: any) {
       console.error('保存失败:', error);
+      // 从错误对象中提取错误信息
+      const errorMessage = error.response?.data?.message || '操作失败';
+      if (errorMessage.includes('already exists')) {
+        message.error('词性已存在，请使用其他名称');
+      } else {
+        message.error(editingPartOfSpeech ? '更新失败: ' + errorMessage : '创建失败: ' + errorMessage);
+      }
     }
   };
 
@@ -117,9 +128,11 @@ const PartOfSpeechPage: React.FC = () => {
           message.success('批量删除成功');
           setSelectedRowKeys([]);
           fetchPartsOfSpeech();
-        } catch (error) {
-          message.error('批量删除失败');
+        } catch (error: any) {
           console.error('批量删除失败:', error);
+          // 从错误对象中提取错误信息
+          const errorMessage = error.response?.data?.message || '操作失败';
+          message.error('批量删除失败: ' + errorMessage);
         } finally {
           setDeleteLoading(false);
         }

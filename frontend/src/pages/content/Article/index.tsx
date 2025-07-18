@@ -18,6 +18,7 @@ const ArticlePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
+  const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -26,6 +27,8 @@ const ArticlePage: React.FC = () => {
   const handleReadArticle = (id: string) => {
     navigate(`/content/article/read/${id}`);
   };
+  
+
 
   // 获取文章列表
   const fetchArticles = async () => {
@@ -49,12 +52,14 @@ const ArticlePage: React.FC = () => {
   // 打开创建文章抽屉
   const handleAddArticle = () => {
     setEditingArticle(null);
+    setDrawerMode('create');
     setDrawerVisible(true);
   };
 
   // 打开编辑文章抽屉
   const handleEditArticle = (article: Article) => {
     setEditingArticle(article);
+    setDrawerMode('edit');
     setDrawerVisible(true);
   };
 
@@ -131,7 +136,7 @@ const ArticlePage: React.FC = () => {
       // 构建文章对象
       // 确保日期有效
       let formattedDate = undefined;
-      if (values.publishDate) {
+      if (values.publishDate && values.publishDate.isValid()) {
         // 使用dayjs内置方法验证日期，并添加时间部分以符合后端LocalDateTime格式
         formattedDate = values.publishDate.format('YYYY-MM-DD HH:mm:ss');
       }
@@ -287,7 +292,7 @@ const ArticlePage: React.FC = () => {
             阅读
           </Button>
           <Button 
-            type="default" 
+            type="primary" 
             icon={<EditOutlined />} 
             onClick={() => handleEditArticle(record)}
           >
@@ -360,8 +365,9 @@ const ArticlePage: React.FC = () => {
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         onSubmit={handleSaveArticle}
-        initialValues={editingArticle || undefined}
-        title={editingArticle ? '编辑文章' : '添加文章'}
+        initialValues={drawerMode === 'edit' ? (editingArticle || undefined) : undefined}
+        title={drawerMode === 'edit' ? '编辑文章' : '添加文章'}
+        mode={drawerMode}
       />
     </div>
   );

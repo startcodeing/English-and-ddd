@@ -14,6 +14,8 @@ const SentencePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingSentence, setEditingSentence] = useState<Sentence | null>(null);
+  const [viewingSentence, setViewingSentence] = useState<Sentence | null>(null);
+  const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'view'>('create');
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -40,12 +42,24 @@ const SentencePage: React.FC = () => {
   // 打开创建句子抽屉
   const handleAddSentence = () => {
     setEditingSentence(null);
+    setViewingSentence(null);
+    setDrawerMode('create');
     setDrawerVisible(true);
   };
 
   // 打开编辑句子抽屉
   const handleEditSentence = (sentence: Sentence) => {
     setEditingSentence(sentence);
+    setViewingSentence(null);
+    setDrawerMode('edit');
+    setDrawerVisible(true);
+  };
+  
+  // 打开查看句子抽屉
+  const handleViewSentence = (sentence: Sentence) => {
+    setEditingSentence(null);
+    setViewingSentence(sentence);
+    setDrawerMode('view');
     setDrawerVisible(true);
   };
 
@@ -213,9 +227,17 @@ const SentencePage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: '15%',
+      width: '25%',
       render: (_: any, record: Sentence) => (
         <Space size="middle">
+          <Button 
+            type="primary" 
+            ghost
+            icon={<InfoCircleOutlined />} 
+            onClick={() => handleViewSentence(record)}
+          >
+            查看
+          </Button>
           <Button 
             type="primary" 
             icon={<EditOutlined />} 
@@ -290,8 +312,9 @@ const SentencePage: React.FC = () => {
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         onSubmit={handleSaveSentence}
-        initialValues={editingSentence || undefined}
-        title={editingSentence ? '编辑句子' : '添加句子'}
+        initialValues={drawerMode === 'edit' ? (editingSentence || undefined) : (drawerMode === 'view' ? (viewingSentence || undefined) : undefined)}
+        title={drawerMode === 'edit' ? '编辑句子' : (drawerMode === 'view' ? '查看句子' : '添加句子')}
+        mode={drawerMode}
       />
     </div>
   );
