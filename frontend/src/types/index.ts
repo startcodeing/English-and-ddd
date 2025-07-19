@@ -5,3 +5,4 @@ export * from './routes';
 export * from './config';
 export * from './writing';
 export * from './dictation';
+export * from './response';

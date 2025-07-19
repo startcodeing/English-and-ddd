@@ -2,15 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, InputNumber, Select, Space, Spin, message } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { getWritingTopicById, createWritingTopic, updateWritingTopic, WritingTopic } from '../../api/writingTopic';
 
-interface WritingTopicForm {
-  description: string;
-  source: string;
-  difficulty: string;
-  wordLimit?: number;
-  timeLimit?: number;
-}
+type WritingTopicForm = Pick<WritingTopic, 'description' | 'source' | 'difficulty' | 'wordLimit' | 'timeLimit'>;
 
 const WritingTopicFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -30,9 +24,9 @@ const WritingTopicFormPage: React.FC = () => {
   const fetchTopicDetail = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/v1/writing-topics/${id}`);
-      if (response.data.success) {
-        const topicData = response.data.data;
+      const response = await getWritingTopicById(id as string);
+      if (response.success) {
+        const topicData = response.data;
         form.setFieldsValue({
           description: topicData.description,
           source: topicData.source,
@@ -41,7 +35,7 @@ const WritingTopicFormPage: React.FC = () => {
           timeLimit: topicData.timeLimit,
         });
       } else {
-        message.error(response.data.message || '获取写作主题详情失败');
+        message.error(response.message || '获取写作主题详情失败');
         navigate('/content/writing-topics');
       }
     } catch (error) {
@@ -60,17 +54,17 @@ const WritingTopicFormPage: React.FC = () => {
       let response;
       if (isEdit) {
         // 更新
-        response = await axios.put(`/api/v1/writing-topics/${id}`, values);
+        response = await updateWritingTopic(id as string, values);
       } else {
         // 创建
-        response = await axios.post('/api/v1/writing-topics', values);
+        response = await createWritingTopic(values);
       }
 
-      if (response.data.success) {
+      if (response.success) {
         message.success(`${isEdit ? '更新' : '创建'}写作主题成功`);
         navigate('/content/writing-topics');
       } else {
-        message.error(response.data.message || `${isEdit ? '更新' : '创建'}写作主题失败`);
+        message.error(response.message || `${isEdit ? '更新' : '创建'}写作主题失败`);
       }
     } catch (error) {
       console.error(`${isEdit ? '更新' : '创建'}写作主题出错:`, error);

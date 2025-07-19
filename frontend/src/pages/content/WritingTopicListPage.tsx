@@ -2,19 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import dayjs from 'dayjs';
-
-interface WritingTopic {
-  id: number;
-  description: string;
-  source: string;
-  difficulty: string;
-  wordLimit: number;
-  timeLimit: number;
-  createTime: string;
-  updateTime: string;
-}
+import { getWritingTopics, countWritingTopics, deleteWritingTopic, batchDeleteWritingTopics, WritingTopic, WritingTopicQuery } from '../../api/writingTopic';
 
 const { confirm } = Modal;
 
@@ -38,24 +27,20 @@ const WritingTopicListPage: React.FC = () => {
   const fetchTopics = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/v1/writing-topics/search', {
-        params: {
-          ...searchParams,
-          pageNum: current,
-          pageSize,
-        },
+      const response = await getWritingTopics({
+        ...searchParams,
+        pageNum: current,
+        pageSize,
       });
-      if (response.data.success) {
-        setTopics(response.data.data);
+      if (response.success) {
+        setTopics(response.data);
         // 获取总数
-        const countResponse = await axios.get('/api/v1/writing-topics/count/search', {
-          params: searchParams,
-        });
-        if (countResponse.data.success) {
-          setTotal(countResponse.data.data);
+        const countResponse = await countWritingTopics(searchParams);
+        if (countResponse.success) {
+          setTotal(countResponse.data);
         }
       } else {
-        message.error(response.data.message || '获取写作主题列表失败');
+        message.error(response.message || '获取写作主题列表失败');
       }
     } catch (error) {
       console.error('获取写作主题列表出错:', error);
@@ -103,12 +88,12 @@ const WritingTopicListPage: React.FC = () => {
       content: '确定要删除这个写作主题吗？此操作不可恢复。',
       onOk: async () => {
         try {
-          const response = await axios.delete(`/api/v1/writing-topics/${id}`);
-          if (response.data.success) {
+          const response = await deleteWritingTopic(id);
+          if (response.success) {
             message.success('删除成功');
             fetchTopics();
           } else {
-            message.error(response.data.message || '删除失败');
+            message.error(response.message || '删除失败');
           }
         } catch (error) {
           console.error('删除写作主题出错:', error);
@@ -131,15 +116,13 @@ const WritingTopicListPage: React.FC = () => {
       content: `确定要删除选中的 ${ids.length} 个写作主题吗？此操作不可恢复。`,
       onOk: async () => {
         try {
-          const response = await axios.delete('/api/v1/writing-topics/batch', {
-            data: ids,
-          });
-          if (response.data.success) {
+          const response = await batchDeleteWritingTopics(ids);
+          if (response.success) {
             message.success('批量删除成功');
             fetchTopics();
             setSelectedRowKeys([]);
           } else {
-            message.error(response.data.message || '批量删除失败');
+            message.error(response.message || '批量删除失败');
           }
         } catch (error) {
           console.error('批量删除写作主题出错:', error);

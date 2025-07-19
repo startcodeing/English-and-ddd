@@ -30,7 +30,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
     // 直接返回响应数据
-    return response.data;
+    return response.data as any;
   },
   (error: AxiosError) => {
     if (error.response) {
