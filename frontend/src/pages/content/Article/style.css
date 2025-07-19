@@ -12,12 +12,63 @@
 .article-page-header h1 {
   margin: 0;
   font-size: 24px;
-  font-weight: 500;
 }
 
 .article-page-actions {
   display: flex;
   align-items: center;
+}
+
+/* 文章表单页面样式 */
+.article-form-container {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.article-form-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.article-form-header h4.ant-typography {
+  margin: 0;
+}
+
+
+
+.article-form-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  flex: 1;
+  overflow: auto;
+  margin: 0 16px 16px;
+}
+
+.article-form {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.form-col {
+  flex: 1;
+}
+
+.form-actions {
+  margin-top: 24px;
+  text-align: right;
 }
 
 /* 批量操作区域样式 */

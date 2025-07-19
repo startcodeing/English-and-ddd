@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip, DatePicker, Select } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, FileTextOutlined, DeleteColumnOutlined, ReadOutlined } from '@ant-design/icons';
+import { Table, Space, Button, Input, Modal, message, Tag, Tooltip } from 'antd';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, DeleteColumnOutlined, ReadOutlined, FileTextOutlined, BookOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getAllArticles, createArticle, updateArticle, deleteArticle, batchDeleteArticles } from '../../../api/article';
+import { getAllArticles, deleteArticle, batchDeleteArticles } from '../../../api/article';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
-import ArticleFormDrawer from './ArticleFormDrawer';
-import dayjs from '../../../utils/dayjs';
 import './style.css';
-
-const { TextArea } = Input;
-const { Option } = Select;
 
 const ArticlePage: React.FC = () => {
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-  const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -49,18 +41,14 @@ const ArticlePage: React.FC = () => {
     fetchArticles();
   }, []);
 
-  // 打开创建文章抽屉
+  // 导航到创建文章页面
   const handleAddArticle = () => {
-    setEditingArticle(null);
-    setDrawerMode('create');
-    setDrawerVisible(true);
+    navigate('/content/article/create');
   };
 
-  // 打开编辑文章抽屉
+  // 导航到编辑文章页面
   const handleEditArticle = (article: Article) => {
-    setEditingArticle(article);
-    setDrawerMode('edit');
-    setDrawerVisible(true);
+    navigate(`/content/article/edit/${article.id}`);
   };
 
   // 删除文章
@@ -123,51 +111,7 @@ const ArticlePage: React.FC = () => {
     }
   };
 
-  // 保存文章（创建或更新）
-  const handleSaveArticle = async (values: { 
-    title: string; 
-    content: string; 
-    source?: string; 
-    author?: string; 
-    publishDate?: dayjs.Dayjs; 
-    difficultyLevel: number 
-  }) => {
-    try {
-      // 构建文章对象
-      // 确保日期有效
-      let formattedDate = undefined;
-      if (values.publishDate && values.publishDate.isValid()) {
-        // 使用dayjs内置方法验证日期，并添加时间部分以符合后端LocalDateTime格式
-        formattedDate = values.publishDate.format('YYYY-MM-DD HH:mm:ss');
-      }
-      
-      const articleData: Omit<Article, 'id'> = {
-        title: values.title,
-        content: values.content,
-        source: values.source || undefined,
-        author: values.author || undefined,
-        publishDate: formattedDate,
-        difficultyLevel: values.difficultyLevel,
-        unfamiliarWords: [],
-        sentences: []
-      };
-      
-      if (editingArticle) {
-        // 更新文章
-        await updateArticle(editingArticle.id, articleData);
-        message.success('更新成功');
-      } else {
-        // 创建文章
-        await createArticle(articleData);
-        message.success('创建成功');
-      }
-      
-      setDrawerVisible(false);
-      fetchArticles();
-    } catch (error) {
-      console.error('保存失败:', error);
-    }
-  };
+
 
   // 搜索文章
   const handleSearch = async () => {
@@ -359,15 +303,6 @@ const ArticlePage: React.FC = () => {
         loading={loading}
         pagination={{ pageSize: 10 }}
         rowSelection={rowSelection}
-      />
-      
-      <ArticleFormDrawer
-        visible={drawerVisible}
-        onClose={() => setDrawerVisible(false)}
-        onSubmit={handleSaveArticle}
-        initialValues={drawerMode === 'edit' ? (editingArticle || undefined) : undefined}
-        title={drawerMode === 'edit' ? '编辑文章' : '添加文章'}
-        mode={drawerMode}
       />
     </div>
   );
