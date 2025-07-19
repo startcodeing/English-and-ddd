@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, message, Modal } from 'antd';
+import { Table, Space, Button, Input, message, Modal, Tooltip } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { getAllWords, createWord, updateWord, deleteWord, batchDeleteWords } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
@@ -218,23 +218,41 @@ const WordPage: React.FC = () => {
     {
       title: '词性',
       key: 'partsOfSpeech',
-      width: 250,
+      width: 150,
       render: (record: SimpleWord) => {
         if (!record.meanings || record.meanings.length === 0) {
           return '无';
         }
         
-        return (
+        // 获取所有词性名称
+        const posNames = record.meanings.map(meaning => {
+          const partOfSpeech = partsOfSpeech.find(pos => pos.id === meaning.partOfSpeechId);
+          return partOfSpeech ? partOfSpeech.englishName : '未知';
+        });
+        
+        // 使用 / 分隔词性名称
+        const posText = posNames.join('/');
+        
+        // 准备悬停提示的详细内容
+        const tooltipContent = (
           <div>
             {record.meanings.map((meaning, index) => {
               const partOfSpeech = partsOfSpeech.find(pos => pos.id === meaning.partOfSpeechId);
               return (
-                <div key={meaning.id || index} className="part-of-speech-item">
-                  <div className="part-of-speech-name">{partOfSpeech ? partOfSpeech.chineseMeaning : '未知'}</div>
-                  <div className="part-of-speech-meaning">{meaning.chineseMeaning}</div>
+                <div key={meaning.id || index} style={{ marginBottom: '8px' }}>
+                  <div><strong>词性：</strong>{partOfSpeech ? `${partOfSpeech.englishName} (${partOfSpeech.chineseMeaning})` : '未知'}</div>
+                  <div><strong>释义：</strong>{meaning.chineseMeaning}</div>
                 </div>
               );
             })}
+          </div>
+        );
+        
+        return (
+          <div>
+            <Tooltip title={tooltipContent} placement="right">
+              <span>{posText}</span>
+            </Tooltip>
           </div>
         );
       }

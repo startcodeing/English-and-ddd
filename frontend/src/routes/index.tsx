@@ -14,6 +14,7 @@ const WordBook = React.lazy(() => import('../pages/vocabulary/WordBook'));
 const Sentence = React.lazy(() => import('../pages/content/Sentence'));
 const Article = React.lazy(() => import('../pages/content/Article'));
 const ArticleReader = React.lazy(() => import('../pages/content/ArticleReader'));
+const SentenceReader = React.lazy(() => import('../pages/content/SentenceReader'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -108,11 +109,18 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
-      {
-        path: '/content/article/read/:id',
+      {        path: '/content/article/read/:id',
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <ArticleReader />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/sentence/read/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <SentenceReader />
           </React.Suspense>
         ),
       },

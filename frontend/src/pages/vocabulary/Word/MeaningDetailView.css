@@ -10,12 +10,7 @@
   margin-bottom: 0;
 }
 
-.synonym-tags, .antonym-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
+/* 移除了 synonym-tags 和 antonym-tags 样式，使用与词性和中文释义一致的样式 */
 
 .example-sentences {
   margin-top: 8px;

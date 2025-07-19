@@ -213,6 +213,11 @@ interface WordDetailDrawerProps {
   wordId?: string;
   onClose: () => void;
   onSuccess: () => void;
+  initialValues?: {
+    spelling?: string;
+    phonetic?: string;
+    difficultyLevel?: number;
+  }; // 添加初始值属性
 }
 
 const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({ 
@@ -220,7 +225,8 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
   mode, 
   wordId, 
   onClose, 
-  onSuccess 
+  onSuccess,
+  initialValues
 }) => {
   const [form] = Form.useForm();
   
@@ -295,6 +301,10 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (mode === 'create') {
         setWord(null);
         form.resetFields();
+        // 如果有初始值，设置到表单中
+        if (initialValues) {
+          form.setFieldsValue(initialValues);
+        }
         setActiveTabKey('0');
         setNewTabs([]);
       } else if (wordId) {
@@ -303,7 +313,7 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       fetchPartsOfSpeech();
       fetchAllWords();
     }
-  }, [visible, mode, wordId]);
+  }, [visible, mode, wordId, initialValues]);
 
   // 当word数据更新时，确保activeTabKey有效
   useEffect(() => {

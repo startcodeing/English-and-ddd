@@ -111,7 +111,7 @@ const PartOfSpeechFormDrawer: React.FC<PartOfSpeechFormDrawerProps> = ({
       title={title}
       open={visible}
       onClose={onClose}
-      width={600}
+      width={900}
       placement="right"
       extra={
         <Space>

@@ -127,19 +127,5 @@
   text-decoration: underline;
 }
 
-.detail-section {
-  margin-bottom: 24px;
-  padding: 0 12px;
-}
-
-.common-phrases .phrase-item {
-  margin-bottom: 12px;
-  padding: 12px 0;
-  border-bottom: 1px dashed #e8e8e8;
-}
-
-.common-phrases .phrase-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
+/* 这些样式已移至 PartOfSpeechDetailDrawer.css */
+/* .detail-section 和 .common-phrases 相关样式已移除 */

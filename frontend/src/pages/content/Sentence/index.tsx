@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { getAllSentences, createSentence, updateSentence, deleteSentence, batchDeleteSentences } from '../../../api/sentence';
 import { Sentence } from '../../../types';
 import SentenceFormDrawer from './SentenceFormDrawer';
+import SentenceViewDrawer from './SentenceViewDrawer';
 import './style.css';
 
 const { TextArea } = Input;
 
 const SentencePage: React.FC = () => {
+  const navigate = useNavigate();
+  
   // 状态定义
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,12 +59,10 @@ const SentencePage: React.FC = () => {
     setDrawerVisible(true);
   };
   
-  // 打开查看句子抽屉
+  // 查看句子详情 - 导航到句子阅读页面
   const handleViewSentence = (sentence: Sentence) => {
-    setEditingSentence(null);
-    setViewingSentence(sentence);
-    setDrawerMode('view');
-    setDrawerVisible(true);
+    // 使用导航功能跳转到句子阅读页面，而不是打开抽屉
+    navigate(`/content/sentence/read/${sentence.id}`);
   };
 
   // 删除句子
@@ -308,14 +310,23 @@ const SentencePage: React.FC = () => {
         pagination={{ pageSize: 10 }}
       />
       
-      <SentenceFormDrawer
-        visible={drawerVisible}
-        onClose={() => setDrawerVisible(false)}
-        onSubmit={handleSaveSentence}
-        initialValues={drawerMode === 'edit' ? (editingSentence || undefined) : (drawerMode === 'view' ? (viewingSentence || undefined) : undefined)}
-        title={drawerMode === 'edit' ? '编辑句子' : (drawerMode === 'view' ? '查看句子' : '添加句子')}
-        mode={drawerMode}
-      />
+      {drawerMode === 'view' ? (
+        <SentenceViewDrawer
+          visible={drawerVisible}
+          onClose={() => setDrawerVisible(false)}
+          sentence={viewingSentence || undefined}
+          title="查看句子"
+        />
+      ) : (
+        <SentenceFormDrawer
+          visible={drawerVisible}
+          onClose={() => setDrawerVisible(false)}
+          onSubmit={handleSaveSentence}
+          initialValues={drawerMode === 'edit' ? (editingSentence || undefined) : undefined}
+          title={drawerMode === 'edit' ? '编辑句子' : '添加句子'}
+          mode={drawerMode}
+        />
+      )}
     </div>
   );
 };

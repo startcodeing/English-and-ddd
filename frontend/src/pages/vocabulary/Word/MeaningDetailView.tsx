@@ -26,26 +26,32 @@ const MeaningDetailView: React.FC<MeaningDetailViewProps> = ({ meaning, partOfSp
       {meaning.synonyms && meaning.synonyms.length > 0 && (
         <div className="meaning-item">
           <Text strong>近义词：</Text>
-          <div className="synonym-tags">
+          <span>
             {meaning.synonyms.map((synonym, idx) => (
-              <Tag key={idx} color="blue">
-                {synonym.synonymWord?.spelling || '未知单词'}
-              </Tag>
+              <React.Fragment key={idx}>
+                {idx > 0 && '、'}
+                <Tag color="blue">
+                  {synonym.synonymWord?.spelling || '未知单词'}
+                </Tag>
+              </React.Fragment>
             ))}
-          </div>
+          </span>
         </div>
       )}
       
       {meaning.antonyms && meaning.antonyms.length > 0 && (
         <div className="meaning-item">
           <Text strong>反义词：</Text>
-          <div className="antonym-tags">
+          <span>
             {meaning.antonyms.map((antonym, idx) => (
-              <Tag key={idx} color="red">
-                {antonym.antonymWord?.spelling || '未知单词'}
-              </Tag>
+              <React.Fragment key={idx}>
+                {idx > 0 && '、'}
+                <Tag color="red">
+                  {antonym.antonymWord?.spelling || '未知单词'}
+                </Tag>
+              </React.Fragment>
             ))}
-          </div>
+          </span>
         </div>
       )}
       

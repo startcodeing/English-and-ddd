@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Typography, Tag, Space, Button, Divider, Tooltip, Skeleton, message, Drawer } from 'antd';
-import { ArrowLeftOutlined, BookOutlined, FileTextOutlined } from '@ant-design/icons';
-import { getArticleById } from '../../../api/article';
+import { Card, Typography, Space, Button, Divider, Tooltip, Skeleton, message, Drawer } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { getSentenceById } from '../../../api/sentence';
 import { getWordBySpelling, getWordDetail } from '../../../api/word';
-import { Article, WordDetail } from '../../../types/models';
-import { difficultyLevelConfigs } from '../../../config/app.config';
+import { Sentence, WordDetail } from '../../../types/models';
 import MarkdownIt from 'markdown-it';
-import '../Article/markdown-styles.css'; // 导入Markdown样式
-import './style.css';
-import WordDetailView from './WordDetailView';
+import '../Sentence/markdown-styles.css'; // 导入Markdown样式
+import '../Sentence/sentence-reader.css'; // 导入句子阅读器样式
+import WordDetailView from './WordDetailView'; // 导入单词详情视图组件
 import WordDetailDrawer from '../../vocabulary/Word/WordDetailDrawer'; // 导入单词详情抽屉组件
 
 const { Title, Text } = Typography;
@@ -24,10 +23,10 @@ const mdParser = new MarkdownIt({
   quotes: ["\u201c", "\u201d", "\u2018", "\u2019"]
 });
 
-const ArticleReader: React.FC = () => {
+const SentenceReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [article, setArticle] = useState<Article | null>(null);
+  const [sentence, setSentence] = useState<Sentence | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [wordDrawerVisible, setWordDrawerVisible] = useState<boolean>(false);
   const [selectedWord, setSelectedWord] = useState<string>('');
@@ -37,34 +36,26 @@ const ArticleReader: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchArticle = async () => {
+    const fetchSentence = async () => {
       try {
         if (id) {
           setLoading(true);
-          const response = await getArticleById(id);
-          setArticle(response.data);
+          const response = await getSentenceById(id);
+          setSentence(response.data);
         }
       } catch (error) {
-        console.error('获取文章详情失败:', error);
-        message.error('获取文章详情失败');
+        console.error('获取句子详情失败:', error);
+        message.error('获取句子详情失败');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchArticle();
+    fetchSentence();
   }, [id]);
 
   const handleBack = () => {
-    navigate('/content/article');
-  };
-
-  const getDifficultyTag = (level: number | undefined) => {
-    if (level === undefined) return null;
-    const config = difficultyLevelConfigs.find(config => config.value === level);
-    return config ? (
-      <Tag color={config.color}>{config.label}</Tag>
-    ) : null;
+    navigate('/content/sentence');
   };
   
   // 处理单词点击事件
@@ -124,16 +115,16 @@ const ArticleReader: React.FC = () => {
     setShowAddWordDrawer(false);
   };
   
-  // 监听文章内容点击事件
+  // 监听句子内容点击事件
   useEffect(() => {
     const handleContentClick = (e: MouseEvent) => {
-      console.log('文章内容点击事件触发');
+      console.log('句子内容点击事件触发');
       // 获取点击的目标元素
       const target = e.target as HTMLElement;
       console.log('点击目标元素:', target.tagName, target.className);
       
       // 检查是否点击了单词 span
-      if (target && target.classList.contains('article-word')) {
+      if (target && target.classList.contains('sentence-word')) {
         console.log('点击了单词元素');
         // 获取单词文本
         const wordText = target.textContent?.trim();
@@ -159,10 +150,10 @@ const ArticleReader: React.FC = () => {
 
     const contentElement = contentRef.current;
     if (contentElement) {
-      console.log('添加点击事件监听器到文章内容元素');
+      console.log('添加点击事件监听器到句子内容元素');
       contentElement.addEventListener('click', handleContentClick as EventListener);
     } else {
-      console.warn('文章内容元素不存在，无法添加点击事件监听器');
+      console.warn('句子内容元素不存在，无法添加点击事件监听器');
     }
 
     return () => {
@@ -170,15 +161,15 @@ const ArticleReader: React.FC = () => {
         contentElement.removeEventListener('click', handleContentClick as EventListener);
       }
     };
-  }, [article]); // 添加 article 作为依赖项，确保文章内容变化时重新添加事件监听
+  }, [sentence]); // 添加 sentence 作为依赖项，确保句子内容变化时重新添加事件监听
   
-  // 处理文章内容渲染，为单词添加点击事件
-  const renderArticleContent = () => {
-    if (!article?.content) return null;
+  // 处理英文内容渲染，将单词包装在可点击的 span 中
+  const renderEnglishContent = () => {
+    if (!sentence?.englishContent) return null;
     
-    console.log('开始渲染文章内容');
+    console.log('开始渲染句子内容');
     // 使用 MarkdownIt 渲染 Markdown 内容
-    const htmlContent = mdParser.render(article.content);
+    const htmlContent = mdParser.render(sentence.englishContent);
     console.log('Markdown 渲染完成');
     
     // 创建一个临时 div 元素来解析 HTML
@@ -189,13 +180,13 @@ const ArticleReader: React.FC = () => {
     const paragraphs = tempDiv.querySelectorAll('p');
     console.log(`找到 ${paragraphs.length} 个段落`);
     paragraphs.forEach(p => {
-      p.className = 'article-paragraph';
+      p.className = 'sentence-paragraph';
     });
     
     const listItems = tempDiv.querySelectorAll('li');
     console.log(`找到 ${listItems.length} 个列表项`);
     listItems.forEach(li => {
-      li.className = 'article-list-item';
+      li.className = 'sentence-list-item';
     });
     
     // 处理文本内容，将单词包装在 span 标签中以便点击
@@ -228,7 +219,7 @@ const ArticleReader: React.FC = () => {
                   if (/^[a-zA-Z]+$/.test(part)) {
                     // 如果是英文单词，创建带有特殊类的 span
                     const span = document.createElement('span');
-                    span.className = 'article-word';
+                    span.className = 'sentence-word';
                     span.textContent = part;
                     // 添加点击事件处理器
                     span.onclick = (e) => {
@@ -264,85 +255,70 @@ const ArticleReader: React.FC = () => {
       }
     });
     
-    console.log('文章内容处理完成');
+    console.log('句子内容处理完成');
     return <div dangerouslySetInnerHTML={{ __html: tempDiv.innerHTML }} />;
   };
 
   return (
-    <div className="article-reader-container">
-      <div className="article-reader-header">
+    <div className="sentence-reader-container">
+      <div className="sentence-reader-header">
         <Button 
           type="primary" 
           icon={<ArrowLeftOutlined />} 
           onClick={handleBack}
-          className="article-reader-back-button"
+          className="sentence-reader-back-button"
         >
           返回列表
         </Button>
       </div>
 
-      {loading ? (
-        <Card className="article-reader-card" bodyStyle={{ padding: '12px 16px' }}>
-          <Skeleton active paragraph={{ rows: 10 }} />
-        </Card>
-      ) : article ? (
-        <Card className="article-reader-card" bodyStyle={{ padding: '12px 16px' }}>
-          <div className="article-reader-title-section">
-            <Title level={2} style={{ lineHeight: '1.3' }}>{article.title}</Title>
-            <div className="article-reader-meta">
-              {article.source && (
-                <Text type="secondary" className="article-reader-source">
-                  来源: {article.source}
-                </Text>
-              )}
-              {article.author && (
-                <Text type="secondary" className="article-reader-author">
-                  作者: {article.author}
-                </Text>
-              )}
-              {article.publishDate && (
-                <Text type="secondary" className="article-reader-date">
-                  发布日期: {article.publishDate}
-                </Text>
-              )}
-              {getDifficultyTag(article.difficultyLevel)}
+      <div className="sentence-reader-main-content">
+        {loading ? (
+          <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+            <Skeleton active paragraph={{ rows: 10 }} />
+          </Card>
+        ) : sentence ? (
+          <div>
+            <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+              <div className="sentence-reader-title-section">
+                <Typography.Title level={4} style={{ lineHeight: '1.3' }}>英文内容</Typography.Title>
+              </div>
+              <Divider style={{ margin: '8px 0' }} />
+              <div className="sentence-reader-content markdown-content" ref={contentRef}>
+                {renderEnglishContent()}
+              </div>
+            </Card>
+            
+            <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }} style={{ marginTop: '16px' }}>
+              <div className="sentence-reader-title-section">
+                <Typography.Title level={4} style={{ lineHeight: '1.3' }}>中文含义</Typography.Title>
+              </div>
+              <Divider style={{ margin: '8px 0' }} />
+              <div className="sentence-reader-content markdown-content">
+                <div dangerouslySetInnerHTML={{ __html: mdParser.render(sentence.chineseMeaning || '') }} />
+              </div>
+            </Card>
+            
+            {sentence.grammarAnalysis && (
+              <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }} style={{ marginTop: '16px' }}>
+                <div className="sentence-reader-title-section">
+                  <Typography.Title level={4} style={{ lineHeight: '1.3' }}>语法分析</Typography.Title>
+                </div>
+                <Divider style={{ margin: '8px 0' }} />
+                <div className="sentence-reader-content markdown-content">
+                  <div dangerouslySetInnerHTML={{ __html: mdParser.render(sentence.grammarAnalysis || '') }} />
+                </div>
+              </Card>
+            )}
+          </div>
+        ) : (
+          <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+            <div className="sentence-reader-empty">
+              <Text>句子不存在或已被删除</Text>
             </div>
-          </div>
-          
-          <Divider style={{ margin: '8px 0' }} />
-          
-          <div className="article-reader-content markdown-content" ref={contentRef}>
-            {renderArticleContent()}
-          </div>
-          
-          <Divider style={{ margin: '8px 0' }} />
-          
-          <div className="article-reader-footer">
-            <Space>
-              {article.sentences && article.sentences.length > 0 && (
-                <Tooltip title={`${article.sentences.length}个句子`}>
-                  <Tag icon={<FileTextOutlined />} color="blue">
-                    {article.sentences.length} 个句子
-                  </Tag>
-                </Tooltip>
-              )}
-              {article.unfamiliarWords && article.unfamiliarWords.length > 0 && (
-                <Tooltip title={`${article.unfamiliarWords.length}个陌生词`}>
-                  <Tag icon={<BookOutlined />} color="orange">
-                    {article.unfamiliarWords.length} 个陌生词
-                  </Tag>
-                </Tooltip>
-              )}
-            </Space>
-          </div>
-        </Card>
-      ) : (
-        <Card className="article-reader-card" bodyStyle={{ padding: '12px 16px' }}>
-          <div className="article-reader-empty">
-            <Text>文章不存在或已被删除</Text>
-          </div>
-        </Card>
-      )}
+          </Card>
+        )}
+      </div>
       
       {/* 单词详情抽屉 */}
       {wordLoading ? (
@@ -354,6 +330,7 @@ const ArticleReader: React.FC = () => {
           width={400}
           destroyOnClose
           zIndex={1001}
+          className="word-detail-drawer"
         >
           <Skeleton active paragraph={{ rows: 10 }} />
         </Drawer>
@@ -392,6 +369,7 @@ const ArticleReader: React.FC = () => {
           width={400}
           destroyOnClose
           zIndex={1001}
+          className="word-detail-drawer"
         >
           <div>未找到单词信息</div>
         </Drawer>
@@ -400,4 +378,4 @@ const ArticleReader: React.FC = () => {
   );
 };
 
-export default ArticleReader;
+export default SentenceReader;

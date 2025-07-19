@@ -1,9 +1,10 @@
 import React from 'react';
-import { Drawer, Typography, Divider, Card } from 'antd';
+import { Drawer, Typography, Divider, Card, Tag } from 'antd';
 import { PartOfSpeech } from '@/types';
 import MarkdownIt from 'markdown-it';
 import 'react-markdown-editor-lite/lib/index.css';
 import './markdown-styles.css';
+import './PartOfSpeechDetailDrawer.css';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -63,15 +64,23 @@ const PartOfSpeechDetailDrawer: React.FC<PartOfSpeechDetailDrawerProps> = ({
 
   return (
     <Drawer
-      title="词性详情"
+      title={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>词性详情</span>}
       open={visible}
       onClose={onClose}
-      width={700}
+      width={900}
       placement="right"
       footer={null}
+      className="part-of-speech-detail-drawer"
+      headerStyle={{ borderBottom: '1px solid #f0f0f0', padding: '16px 24px' }}
+      bodyStyle={{ padding: '24px' }}
     >
       <div className="part-of-speech-detail">
-        <Title level={3}>{partOfSpeech.englishName}</Title>
+        <Title level={2}>
+          {partOfSpeech.englishName}
+          <Tag color="blue" style={{ marginLeft: '12px', fontSize: '14px', padding: '0 8px' }}>
+            {partOfSpeech.chineseMeaning}
+          </Tag>
+        </Title>
         
         <Divider orientation="left">中文含义</Divider>
         <div className="detail-section">
