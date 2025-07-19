@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, message } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech, batchDeletePartOfSpeech } from '../../../api/partOfSpeech';
 import { PartOfSpeech } from '@/types';
 import PartOfSpeechFormDrawer from './PartOfSpeechFormDrawer';
+import PartOfSpeechDetailDrawer from './PartOfSpeechDetailDrawer';
 import './style.css';
 
 const PartOfSpeechPage: React.FC = () => {
@@ -16,14 +17,21 @@ const PartOfSpeechPage: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [detailDrawerVisible, setDetailDrawerVisible] = useState<boolean>(false);
+  const [viewingPartOfSpeech, setViewingPartOfSpeech] = useState<PartOfSpeech | null>(null);
 
   // 获取词性列表
   const fetchPartsOfSpeech = async () => {
     setLoading(true);
     try {
       const response = await getAllPartOfSpeech();
-      setPartsOfSpeech(response.data);
-      setFilteredPartsOfSpeech(response.data);
+      // 确保每个词性的 commonPhrases 字段都是数组类型
+      const processedData = response.data.map((item: PartOfSpeech) => ({
+        ...item,
+        commonPhrases: Array.isArray(item.commonPhrases) ? item.commonPhrases : []
+      }));
+      setPartsOfSpeech(processedData);
+      setFilteredPartsOfSpeech(processedData);
     } catch (error: any) {
       console.error('获取词性列表失败:', error);
       // 从错误对象中提取错误信息
@@ -47,8 +55,27 @@ const PartOfSpeechPage: React.FC = () => {
 
   // 打开编辑词性抽屉
   const handleEditPartOfSpeech = (partOfSpeech: PartOfSpeech) => {
-    setEditingPartOfSpeech(partOfSpeech);
+    // 创建一个新对象，确保所有字段的类型正确
+    const editingPartOfSpeech = {
+      // 确保基本字段存在
+      id: partOfSpeech.id,
+      englishName: partOfSpeech.englishName || '',
+      chineseMeaning: partOfSpeech.chineseMeaning || '',
+      // 确保 usageSummary 是字符串类型
+      usageSummary: typeof partOfSpeech.usageSummary === 'string' ? partOfSpeech.usageSummary : '',
+      // 确保 commonPhrases 是数组类型，并且每个元素都是字符串
+      commonPhrases: Array.isArray(partOfSpeech.commonPhrases) 
+        ? partOfSpeech.commonPhrases.map(phrase => typeof phrase === 'string' ? phrase : '')
+        : []
+    };
+    setEditingPartOfSpeech(editingPartOfSpeech);
     setDrawerVisible(true);
+  };
+  
+  // 打开查看词性详情抽屉
+  const handleViewPartOfSpeech = (partOfSpeech: PartOfSpeech) => {
+    setViewingPartOfSpeech(partOfSpeech);
+    setDetailDrawerVisible(true);
   };
 
   // 删除词性
@@ -84,7 +111,7 @@ const PartOfSpeechPage: React.FC = () => {
         englishName: values.englishName,
         chineseMeaning: values.chineseMeaning,
         usageSummary: values.usageSummary || undefined,
-        commonPhrases: commonPhrases.length > 0 ? commonPhrases : undefined
+        commonPhrases: commonPhrases // 始终保持为数组，即使是空数组
       };
       
       if (editingPartOfSpeech) {
@@ -127,7 +154,7 @@ const PartOfSpeechPage: React.FC = () => {
           await batchDeletePartOfSpeech(selectedRowKeys as string[]);
           message.success('批量删除成功');
           setSelectedRowKeys([]);
-          fetchPartsOfSpeech();
+          await fetchPartsOfSpeech();
         } catch (error: any) {
           console.error('批量删除失败:', error);
           // 从错误对象中提取错误信息
@@ -158,7 +185,13 @@ const PartOfSpeechPage: React.FC = () => {
       pos.chineseMeaning.toLowerCase().includes(value.toLowerCase())
     );
     
-    setFilteredPartsOfSpeech(filtered);
+    // 确保搜索结果中的 commonPhrases 字段也始终是数组类型
+    const processedFiltered = filtered.map(item => ({
+      ...item,
+      commonPhrases: Array.isArray(item.commonPhrases) ? item.commonPhrases : []
+    }));
+    
+    setFilteredPartsOfSpeech(processedFiltered);
   };
 
   // 表格列定义
@@ -172,27 +205,49 @@ const PartOfSpeechPage: React.FC = () => {
     {
       title: '中文含义',
       dataIndex: 'chineseMeaning',
-      key: 'chineseMeaning'
+      key: 'chineseMeaning',
+      render: (text: string) => {
+        // 截取前30个字符，避免内容过长
+        const plainText = text.replace(/<[^>]+>/g, '');
+        return plainText.length > 30 ? plainText.substring(0, 30) + '...' : plainText;
+      }
     },
     {
       title: '用法概述',
       dataIndex: 'usageSummary',
       key: 'usageSummary',
-      render: (text: string) => text || '-'
+      render: (text: string) => {
+        if (!text) return '-';
+        // 截取前30个字符，避免内容过长
+        const plainText = text.replace(/<[^>]+>/g, '');
+        return plainText.length > 30 ? plainText.substring(0, 30) + '...' : plainText;
+      }
     },
     {
       title: '常用短语',
       dataIndex: 'commonPhrases',
       key: 'commonPhrases',
-      render: (phrases: string[]) => phrases && phrases.length > 0 
-        ? phrases.join(', ')
-        : '-'
+      render: (phrases: string[]) => {
+        if (!phrases || phrases.length === 0) return '-';
+        // 确保第一个短语是字符串
+        const firstPhrase = typeof phrases[0] === 'string' ? phrases[0] : '';
+        // 只显示第一个短语，并截取前30个字符
+        const plainText = firstPhrase.replace(/<[^>]+>/g, '');
+        return (phrases.length > 1 ? `${plainText.substring(0, 30)}... (共${phrases.length}个)` : plainText);
+      }
     },
     {
       title: '操作',
       key: 'action',
       render: (_: any, record: PartOfSpeech) => (
         <Space size="middle">
+          <Button 
+            type="default" 
+            icon={<EyeOutlined />} 
+            onClick={() => handleViewPartOfSpeech(record)}
+          >
+            查看
+          </Button>
           <Button 
             type="primary" 
             icon={<EditOutlined />} 
@@ -277,6 +332,12 @@ const PartOfSpeechPage: React.FC = () => {
         onSubmit={handleSavePartOfSpeech}
         initialValues={editingPartOfSpeech || undefined}
         title={editingPartOfSpeech ? '编辑词性' : '添加词性'}
+      />
+      
+      <PartOfSpeechDetailDrawer
+        visible={detailDrawerVisible}
+        onClose={() => setDetailDrawerVisible(false)}
+        partOfSpeech={viewingPartOfSpeech}
       />
     </div>
   );

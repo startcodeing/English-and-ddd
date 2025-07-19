@@ -56,9 +56,9 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
           chineseMeaning: initialValues.chineseMeaning || '',
           grammarAnalysis: initialValues.grammarAnalysis || ''
         });
-        setEnglishContent(initialValues.englishContent || '');
-        setChineseMeaning(initialValues.chineseMeaning || '');
-        setGrammarAnalysis(initialValues.grammarAnalysis || '');
+        setEnglishContent(typeof initialValues.englishContent === 'string' ? initialValues.englishContent : '');
+        setChineseMeaning(typeof initialValues.chineseMeaning === 'string' ? initialValues.chineseMeaning : '');
+        setGrammarAnalysis(typeof initialValues.grammarAnalysis === 'string' ? initialValues.grammarAnalysis : '');
       } else {
         // 如果是创建模式，重置表单
         form.resetFields();
@@ -84,18 +84,21 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
   };
   
   const handleEnglishContentChange = ({ text }: EditorResult) => {
-    setEnglishContent(text);
-    form.setFieldsValue({ englishContent: text });
+    const safeText = typeof text === 'string' ? text : '';
+    setEnglishContent(safeText);
+    form.setFieldsValue({ englishContent: safeText });
   };
   
   const handleChineseMeaningChange = ({ text }: EditorResult) => {
-    setChineseMeaning(text);
-    form.setFieldsValue({ chineseMeaning: text });
+    const safeText = typeof text === 'string' ? text : '';
+    setChineseMeaning(safeText);
+    form.setFieldsValue({ chineseMeaning: safeText });
   };
   
   const handleGrammarAnalysisChange = ({ text }: EditorResult) => {
-    setGrammarAnalysis(text);
-    form.setFieldsValue({ grammarAnalysis: text });
+    const safeText = typeof text === 'string' ? text : '';
+    setGrammarAnalysis(safeText);
+    form.setFieldsValue({ grammarAnalysis: safeText });
   };
 
   // 渲染查看模式下的内容
@@ -166,7 +169,7 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
               renderHTML={text => mdParser.render(text)}
               placeholder="请输入英文内容"
               onChange={handleEnglishContentChange}
-              value={englishContent}
+              value={typeof englishContent === 'string' ? englishContent : ''}
             />
           </Form.Item>
           
@@ -180,7 +183,7 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
               renderHTML={text => mdParser.render(text)}
               placeholder="请输入中文含义"
               onChange={handleChineseMeaningChange}
-              value={chineseMeaning}
+              value={typeof chineseMeaning === 'string' ? chineseMeaning : ''}
             />
           </Form.Item>
           
@@ -194,7 +197,7 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
               renderHTML={text => mdParser.render(text)}
               placeholder="请输入语法分析"
               onChange={handleGrammarAnalysisChange}
-              value={grammarAnalysis}
+              value={typeof grammarAnalysis === 'string' ? grammarAnalysis : ''}
             />
           </Form.Item>
         </Form>
