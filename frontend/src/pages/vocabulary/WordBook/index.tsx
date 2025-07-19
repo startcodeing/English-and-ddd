@@ -228,7 +228,7 @@ const WordBookPage: React.FC = () => {
       render: (text: string, record: WordBook) => (
         <Space>
           <BookOutlined style={{ color: '#1890ff' }} />
-          <span style={{ fontWeight: 'bold' }}>{text}</span>
+          <a style={{ fontWeight: 'bold' }} onClick={() => handleViewWordBook(record)}>{text}</a>
         </Space>
       ),
     },

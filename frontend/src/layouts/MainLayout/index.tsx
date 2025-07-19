@@ -72,6 +72,11 @@ const MainLayout: React.FC = () => {
           label: '文章管理',
           onClick: () => navigate('/content/article'),
         },
+        {
+          key: 'writing-topics',
+          label: '写作主题管理',
+          onClick: () => navigate('/content/writing-topics'),
+        },
       ],
     },
     {

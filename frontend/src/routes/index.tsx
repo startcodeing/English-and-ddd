@@ -16,6 +16,8 @@ const Article = React.lazy(() => import('../pages/content/Article'));
 const ArticleReader = React.lazy(() => import('../pages/content/ArticleReader'));
 const SentenceReader = React.lazy(() => import('../pages/content/SentenceReader'));
 const ArticleForm = React.lazy(() => import('../pages/content/Article/ArticleFormPage'));
+const WritingTopicList = React.lazy(() => import('../pages/content/WritingTopicListPage'));
+const WritingTopicForm = React.lazy(() => import('../pages/content/WritingTopicFormPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -139,6 +141,30 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <SentenceReader />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/writing-topics',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingTopicList />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/writing-topics/create',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingTopicForm />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/writing-topics/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingTopicForm />
           </React.Suspense>
         ),
       },

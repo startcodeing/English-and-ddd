@@ -200,7 +200,10 @@ const PartOfSpeechPage: React.FC = () => {
       title: '英文名称',
       dataIndex: 'englishName',
       key: 'englishName',
-      sorter: (a: PartOfSpeech, b: PartOfSpeech) => a.englishName.localeCompare(b.englishName)
+      sorter: (a: PartOfSpeech, b: PartOfSpeech) => a.englishName.localeCompare(b.englishName),
+      render: (text: string, record: PartOfSpeech) => (
+        <a onClick={() => handleViewPartOfSpeech(record)}>{text}</a>
+      )
     },
     {
       title: '中文含义',

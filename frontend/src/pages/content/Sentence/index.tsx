@@ -179,9 +179,9 @@ const SentencePage: React.FC = () => {
       ellipsis: {
         showTitle: false,
       },
-      render: (text: string) => (
+      render: (text: string, record: Sentence) => (
         <Tooltip placement="topLeft" title={text}>
-          <div className="sentence-content">{text}</div>
+          <a className="sentence-content" onClick={() => handleViewSentence(record)}>{text}</a>
         </Tooltip>
       )
     },

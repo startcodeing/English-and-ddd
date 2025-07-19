@@ -208,7 +208,10 @@ const WordPage: React.FC = () => {
       title: '拼写',
       dataIndex: 'spelling',
       key: 'spelling',
-      sorter: (a: SimpleWord, b: SimpleWord) => a.spelling.localeCompare(b.spelling)
+      sorter: (a: SimpleWord, b: SimpleWord) => a.spelling.localeCompare(b.spelling),
+      render: (text: string, record: SimpleWord) => (
+        <a onClick={() => handleViewWord(record)}>{text}</a>
+      )
     },
     {
       title: '发音',

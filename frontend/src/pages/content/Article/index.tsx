@@ -142,9 +142,9 @@ const ArticlePage: React.FC = () => {
       ellipsis: {
         showTitle: false,
       },
-      render: (text: string) => (
+      render: (text: string, record: Article) => (
         <Tooltip placement="topLeft" title={text}>
-          <div className="article-title">{text}</div>
+          <a className="article-title" onClick={() => handleReadArticle(record.id)}>{text}</a>
         </Tooltip>
       ),
       sorter: (a: Article, b: Article) => a.title.localeCompare(b.title)

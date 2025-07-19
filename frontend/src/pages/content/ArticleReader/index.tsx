@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Typography, Tag, Space, Button, Divider, Tooltip, Skeleton, message, Drawer } from 'antd';
-import { ArrowLeftOutlined, BookOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Card, Typography, Tag, Space, Button, Divider, Tooltip, Skeleton, message, Drawer, Form } from 'antd';
+import { ArrowLeftOutlined, BookOutlined, FileTextOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getArticleById } from '../../../api/article';
 import { getWordBySpelling, getWordDetail } from '../../../api/word';
 import { Article, WordDetail } from '../../../types/models';
 import { difficultyLevelConfigs } from '../../../config/app.config';
 import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 import '../Article/markdown-styles.css'; // 导入Markdown样式
 import './style.css';
 import WordDetailView from './WordDetailView';
@@ -34,6 +36,12 @@ const ArticleReader: React.FC = () => {
   const [wordDetail, setWordDetail] = useState<WordDetail | null>(null);
   const [wordLoading, setWordLoading] = useState<boolean>(false);
   const [showAddWordDrawer, setShowAddWordDrawer] = useState<boolean>(false);
+  const [sentenceDrawerVisible, setSentenceDrawerVisible] = useState<boolean>(false);
+  const [selectedSentence, setSelectedSentence] = useState<string>('');
+  const [sentenceForm] = Form.useForm();
+  const [englishContent, setEnglishContent] = useState<string>('');
+  const [chineseMeaning, setChineseMeaning] = useState<string>('');
+  const [grammarAnalysis, setGrammarAnalysis] = useState<string>('');
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -124,6 +132,77 @@ const ArticleReader: React.FC = () => {
     setShowAddWordDrawer(false);
   };
   
+  // 处理选中文本添加为句子
+  const handleAddSentence = (text: string) => {
+    setSelectedSentence(text);
+    setEnglishContent(text);
+    setSentenceDrawerVisible(true);
+    
+    // 重置表单
+    sentenceForm.resetFields();
+    // 设置初始值
+    sentenceForm.setFieldsValue({
+      englishContent: text,
+      chineseMeaning: '',
+      grammarAnalysis: ''
+    });
+  };
+
+  // 关闭句子添加抽屉
+  const handleCloseSentenceDrawer = () => {
+    setSentenceDrawerVisible(false);
+    setSelectedSentence('');
+    setEnglishContent('');
+    setChineseMeaning('');
+    setGrammarAnalysis('');
+    sentenceForm.resetFields();
+  };
+
+  // 保存新句子
+  const handleSaveSentence = async () => {
+    try {
+      // 验证表单
+      await sentenceForm.validateFields();
+      
+      // 导入创建句子的API
+      const { createSentence } = await import('../../../api/sentence');
+      
+      // 调用API保存句子
+      await createSentence({
+        englishContent: englishContent,
+        chineseMeaning: chineseMeaning,
+        grammarAnalysis: grammarAnalysis || ''
+      });
+      
+      message.success('句子添加成功');
+      handleCloseSentenceDrawer();
+    } catch (error) {
+      console.error('添加句子失败:', error);
+      message.error('添加句子失败');
+    }
+  };
+  
+  // 处理富文本编辑器内容变化
+  interface EditorResult {
+    text: string;
+    html: string;
+  }
+  
+  const handleEnglishContentChange = ({ text }: EditorResult) => {
+    setEnglishContent(text);
+    sentenceForm.setFieldsValue({ englishContent: text });
+  };
+  
+  const handleChineseMeaningChange = ({ text }: EditorResult) => {
+    setChineseMeaning(text);
+    sentenceForm.setFieldsValue({ chineseMeaning: text });
+  };
+  
+  const handleGrammarAnalysisChange = ({ text }: EditorResult) => {
+    setGrammarAnalysis(text);
+    sentenceForm.setFieldsValue({ grammarAnalysis: text });
+  };
+
   // 监听文章内容点击事件
   useEffect(() => {
     const handleContentClick = (e: MouseEvent) => {
@@ -146,28 +225,33 @@ const ArticleReader: React.FC = () => {
         }
         return;
       }
-      
-      // 如果点击的不是单词 span，检查是否有文本选择
+    };
+
+    // 监听鼠标释放事件，用于处理文本选择
+    const handleMouseUp = () => {
       const selection = window.getSelection();
       if (selection && selection.toString().trim()) {
         const selectedText = selection.toString().trim();
         console.log('选中的文本:', selectedText);
-        // 处理选中的文本
-        handleWordClick(selectedText);
+        // 处理选中的文本，弹出句子添加抽屉
+        handleAddSentence(selectedText);
       }
     };
+    
 
     const contentElement = contentRef.current;
     if (contentElement) {
-      console.log('添加点击事件监听器到文章内容元素');
+      console.log('添加事件监听器到文章内容元素');
       contentElement.addEventListener('click', handleContentClick as EventListener);
+      contentElement.addEventListener('mouseup', handleMouseUp as EventListener);
     } else {
-      console.warn('文章内容元素不存在，无法添加点击事件监听器');
+      console.warn('文章内容元素不存在，无法添加事件监听器');
     }
 
     return () => {
       if (contentElement) {
         contentElement.removeEventListener('click', handleContentClick as EventListener);
+        contentElement.removeEventListener('mouseup', handleMouseUp as EventListener);
       }
     };
   }, [article]); // 添加 article 作为依赖项，确保文章内容变化时重新添加事件监听
@@ -396,6 +480,77 @@ const ArticleReader: React.FC = () => {
           <div>未找到单词信息</div>
         </Drawer>
       )}
+
+      {/* 句子添加抽屉 */}
+      <Drawer
+        title="添加句子"
+        placement="right"
+        onClose={handleCloseSentenceDrawer}
+        open={sentenceDrawerVisible}
+        width={900}
+        destroyOnClose
+        zIndex={1002}
+        extra={
+          <Space>
+            <Button onClick={handleCloseSentenceDrawer}>取消</Button>
+            <Button type="primary" onClick={handleSaveSentence}>
+              保存
+            </Button>
+          </Space>
+        }
+      >
+        <Form
+          form={sentenceForm}
+          layout="vertical"
+          initialValues={{
+            englishContent: selectedSentence,
+            chineseMeaning: '',
+            grammarAnalysis: ''
+          }}
+        >
+          <Form.Item
+            name="englishContent"
+            label="英文内容"
+            rules={[{ required: true, message: '请输入英文内容' }]}
+          >
+            <MdEditor
+              style={{ height: '250px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入英文内容"
+              onChange={handleEnglishContentChange}
+              value={englishContent}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="chineseMeaning"
+            label="中文含义"
+            rules={[{ required: true, message: '请输入中文含义' }]}
+          >
+            <MdEditor
+              style={{ height: '250px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入中文含义"
+              onChange={handleChineseMeaningChange}
+              value={chineseMeaning}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="grammarAnalysis"
+            label="语法分析"
+            tooltip={{ title: '分析句子的语法结构，如时态、语态、从句类型等', icon: <InfoCircleOutlined /> }}
+          >
+            <MdEditor
+              style={{ height: '300px', width: '100%' }}
+              renderHTML={text => mdParser.render(text)}
+              placeholder="请输入语法分析"
+              onChange={handleGrammarAnalysisChange}
+              value={grammarAnalysis}
+            />
+          </Form.Item>
+        </Form>
+      </Drawer>
     </div>
   );
 };
