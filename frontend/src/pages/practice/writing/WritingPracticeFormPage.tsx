@@ -485,17 +485,17 @@ const WritingPracticeFormPage: React.FC = () => {
           </Form.Item>
         </Card>
 
-        <Form.Item style={{ textAlign: 'right', marginTop: 24, marginBottom: 0 }}>
-          <Space size="middle">
+        <Form.Item style={{ textAlign: 'right', marginTop: 16, marginBottom: 0 }}>
+          <Space size="small">
             <Button 
               type="primary" 
               htmlType="submit" 
               loading={submitting} 
               disabled={!editorContent}
-              size="large"
+              size="middle"
               style={{ 
-                minWidth: '100px',
-                borderRadius: '6px',
+                minWidth: '90px',
+                borderRadius: '4px',
                 fontWeight: 500,
                 boxShadow: '0 2px 0 rgba(0,0,0,0.045)'
               }}
@@ -507,10 +507,10 @@ const WritingPracticeFormPage: React.FC = () => {
               onClick={saveDraft} 
               loading={submitting} 
               disabled={!editorContent}
-              size="large"
+              size="middle"
               style={{ 
-                minWidth: '100px',
-                borderRadius: '6px',
+                minWidth: '90px',
+                borderRadius: '4px',
                 fontWeight: 500
               }}
               icon={<SaveOutlined />}
@@ -519,10 +519,10 @@ const WritingPracticeFormPage: React.FC = () => {
             </Button>
             <Button 
                onClick={() => navigate('/practice/writing')}
-               size="large"
+               size="middle"
                style={{ 
-                 minWidth: '80px',
-                 borderRadius: '6px'
+                 minWidth: '70px',
+                 borderRadius: '4px'
                }}
                icon={<CloseOutlined />}
             >
