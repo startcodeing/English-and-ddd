@@ -16,6 +16,7 @@
         <module>interfaces-vocabulary</module>
         <module>interfaces-content</module>
         <module>interfaces-activity</module>
+        <module>interfaces-practice</module>
         <!-- 更多接口模块将在后续添加 -->
     </modules>
 

@@ -22,6 +22,9 @@ const WritingTopicForm = React.lazy(() => import('../pages/content/WritingTopicF
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
 const Writing = React.lazy(() => import('../pages/practice/writing'));
+const WritingPracticeList = React.lazy(() => import('../pages/practice/writing/WritingPracticeListPage'));
+const WritingPracticeForm = React.lazy(() => import('../pages/practice/writing/WritingPracticeFormPage'));
+const WritingPracticeView = React.lazy(() => import('../pages/practice/writing/WritingPracticeViewPage'));
 
 // 测试模块页面
 const Comprehensive = React.lazy(() => import('../pages/test/comprehensive'));
@@ -181,7 +184,30 @@ const router = createBrowserRouter([
         path: '/practice/writing',
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
-            <Writing />
+            <WritingPracticeList />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/practice/writing/create',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingPracticeForm />
+          </React.Suspense>
+        ),
+      },
+      {        path: '/practice/writing/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingPracticeForm />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/practice/writing/view/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingPracticeView />
           </React.Suspense>
         ),
       },

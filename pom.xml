@@ -73,6 +73,12 @@
                 <artifactId>domain-activity</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>domain-practice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
             <!-- 应用模块 -->
             <dependency>
@@ -93,6 +99,11 @@
             <dependency>
                 <groupId>com.englishlearning</groupId>
                 <artifactId>application-writing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>application-practice</artifactId>
                 <version>${project.version}</version>
             </dependency>
             
@@ -126,7 +137,17 @@
             </dependency>
             <dependency>
                 <groupId>com.englishlearning</groupId>
+                <artifactId>interfaces-content</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
                 <artifactId>interfaces-activity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>interfaces-practice</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

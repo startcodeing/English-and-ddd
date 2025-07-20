@@ -1,0 +1,6 @@
+com\englishlearning\application\practice\dto\WritingPracticeDTO.class
+com\englishlearning\application\practice\service\WritingPracticeApplicationService.class
+com\englishlearning\application\practice\dto\WritingPracticeDTO$WritingPracticeDTOBuilder.class
+com\englishlearning\application\practice\dto\WritingPracticeQueryDTO.class
+com\englishlearning\application\practice\dto\WritingPracticeQueryDTO$WritingPracticeQueryDTOBuilder.class
+com\englishlearning\application\practice\service\impl\WritingPracticeApplicationServiceImpl.class

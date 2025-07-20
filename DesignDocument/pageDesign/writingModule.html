@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>写作练习</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #f0f0f0;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .btn:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #editor {
+      border: 1px solid #ccc;
+      min-height: 200px;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+
+    #topic-detail {
+      background-color: #f0f0f0;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #007bff;
+    }
+
+    .timer {
+      font-weight: bold;
+      color: #d9534f;
+      margin-bottom: 10px;
+    }
+
+    .button-group {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    #writing-editor-section {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 列表视图 -->
+  <div id="writing-list-section">
+    <h2>写作练习记录</h2>
+    <button class="btn" onclick="startNewWriting()">开始新写作</button>
+    <table>
+      <thead>
+        <tr>
+          <th>主题</th>
+          <th>状态</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="writing-table-body">
+        <!-- 模拟数据 -->
+        <tr>
+          <td>菜市场的生产生参数的长长的</td>
+          <td>草稿</td>
+          <td>2025-07-20 09:19:27</td>
+          <td>
+            <button class="btn" onclick="continueWriting()">继续写作</button>
+            <button class="btn" onclick="viewWriting()">查看</button>
+            <button class="btn" onclick="deleteWriting()">删除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 写作编辑区 -->
+  <div id="writing-editor-section">
+    <h2>写作练习</h2>
+
+    <div class="form-group">
+      <label>选择写作主题：</label>
+      <select id="topic-select">
+        <option value="">-- 请选择主题 --</option>
+        <option value="1" data-desc="描述：菜市场的生产生参数的长长的" data-limit="30">菜市场的生产生参数的长长的（30分钟）</option>
+      </select>
+    </div>
+
+    <div id="topic-detail" style="display:none;"></div>
+    <div id="timer" class="timer" style="display:none;"></div>
+
+    <div id="editor" contenteditable="true" style="display:none;"></div>
+
+    <div class="button-group" id="button-group" style="display:none;">
+      <button class="btn" onclick="saveDraft()">保存</button>
+      <button class="btn" onclick="submitEssay()">提交</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const topicSelect = document.getElementById('topic-select');
+  const topicDetail = document.getElementById('topic-detail');
+  const editor = document.getElementById('editor');
+  const timer = document.getElementById('timer');
+  const buttonGroup = document.getElementById('button-group');
+
+  const listSection = document.getElementById('writing-list-section');
+  const editorSection = document.getElementById('writing-editor-section');
+
+  let countdownInterval;
+  let timeRemaining = 0;
+
+  // 切换到新建写作
+  function startNewWriting() {
+    listSection.style.display = 'none';
+    editorSection.style.display = 'block';
+    resetEditor();
+  }
+
+  // 模拟继续写作
+  function continueWriting() {
+    listSection.style.display = 'none';
+    editorSection.style.display = 'block';
+    resetEditor();
+    // 你可以根据具体内容填充 editor.innerHTML
+  }
+
+  function viewWriting() {
+    alert("模拟查看已提交内容");
+  }
+
+  function deleteWriting() {
+    alert("模拟删除写作记录");
+  }
+
+  topicSelect.addEventListener('change', function () {
+    const selectedOption = this.options[this.selectedIndex];
+    const desc = selectedOption.getAttribute('data-desc');
+    const limit = selectedOption.getAttribute('data-limit');
+
+    if (!desc) {
+      topicDetail.style.display = 'none';
+      editor.style.display = 'none';
+      timer.style.display = 'none';
+      buttonGroup.style.display = 'none';
+      return;
+    }
+
+    topicDetail.innerText = desc;
+    topicDetail.style.display = 'block';
+    editor.style.display = 'block';
+    buttonGroup.style.display = 'block';
+
+    timeRemaining = parseInt(limit) * 60;
+    startCountdown();
+  });
+
+  function startCountdown() {
+    clearInterval(countdownInterval);
+    timer.style.display = 'block';
+    updateTimer();
+
+    countdownInterval = setInterval(() => {
+      timeRemaining--;
+      updateTimer();
+      if (timeRemaining <= 0) {
+        clearInterval(countdownInterval);
+        timer.innerText = "时间到！自动保存中...";
+      }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const min = Math.floor(timeRemaining / 60);
+    const sec = timeRemaining % 60;
+    timer.innerText = `剩余时间：${min}分${sec < 10 ? '0' : ''}${sec}秒`;
+  }
+
+  function saveDraft() {
+    const content = editor.innerHTML;
+    alert("草稿已保存，内容长度：" + content.length);
+  }
+
+  function submitEssay() {
+    const content = editor.innerHTML;
+    alert("写作已提交，内容长度：" + content.length);
+    // 模拟回到列表
+    listSection.style.display = 'block';
+    editorSection.style.display = 'none';
+  }
+
+  function resetEditor() {
+    topicSelect.value = '';
+    topicDetail.style.display = 'none';
+    editor.innerHTML = '';
+    editor.style.display = 'none';
+    timer.style.display = 'none';
+    buttonGroup.style.display = 'none';
+    clearInterval(countdownInterval);
+  }
+</script>
+
+</body>
+</html>

@@ -94,7 +94,7 @@ const WritingTopicFormPage: React.FC = () => {
           layout="vertical"
           onFinish={handleSubmit}
           initialValues={{
-            difficulty: 'MEDIUM', // 默认中等难度
+            difficulty: 'medium', // 默认中等难度
           }}
         >
           <Form.Item
@@ -118,9 +118,9 @@ const WritingTopicFormPage: React.FC = () => {
             <Select
               placeholder="请选择难度级别"
               options={[
-                { value: 'EASY', label: '简单' },
-                { value: 'MEDIUM', label: '中等' },
-                { value: 'HARD', label: '困难' },
+                { value: 'easy', label: '简单' },
+                { value: 'medium', label: '中等' },
+                { value: 'hard', label: '困难' },
               ]}
             />
           </Form.Item>

@@ -1,8 +1,11 @@
 package com.englishlearning.domain.content.model.enums;
 
+import lombok.Getter;
+
 /**
  * 难度级别枚举
  */
+@Getter
 public enum DifficultyLevel {
     EASY("easy", "简单"),
     MEDIUM("medium", "中等"),
@@ -15,15 +18,7 @@ public enum DifficultyLevel {
         this.code = code;
         this.description = description;
     }
-    
-    public String getCode() {
-        return code;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
+
     /**
      * 根据code获取枚举值
      */

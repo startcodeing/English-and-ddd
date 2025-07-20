@@ -1,46 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, message } from 'antd';
+import { Button, Card, Col, Descriptions, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { getWritingTopics, countWritingTopics, deleteWritingTopic, batchDeleteWritingTopics, WritingTopic, WritingTopicQuery } from '../../api/writingTopic';
+import { getWritingTopics, countWritingTopics, deleteWritingTopic, batchDeleteWritingTopics, getWritingTopicById, WritingTopic, WritingTopicQuery } from '../../api/writingTopic';
 
 const { confirm } = Modal;
+
+const { Text } = Typography;
 
 const WritingTopicListPage: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  
+  // 状态管理
   const [topics, setTopics] = useState<WritingTopic[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
   const [current, setCurrent] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-
-  // 搜索条件
-  const [searchParams, setSearchParams] = useState({
-    description: '',
-    source: '',
-    difficulty: '',
-  });
+  const [searchParams, setSearchParams] = useState<WritingTopicQuery>({});
+  const [detailVisible, setDetailVisible] = useState<boolean>(false);
+  const [currentTopic, setCurrentTopic] = useState<WritingTopic | null>(null);
+  const [detailLoading, setDetailLoading] = useState<boolean>(false);
 
   // 获取写作主题列表
   const fetchTopics = async () => {
     setLoading(true);
     try {
-      const response = await getWritingTopics({
+      const params = {
         ...searchParams,
         pageNum: current,
         pageSize,
-      });
-      if (response.success) {
-        setTopics(response.data);
-        // 获取总数
-        const countResponse = await countWritingTopics(searchParams);
-        if (countResponse.success) {
-          setTotal(countResponse.data);
-        }
+      };
+      
+      const [topicsRes, countRes] = await Promise.all([
+        getWritingTopics(params),
+        countWritingTopics(params),
+      ]);
+      
+      if (topicsRes.success && countRes.success) {
+        setTopics(topicsRes.data || []);
+        setTotal(countRes.data || 0);
       } else {
-        message.error(response.message || '获取写作主题列表失败');
+        message.error(topicsRes.message || countRes.message || '获取写作主题列表失败');
       }
     } catch (error) {
       console.error('获取写作主题列表出错:', error);
@@ -48,6 +51,31 @@ const WritingTopicListPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 获取写作主题详情
+  const fetchTopicDetail = async (id: number) => {
+    setDetailLoading(true);
+    try {
+      const response = await getWritingTopicById(id);
+      if (response.success) {
+        setCurrentTopic(response.data);
+        setDetailVisible(true);
+      } else {
+        message.error(response.message || '获取写作主题详情失败');
+      }
+    } catch (error) {
+      console.error('获取写作主题详情出错:', error);
+      message.error('获取写作主题详情失败');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+  
+  // 关闭详情弹窗
+  const handleDetailClose = () => {
+    setDetailVisible(false);
+    setCurrentTopic(null);
   };
 
   // 初始加载和条件变化时获取数据
@@ -65,11 +93,7 @@ const WritingTopicListPage: React.FC = () => {
   const handleReset = () => {
     form.resetFields();
     setCurrent(1);
-    setSearchParams({
-      description: '',
-      source: '',
-      difficulty: '',
-    });
+    setSearchParams({});
   };
 
   // 处理分页变化
@@ -145,6 +169,11 @@ const WritingTopicListPage: React.FC = () => {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
+      render: (text: string, record: WritingTopic) => (
+        <Typography.Link onClick={() => fetchTopicDetail(record.id)}>
+          {text}
+        </Typography.Link>
+      ),
     },
     {
       title: '来源',
@@ -158,18 +187,8 @@ const WritingTopicListPage: React.FC = () => {
       key: 'difficulty',
       width: 100,
       render: (difficulty: string) => {
-        let color = 'green';
-        let text = '简单';
-        
-        if (difficulty === 'MEDIUM') {
-          color = 'orange';
-          text = '中等';
-        } else if (difficulty === 'HARD') {
-          color = 'red';
-          text = '困难';
-        }
-        
-        return <Tag color={color}>{text}</Tag>;
+        // 直接显示后端返回的难度级别
+        return <span>{difficulty}</span>;
       },
     },
     {
@@ -245,9 +264,9 @@ const WritingTopicListPage: React.FC = () => {
             allowClear
             style={{ width: 120 }}
             options={[
-              { value: 'EASY', label: '简单' },
-              { value: 'MEDIUM', label: '中等' },
-              { value: 'HARD', label: '困难' },
+              { value: 'easy', label: '简单' },
+              { value: 'medium', label: '中等' },
+              { value: 'hard', label: '困难' },
             ]}
           />
         </Form.Item>
@@ -308,6 +327,59 @@ const WritingTopicListPage: React.FC = () => {
           />
         </Col>
       </Row>
+
+      {/* 详情弹窗 */}
+      <Modal
+        title="写作主题详情"
+        open={detailVisible}
+        onCancel={handleDetailClose}
+        footer={[
+          <Button key="close" onClick={handleDetailClose}>
+            关闭
+          </Button>
+        ]}
+        width={700}
+      >
+        {detailLoading ? (
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>加载中...</div>
+        ) : currentTopic ? (
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="ID">{currentTopic.id}</Descriptions.Item>
+            <Descriptions.Item label="主题描述">{currentTopic.description}</Descriptions.Item>
+            <Descriptions.Item label="来源">{currentTopic.source}</Descriptions.Item>
+            <Descriptions.Item label="难度级别">
+              {(() => {
+                let color = 'green';
+                let text = '简单';
+                
+                if (currentTopic.difficulty === 'medium') {
+                  color = 'orange';
+                  text = '中等';
+                } else if (currentTopic.difficulty === 'hard') {
+                  color = 'red';
+                  text = '困难';
+                }
+                
+                return <Tag color={color}>{text}</Tag>;
+              })()}
+            </Descriptions.Item>
+            <Descriptions.Item label="字数限制">
+              {currentTopic.wordLimit ? `${currentTopic.wordLimit}字` : '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="时间限制">
+              {currentTopic.timeLimit ? `${currentTopic.timeLimit}分钟` : '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="创建时间">
+              {dayjs(currentTopic.createTime).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+            <Descriptions.Item label="更新时间">
+              {dayjs(currentTopic.updateTime).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+          </Descriptions>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>暂无数据</div>
+        )}
+      </Modal>
     </Card>
   );
 };
