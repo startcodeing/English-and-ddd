@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Card, Form, Input, Select, Space, message, Typography, Progress, Row, Col } from 'antd';
+import { Button, Card, Form, Input, Select, Space, message, Typography, Progress, Row, Col, Tag } from 'antd';
+import { CheckOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createWritingPractice, getWritingPracticeById, updateWritingPractice, WritingPractice } from '../../../api/writingPractice';
 import { getWritingTopics, WritingTopic } from '../../../api/writingTopic';
@@ -345,7 +346,7 @@ const WritingPracticeFormPage: React.FC = () => {
               <Progress 
                 type="circle" 
                 percent={calculateProgress()} 
-                width={30} 
+                width={24} 
                 format={() => ''}
                 status={timeLeft < 60 ? 'exception' : undefined}
               />
@@ -353,7 +354,7 @@ const WritingPracticeFormPage: React.FC = () => {
           )}
         </Space>
       }
-      bodyStyle={{ padding: 16 }}
+      bodyStyle={{ padding: 12 }}
     >
       <Form
         form={form}
@@ -362,69 +363,169 @@ const WritingPracticeFormPage: React.FC = () => {
         disabled={loading || submitting}
         onFinish={submitPractice}
       >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} md={8}>
-            <Form.Item
-              name="topicId"
-              label="写作主题"
-              rules={[{ required: true, message: '请选择写作主题' }]}
-            >
-              <Select
-                placeholder="请选择写作主题"
-                onChange={handleTopicChange}
-                disabled={isEdit || timerStarted}
-                options={topics.map(topic => ({
-                  value: topic.id,
-                  label: `${topic.description} (${topic.difficulty})`,
-                }))}
-              />
-            </Form.Item>
-
+        {/* 上方小区域：写作练习详情和写作主题内容 */}
+        <div style={{ marginBottom: 12, background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%)', padding: '8px 10px', borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #e1e4e8' }}>
+          <Row gutter={[16, 8]} align="middle">
+            <Col xs={24} sm={24} md={8} lg={6}>
+              <Form.Item
+                name="topicId"
+                label={<span style={{ fontSize: '14px', fontWeight: 500 }}>写作主题</span>}
+                style={{ marginBottom: 4 }}
+                rules={[{ required: true, message: '请选择写作主题' }]}
+              >
+                <Select
+                  placeholder="请选择写作主题"
+                  onChange={handleTopicChange}
+                  disabled={isEdit || timerStarted}
+                  style={{ width: '100%' }}
+                  options={topics.map(topic => ({
+                    value: topic.id,
+                    label: `${topic.description} (${topic.difficulty})`,
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+            
             {selectedTopic && (
-              <div style={{ marginBottom: 16, padding: 12, background: '#f5f5f5', borderRadius: 4 }}>
-                <Title level={5} style={{ fontSize: 16, marginTop: 0 }}>主题详情</Title>
-                <p style={{ margin: '8px 0' }}><strong>描述：</strong> {selectedTopic.description}</p>
-                {selectedTopic.source && (
-                  <p style={{ margin: '8px 0' }}><strong>来源：</strong> {selectedTopic.source}</p>
-                )}
-                <p style={{ margin: '8px 0' }}><strong>难度：</strong> {selectedTopic.difficulty}</p>
-                {selectedTopic.wordLimit && (
-                  <p style={{ margin: '8px 0' }}><strong>字数限制：</strong> {selectedTopic.wordLimit}字</p>
-                )}
-                {selectedTopic.timeLimit && (
-                  <p style={{ margin: '8px 0' }}><strong>时间限制：</strong> {selectedTopic.timeLimit}分钟</p>
-                )}
-              </div>
+              <Col xs={24} md={16} lg={18}>
+                <Card 
+                  bordered={false} 
+                  style={{ 
+                    background: 'rgba(255,255,255,0.8)', 
+                    borderRadius: 6,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                  }}
+                  bodyStyle={{ padding: '8px 12px' }}
+                >
+                  <Row gutter={[12, 6]}>
+                    <Col xs={24} md={24}>
+                      <div style={{ 
+                        fontSize: '14px', 
+                        fontWeight: 500, 
+                        marginBottom: 6, 
+                        color: '#1890ff',
+                        borderBottom: '1px solid #f0f0f0',
+                        paddingBottom: 4
+                      }}>
+                        {selectedTopic.description}
+                      </div>
+                    </Col>
+                    <Col xs={12} sm={6} md={6}>
+                      <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
+                        <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>难度：</Text>
+                        <Tag color={selectedTopic.difficulty === 'easy' ? 'success' : selectedTopic.difficulty === 'medium' ? 'warning' : 'error'} style={{ fontSize: '12px', lineHeight: '16px', padding: '0 4px', margin: 0 }}>
+                          {selectedTopic.difficulty}
+                        </Tag>
+                      </div>
+                    </Col>
+                    {selectedTopic.source && (
+                      <Col xs={12} sm={6} md={6}>
+                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
+                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>来源：</Text>
+                          <Text italic style={{ fontSize: '12px' }}>{selectedTopic.source}</Text>
+                        </div>
+                      </Col>
+                    )}
+                    {selectedTopic.wordLimit && (
+                      <Col xs={12} sm={6} md={6}>
+                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
+                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>字数：</Text>
+                          <Text style={{ fontSize: '12px' }}>
+                            <span style={{ color: '#1890ff', fontWeight: 500 }}>{selectedTopic.wordLimit}</span> 字
+                          </Text>
+                        </div>
+                      </Col>
+                    )}
+                    {selectedTopic.timeLimit && (
+                      <Col xs={12} sm={6} md={6}>
+                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
+                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>时间：</Text>
+                          <Text style={{ fontSize: '12px' }}>
+                            <span style={{ color: '#ff4d4f', fontWeight: 500 }}>{selectedTopic.timeLimit}</span> 分钟
+                          </Text>
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
+                </Card>
+              </Col>
             )}
-          </Col>
-          
-          <Col xs={24} md={16}>
-            <Form.Item
-              label="写作内容"
-              required
-              validateStatus={editorContent ? 'success' : undefined}
-              help={!editorContent && form.isFieldTouched('topicId') ? '请输入写作内容' : undefined}
-            >
-              <MdEditor
-                style={{ height: '500px' }}
-                renderHTML={text => mdParser.render(text)}
-                onChange={handleEditorChange}
-                value={editorContent}
-                placeholder="请在此输入您的写作内容..."
-              />
-            </Form.Item>
-          </Col>
-        </Row>
+          </Row>
+        </div>
+        
+        {/* 下方大区域：写作内容 */}
+        <Card
+          style={{ 
+            marginBottom: 16, 
+            borderRadius: 8, 
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)', 
+            border: '1px solid #e1e4e8' 
+          }}
+          bodyStyle={{ padding: '12px 16px' }}
+        >
+          <Form.Item
+            label={<span style={{ fontSize: '14px', fontWeight: 500 }}>写作内容</span>}
+            required
+            validateStatus={editorContent ? 'success' : undefined}
+            help={!editorContent && form.isFieldTouched('topicId') ? '请输入写作内容' : undefined}
+            style={{ marginBottom: 8 }}
+          >
+            <MdEditor
+              style={{ 
+                height: '600px', 
+                border: '1px solid #d9d9d9', 
+                borderRadius: 4,
+                overflow: 'hidden'
+              }}
+              renderHTML={text => mdParser.render(text)}
+              onChange={handleEditorChange}
+              value={editorContent}
+              placeholder="请在此输入您的写作内容..."
+            />
+          </Form.Item>
+        </Card>
 
-        <Form.Item style={{ textAlign: 'right', marginTop: 16, marginBottom: 0 }}>
-          <Space>
-            <Button type="primary" htmlType="submit" loading={submitting} disabled={!editorContent}>
+        <Form.Item style={{ textAlign: 'right', marginTop: 24, marginBottom: 0 }}>
+          <Space size="middle">
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={submitting} 
+              disabled={!editorContent}
+              size="large"
+              style={{ 
+                minWidth: '100px',
+                borderRadius: '6px',
+                fontWeight: 500,
+                boxShadow: '0 2px 0 rgba(0,0,0,0.045)'
+              }}
+              icon={<CheckOutlined />}
+            >
               提交
             </Button>
-            <Button onClick={saveDraft} loading={submitting} disabled={!editorContent}>
+            <Button 
+              onClick={saveDraft} 
+              loading={submitting} 
+              disabled={!editorContent}
+              size="large"
+              style={{ 
+                minWidth: '100px',
+                borderRadius: '6px',
+                fontWeight: 500
+              }}
+              icon={<SaveOutlined />}
+            >
               保存草稿
             </Button>
-            <Button onClick={() => navigate('/practice/writing')}>
+            <Button 
+               onClick={() => navigate('/practice/writing')}
+               size="large"
+               style={{ 
+                 minWidth: '80px',
+                 borderRadius: '6px'
+               }}
+               icon={<CloseOutlined />}
+            >
               取消
             </Button>
           </Space>

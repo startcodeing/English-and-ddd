@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Descriptions, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Button, Card, Col, Form, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { getWritingPractices, countWritingPractices, deleteWritingPractice, batchDeleteWritingPractices, getWritingPracticeById, WritingPractice, WritingPracticeQuery } from '../../../api/writingPractice';
+import { getWritingPractices, countWritingPractices, deleteWritingPractice, batchDeleteWritingPractices, WritingPractice, WritingPracticeQuery } from '../../../api/writingPractice';
 import { getWritingTopicById, getWritingTopics, WritingTopic } from '../../../api/writingTopic';
 
 const { confirm } = Modal;
@@ -20,9 +20,7 @@ const WritingPracticeListPage: React.FC = () => {
   const [current, setCurrent] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [searchParams, setSearchParams] = useState<WritingPracticeQuery>({});
-  const [detailVisible, setDetailVisible] = useState<boolean>(false);
-  const [currentPractice, setCurrentPractice] = useState<WritingPractice | null>(null);
-  const [detailLoading, setDetailLoading] = useState<boolean>(false);
+  // 移除详情弹窗相关状态
   const [topicsMap, setTopicsMap] = useState<Record<number, WritingTopic>>({});
   const [allTopics, setAllTopics] = useState<WritingTopic[]>([]);
   const [topicsLoading, setTopicsLoading] = useState<boolean>(false);
@@ -89,30 +87,7 @@ const WritingPracticeListPage: React.FC = () => {
     }
   };
 
-  // 获取写作练习详情
-  const fetchPracticeDetail = async (id: number) => {
-    setDetailLoading(true);
-    try {
-      const response = await getWritingPracticeById(id);
-      if (response.success) {
-        setCurrentPractice(response.data);
-        setDetailVisible(true);
-      } else {
-        message.error(response.message || '获取写作练习详情失败');
-      }
-    } catch (error) {
-      console.error('获取写作练习详情出错:', error);
-      message.error('获取写作练习详情失败');
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-  
-  // 关闭详情弹窗
-  const handleDetailClose = () => {
-    setDetailVisible(false);
-    setCurrentPractice(null);
-  };
+  // 移除详情弹窗相关函数
 
   // 获取所有主题
   const fetchAllTopics = async () => {
@@ -245,7 +220,7 @@ const WritingPracticeListPage: React.FC = () => {
       key: 'content',
       ellipsis: true,
       render: (text: string, record: WritingPractice) => (
-        <Typography.Link onClick={() => fetchPracticeDetail(record.id)}>
+        <Typography.Link onClick={() => navigate(`/practice/writing/view/${record.id}`)}>
           {text.length > 50 ? text.substring(0, 50) + '...' : text}
         </Typography.Link>
       ),
@@ -411,52 +386,7 @@ const WritingPracticeListPage: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 详情弹窗 */}
-      <Modal
-        title="写作练习详情"
-        open={detailVisible}
-        onCancel={handleDetailClose}
-        footer={[
-          <Button key="close" onClick={handleDetailClose}>
-            关闭
-          </Button>
-        ]}
-        width={700}
-      >
-        {detailLoading ? (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>加载中...</div>
-        ) : currentPractice ? (
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label="ID">{currentPractice.id}</Descriptions.Item>
-            <Descriptions.Item label="主题描述">
-              {topicsMap[currentPractice.topicId] 
-                ? topicsMap[currentPractice.topicId].description 
-                : `主题ID: ${currentPractice.topicId}`}
-            </Descriptions.Item>
-            <Descriptions.Item label="状态">
-              {currentPractice.status === 'draft' ? (
-                <Tag color="orange">草稿</Tag>
-              ) : (
-                <Tag color="green">已提交</Tag>
-              )}
-            </Descriptions.Item>
-            <Descriptions.Item label="内容">
-              <div style={{ whiteSpace: 'pre-wrap' }}>{currentPractice.content}</div>
-            </Descriptions.Item>
-            <Descriptions.Item label="分数">
-              {currentPractice.score || '-'}
-            </Descriptions.Item>
-            <Descriptions.Item label="创建时间">
-              {dayjs(currentPractice.createTime).format('YYYY-MM-DD HH:mm:ss')}
-            </Descriptions.Item>
-            <Descriptions.Item label="更新时间">
-              {dayjs(currentPractice.updateTime).format('YYYY-MM-DD HH:mm:ss')}
-            </Descriptions.Item>
-          </Descriptions>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>暂无数据</div>
-        )}
-      </Modal>
+      {/* 移除详情弹窗 */}
     </Card>
   );
 };
