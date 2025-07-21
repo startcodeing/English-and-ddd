@@ -29,7 +29,8 @@ public class WritingTopicPO {
     /**
      * 主题描述
      */
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false)
+    @Lob
     private String description;
     
     /**

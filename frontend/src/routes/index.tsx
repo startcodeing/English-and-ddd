@@ -18,6 +18,7 @@ const SentenceReader = React.lazy(() => import('../pages/content/SentenceReader'
 const ArticleForm = React.lazy(() => import('../pages/content/Article/ArticleFormPage'));
 const WritingTopicList = React.lazy(() => import('../pages/content/WritingTopicListPage'));
 const WritingTopicForm = React.lazy(() => import('../pages/content/WritingTopicFormPage'));
+const WritingTopicDetail = React.lazy(() => import('../pages/content/WritingTopicDetailPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -168,6 +169,14 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <WritingTopicForm />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/writing-topics/detail/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <WritingTopicDetail />
           </React.Suspense>
         ),
       },

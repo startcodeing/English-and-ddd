@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Card, Form, Input, InputNumber, Select, Space, Spin, message } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getWritingTopicById, createWritingTopic, updateWritingTopic, WritingTopic } from '../../api/writingTopic';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 
 type WritingTopicForm = Pick<WritingTopic, 'description' | 'source' | 'difficulty' | 'wordLimit' | 'timeLimit'>;
+
+// 初始化Markdown解析器
+const mdParser = new MarkdownIt();
 
 const WritingTopicFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +18,11 @@ const WritingTopicFormPage: React.FC = () => {
   const [form] = Form.useForm<WritingTopicForm>();
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [editorContent, setEditorContent] = useState<string>('');
   const isEdit = !!id;
+  
+  // 添加页面容器的引用，用于处理溢出问题
+  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   // 获取写作主题详情
   useEffect(() => {
@@ -28,12 +38,13 @@ const WritingTopicFormPage: React.FC = () => {
       if (response.success) {
         const topicData = response.data;
         form.setFieldsValue({
-          description: topicData.description,
           source: topicData.source,
           difficulty: topicData.difficulty,
           wordLimit: topicData.wordLimit,
           timeLimit: topicData.timeLimit,
         });
+        // 设置富文本编辑器内容
+        setEditorContent(topicData.description);
       } else {
         message.error(response.message || '获取写作主题详情失败');
         navigate('/content/writing-topics');
@@ -47,17 +58,34 @@ const WritingTopicFormPage: React.FC = () => {
     }
   };
 
+  // 处理编辑器内容变化
+  const handleEditorChange = ({ text }: { text: string }) => {
+    setEditorContent(text);
+  };
+
   // 提交表单
   const handleSubmit = async (values: WritingTopicForm) => {
+    // 验证富文本编辑器内容
+    if (!editorContent.trim()) {
+      message.error('请输入主题描述');
+      return;
+    }
+    
     setSubmitting(true);
     try {
+      // 将富文本编辑器内容作为description字段
+      const submitData = {
+        ...values,
+        description: editorContent
+      };
+      
       let response;
       if (isEdit) {
         // 更新
-        response = await updateWritingTopic(id as string, values);
+        response = await updateWritingTopic(id as string, submitData);
       } else {
         // 创建
-        response = await createWritingTopic(values);
+        response = await createWritingTopic(submitData);
       }
 
       if (response.success) {
@@ -80,35 +108,52 @@ const WritingTopicFormPage: React.FC = () => {
   };
 
   return (
-    <Card
-      title={isEdit ? '编辑写作主题' : '新增写作主题'}
-      extra={
-        <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-          返回列表
-        </Button>
-      }
+    <div 
+      ref={pageContainerRef}
+      style={{
+        maxWidth: '100%',
+        margin: '0 auto',
+        padding: '0 8px',
+        boxSizing: 'border-box',
+        width: '100%'
+      }}
     >
-      <Spin spinning={loading}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          initialValues={{
-            difficulty: 'medium', // 默认中等难度
-          }}
-        >
-          <Form.Item
-            name="description"
-            label="主题描述"
-            rules={[{ required: true, message: '请输入主题描述' }]}
+      <Card
+        title={isEdit ? '编辑写作主题' : '新增写作主题'}
+        extra={
+          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
+            返回列表
+          </Button>
+        }
+      >
+        <Spin spinning={loading}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            initialValues={{
+              difficulty: 'medium', // 默认中等难度
+            }}
           >
-            <Input.TextArea
-              rows={4}
-              placeholder="请输入主题描述"
-              maxLength={500}
-              showCount
-            />
-          </Form.Item>
+            <Form.Item
+              label="主题描述"
+              required
+              validateStatus={editorContent ? 'success' : undefined}
+              help={!editorContent ? '请输入主题描述' : undefined}
+            >
+              <MdEditor
+                style={{ 
+                  height: '300px', 
+                  border: '1px solid #d9d9d9', 
+                  borderRadius: 4,
+                  overflow: 'hidden'
+                }}
+                renderHTML={text => mdParser.render(text)}
+                onChange={handleEditorChange}
+                value={editorContent}
+                placeholder="请在此输入主题描述..."
+              />
+            </Form.Item>
 
           <Form.Item name="source" label="来源" rules={[{ max: 100, message: '来源最多100个字符' }]}>
             <Input placeholder="请输入来源" />
@@ -161,6 +206,7 @@ const WritingTopicFormPage: React.FC = () => {
         </Form>
       </Spin>
     </Card>
+  </div>
   );
 };
 

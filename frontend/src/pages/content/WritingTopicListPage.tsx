@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Descriptions, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Button, Card, Col, Descriptions, Form, Input, InputNumber, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getWritingTopics, countWritingTopics, deleteWritingTopic, batchDeleteWritingTopics, getWritingTopicById, WritingTopic, WritingTopicQuery } from '../../api/writingTopic';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 
 const { confirm } = Modal;
 
 const { Text } = Typography;
+
+// 初始化Markdown解析器
+const mdParser = new MarkdownIt();
 
 const WritingTopicListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -170,7 +176,7 @@ const WritingTopicListPage: React.FC = () => {
       key: 'description',
       ellipsis: true,
       render: (text: string, record: WritingTopic) => (
-        <Typography.Link onClick={() => fetchTopicDetail(record.id)}>
+        <Typography.Link onClick={() => navigate(`/content/writing-topics/detail/${record.id}`)}>
           {text}
         </Typography.Link>
       ),
@@ -338,44 +344,79 @@ const WritingTopicListPage: React.FC = () => {
             关闭
           </Button>
         ]}
-        width={700}
+        width={800}
+        bodyStyle={{ maxHeight: '70vh', overflow: 'auto' }}
       >
         {detailLoading ? (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>加载中...</div>
         ) : currentTopic ? (
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label="ID">{currentTopic.id}</Descriptions.Item>
-            <Descriptions.Item label="主题描述">{currentTopic.description}</Descriptions.Item>
-            <Descriptions.Item label="来源">{currentTopic.source}</Descriptions.Item>
-            <Descriptions.Item label="难度级别">
-              {(() => {
-                let color = 'green';
-                let text = '简单';
-                
-                if (currentTopic.difficulty === 'medium') {
-                  color = 'orange';
-                  text = '中等';
-                } else if (currentTopic.difficulty === 'hard') {
-                  color = 'red';
-                  text = '困难';
-                }
-                
-                return <Tag color={color}>{text}</Tag>;
-              })()}
-            </Descriptions.Item>
-            <Descriptions.Item label="字数限制">
-              {currentTopic.wordLimit ? `${currentTopic.wordLimit}字` : '-'}
-            </Descriptions.Item>
-            <Descriptions.Item label="时间限制">
-              {currentTopic.timeLimit ? `${currentTopic.timeLimit}分钟` : '-'}
-            </Descriptions.Item>
-            <Descriptions.Item label="创建时间">
-              {dayjs(currentTopic.createTime).format('YYYY-MM-DD HH:mm:ss')}
-            </Descriptions.Item>
-            <Descriptions.Item label="更新时间">
-              {dayjs(currentTopic.updateTime).format('YYYY-MM-DD HH:mm:ss')}
-            </Descriptions.Item>
-          </Descriptions>
+          <div style={{ padding: '0 8px' }}>
+            <Form layout="vertical">
+              <Form.Item label="主题描述">
+                <MdEditor
+                  style={{ 
+                    height: '300px', 
+                    border: '1px solid #d9d9d9', 
+                    borderRadius: 4,
+                    overflow: 'hidden'
+                  }}
+                  value={currentTopic.description}
+                  renderHTML={text => mdParser.render(text)}
+                  readOnly={true}
+                  config={{
+                    view: { menu: false, md: false, html: true },
+                    canView: { menu: false, md: false, html: true, fullScreen: false, hideMenu: false }
+                  }}
+                />
+              </Form.Item>
+              
+              <Form.Item label="ID">
+                <Input value={currentTopic.id.toString()} readOnly />
+              </Form.Item>
+              
+              <Form.Item label="来源">
+                <Input value={currentTopic.source || ''} readOnly />
+              </Form.Item>
+              
+              <Form.Item label="难度级别">
+                <Select
+                  value={currentTopic.difficulty}
+                  disabled
+                  options={[
+                    { value: 'easy', label: '简单' },
+                    { value: 'medium', label: '中等' },
+                    { value: 'hard', label: '困难' },
+                  ]}
+                />
+              </Form.Item>
+              
+              <Form.Item label="字数限制">
+                <InputNumber
+                  value={currentTopic.wordLimit}
+                  disabled
+                  addonAfter="字"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+              
+              <Form.Item label="时间限制">
+                <InputNumber
+                  value={currentTopic.timeLimit}
+                  disabled
+                  addonAfter="分钟"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+              
+              <Form.Item label="创建时间">
+                <Input value={dayjs(currentTopic.createTime).format('YYYY-MM-DD HH:mm:ss')} readOnly />
+              </Form.Item>
+              
+              <Form.Item label="更新时间">
+                <Input value={dayjs(currentTopic.updateTime).format('YYYY-MM-DD HH:mm:ss')} readOnly />
+              </Form.Item>
+            </Form>
+          </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>暂无数据</div>
         )}

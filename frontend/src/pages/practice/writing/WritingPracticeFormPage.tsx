@@ -19,6 +19,9 @@ const WritingPracticeFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [form] = Form.useForm();
   const isEdit = !!id;
+  
+  // 添加页面容器的引用，用于处理溢出问题
+  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   // 状态管理
   const [loading, setLoading] = useState<boolean>(false);
@@ -333,44 +336,75 @@ const WritingPracticeFormPage: React.FC = () => {
   };
 
   return (
-    <Card 
-      title={isEdit ? '编辑写作练习' : '新建写作练习'}
-      extra={
-        <Space>
-          {autoSaving && <Text type="secondary">自动保存中...</Text>}
-          {timeLeft !== null && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Text type="danger" strong style={{ marginRight: 8 }}>
-                剩余时间: {formatTimeLeft()}
-              </Text>
-              <Progress 
-                type="circle" 
-                percent={calculateProgress()} 
-                width={24} 
-                format={() => ''}
-                status={timeLeft < 60 ? 'exception' : undefined}
-              />
-            </div>
-          )}
-        </Space>
-      }
-      bodyStyle={{ padding: 12 }}
+    <div 
+      ref={pageContainerRef}
+      style={{
+        maxWidth: '100%',
+        margin: '0 auto',
+        padding: '0 8px',
+        boxSizing: 'border-box',
+        width: '100%'
+      }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{ status: 'draft' }}
-        disabled={loading || submitting}
-        onFinish={submitPractice}
+      <Card 
+        title={isEdit ? '编辑写作练习' : '新建写作练习'}
+        extra={
+          <Space>
+            {autoSaving && <Text type="secondary">自动保存中...</Text>}
+            {timeLeft !== null && (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Text type="danger" strong style={{ marginRight: 8 }}>
+                  剩余时间: {formatTimeLeft()}
+                </Text>
+                <Progress 
+                  type="circle" 
+                  percent={calculateProgress()} 
+                  width={24} 
+                  format={() => ''}
+                  status={timeLeft < 60 ? 'exception' : undefined}
+                />
+              </div>
+            )}
+          </Space>
+        }
+        bodyStyle={{ padding: 8 }}
+        style={{ width: '100%', overflow: 'hidden' }}
       >
-        {/* 上方小区域：写作练习详情和写作主题内容 */}
-        <div style={{ marginBottom: 12, background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%)', padding: '8px 10px', borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #e1e4e8' }}>
-          <Row gutter={[16, 8]} align="middle">
-            <Col xs={24} sm={24} md={8} lg={6}>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ status: 'draft' }}
+          disabled={loading || submitting}
+          onFinish={submitPractice}
+        >
+        {/* 左右分栏布局：左侧写作主题，右侧写作内容 */}
+        <Row gutter={[8, 8]}>
+          {/* 左侧：写作主题区域 */}
+          <Col xs={24} sm={24} md={8} lg={7} xl={6}>
+            <div style={{ 
+              background: 'linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%)', 
+              padding: '8px 12px', 
+              borderRadius: 10, 
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)', 
+              border: '1px solid #e1e4e8',
+              position: 'relative',
+              overflow: 'hidden',
+              height: '100%'
+            }}>
+              <div style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                width: '100%', 
+                height: '4px', 
+                background: 'linear-gradient(90deg, #1890ff, #52c41a)' 
+              }}></div>
+              
+              {/* 写作主题选择区域 */}
               <Form.Item
                 name="topicId"
-                label={<span style={{ fontSize: '14px', fontWeight: 500 }}>写作主题</span>}
-                style={{ marginBottom: 4 }}
+                label={<span style={{ fontSize: '15px', fontWeight: 600, color: '#333' }}>写作主题</span>}
+                style={{ marginBottom: 8 }}
                 rules={[{ required: true, message: '请选择写作主题' }]}
               >
                 <Select
@@ -378,114 +412,200 @@ const WritingPracticeFormPage: React.FC = () => {
                   onChange={handleTopicChange}
                   disabled={isEdit || timerStarted}
                   style={{ width: '100%' }}
+                  size="large"
                   options={topics.map(topic => ({
                     value: topic.id,
                     label: `${topic.description} (${topic.difficulty})`,
                   }))}
                 />
               </Form.Item>
-            </Col>
-            
-            {selectedTopic && (
-              <Col xs={24} md={16} lg={18}>
+              
+              {/* 主题信息区域 - 当有选中主题时显示 */}
+              {selectedTopic && (
                 <Card 
                   bordered={false} 
                   style={{ 
-                    background: 'rgba(255,255,255,0.8)', 
-                    borderRadius: 6,
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                    background: 'rgba(255,255,255,0.9)', 
+                    borderRadius: 8,
+                    boxShadow: '0 3px 10px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(232,232,232,0.8)',
+                    width: '100%',
+                    overflow: 'hidden',
+                    marginTop: 8
                   }}
-                  bodyStyle={{ padding: '8px 12px' }}
+                  bodyStyle={{ 
+                    padding: '8px 12px', 
+                    overflow: 'hidden'
+                  }}
                 >
-                  <Row gutter={[12, 6]}>
-                    <Col xs={24} md={24}>
+                  {/* 主题描述 - 添加文本溢出处理 */}
+                  <div style={{ 
+                    fontSize: '16px', 
+                    fontWeight: 600, 
+                    marginBottom: 12, 
+                    color: '#1890ff',
+                    borderBottom: '1px solid #f0f0f0',
+                    paddingBottom: 8,
+                    display: 'flex',
+                    alignItems: 'flex-start'
+                  }}>
+                    <div style={{ 
+                      width: '4px', 
+                      height: '18px', 
+                      background: '#1890ff', 
+                      marginRight: '8px', 
+                      borderRadius: '2px',
+                      flexShrink: 0,
+                      marginTop: '3px'
+                    }}></div>
+                    <div style={{ 
+                      wordBreak: 'break-word', 
+                      whiteSpace: 'pre-wrap',
+                      overflow: 'auto',
+                      maxHeight: '300px', /* 增加高度，适应左侧布局 */
+                      width: '100%',
+                      paddingRight: '8px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#d9d9d9 #f5f5f5'
+                    }}>
+                      {selectedTopic.description}
+                    </div>
+                  </div>
+                  
+                  {/* 主题信息项 - 使用更灵活的响应式布局 */}
+                  <Row gutter={[8, 8]}>
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                       <div style={{ 
-                        fontSize: '14px', 
-                        fontWeight: 500, 
-                        marginBottom: 6, 
-                        color: '#1890ff',
-                        borderBottom: '1px solid #f0f0f0',
-                        paddingBottom: 4
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '32px',
+                        background: 'rgba(250,250,250,0.6)',
+                        padding: '0 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #f0f0f0'
                       }}>
-                        {selectedTopic.description}
-                      </div>
-                    </Col>
-                    <Col xs={12} sm={6} md={6}>
-                      <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
-                        <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>难度：</Text>
-                        <Tag color={selectedTopic.difficulty === 'easy' ? 'success' : selectedTopic.difficulty === 'medium' ? 'warning' : 'error'} style={{ fontSize: '12px', lineHeight: '16px', padding: '0 4px', margin: 0 }}>
+                        <Text strong style={{ marginRight: 8, color: '#444', fontSize: '13px', flexShrink: 0 }}>难度</Text>
+                        <Tag color={selectedTopic.difficulty === 'easy' ? 'success' : selectedTopic.difficulty === 'medium' ? 'warning' : 'error'} style={{ 
+                          fontSize: '13px', 
+                          lineHeight: '20px', 
+                          padding: '0 8px', 
+                          margin: 0,
+                          fontWeight: 500,
+                          borderRadius: '4px'
+                        }}>
                           {selectedTopic.difficulty}
                         </Tag>
                       </div>
                     </Col>
                     {selectedTopic.source && (
-                      <Col xs={12} sm={6} md={6}>
-                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
-                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>来源：</Text>
-                          <Text italic style={{ fontSize: '12px' }}>{selectedTopic.source}</Text>
+                      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          height: '32px',
+                          background: 'rgba(250,250,250,0.6)',
+                          padding: '0 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #f0f0f0',
+                          overflow: 'hidden'
+                        }}>
+                          <Text strong style={{ marginRight: 8, color: '#444', fontSize: '13px', flexShrink: 0 }}>来源</Text>
+                          <div style={{
+                            maxWidth: 'calc(100% - 40px)',
+                            overflow: 'hidden'
+                          }}>
+                            <Text italic style={{ 
+                              fontSize: '13px', 
+                              color: '#666',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              display: 'block'
+                            }} title={selectedTopic.source}>
+                              {selectedTopic.source}
+                            </Text>
+                          </div>
                         </div>
                       </Col>
                     )}
                     {selectedTopic.wordLimit && (
-                      <Col xs={12} sm={6} md={6}>
-                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
-                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>字数：</Text>
-                          <Text style={{ fontSize: '12px' }}>
-                            <span style={{ color: '#1890ff', fontWeight: 500 }}>{selectedTopic.wordLimit}</span> 字
+                      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          height: '32px',
+                          background: 'rgba(250,250,250,0.6)',
+                          padding: '0 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #f0f0f0'
+                        }}>
+                          <Text strong style={{ marginRight: 8, color: '#444', fontSize: '13px', flexShrink: 0 }}>字数</Text>
+                          <Text style={{ fontSize: '13px' }}>
+                            <span style={{ color: '#1890ff', fontWeight: 600, fontSize: '15px' }}>{selectedTopic.wordLimit}</span> 字
                           </Text>
                         </div>
                       </Col>
                     )}
                     {selectedTopic.timeLimit && (
-                      <Col xs={12} sm={6} md={6}>
-                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }}>
-                          <Text strong style={{ marginRight: 4, color: '#555', fontSize: '12px' }}>时间：</Text>
-                          <Text style={{ fontSize: '12px' }}>
-                            <span style={{ color: '#ff4d4f', fontWeight: 500 }}>{selectedTopic.timeLimit}</span> 分钟
+                      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          height: '32px',
+                          background: 'rgba(250,250,250,0.6)',
+                          padding: '0 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #f0f0f0'
+                        }}>
+                          <Text strong style={{ marginRight: 8, color: '#444', fontSize: '13px', flexShrink: 0 }}>时间</Text>
+                          <Text style={{ fontSize: '13px' }}>
+                            <span style={{ color: '#ff4d4f', fontWeight: 600, fontSize: '15px' }}>{selectedTopic.timeLimit}</span> 分钟
                           </Text>
                         </div>
                       </Col>
                     )}
                   </Row>
                 </Card>
-              </Col>
-            )}
-          </Row>
-        </div>
-        
-        {/* 下方大区域：写作内容 */}
-        <Card
-          style={{ 
-            marginBottom: 16, 
-            borderRadius: 8, 
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)', 
-            border: '1px solid #e1e4e8' 
-          }}
-          bodyStyle={{ padding: '12px 16px' }}
-        >
-          <Form.Item
-            label={<span style={{ fontSize: '14px', fontWeight: 500 }}>写作内容</span>}
-            required
-            validateStatus={editorContent ? 'success' : undefined}
-            help={!editorContent && form.isFieldTouched('topicId') ? '请输入写作内容' : undefined}
-            style={{ marginBottom: 8 }}
-          >
-            <MdEditor
+              )}
+            </div>
+          </Col>
+          
+          {/* 右侧：写作内容区域 */}
+          <Col xs={24} sm={24} md={16} lg={17} xl={18}>
+            <Card
               style={{ 
-                height: '600px', 
-                border: '1px solid #d9d9d9', 
-                borderRadius: 4,
-                overflow: 'hidden'
+                borderRadius: 8, 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)', 
+                border: '1px solid #e1e4e8',
+                height: '100%'
               }}
-              renderHTML={text => mdParser.render(text)}
-              onChange={handleEditorChange}
-              value={editorContent}
-              placeholder="请在此输入您的写作内容..."
-            />
-          </Form.Item>
-        </Card>
+              bodyStyle={{ padding: '8px 12px' }}
+            >
+              <Form.Item
+                label={<span style={{ fontSize: '14px', fontWeight: 500 }}>写作内容</span>}
+                required
+                validateStatus={editorContent ? 'success' : undefined}
+                help={!editorContent && form.isFieldTouched('topicId') ? '请输入写作内容' : undefined}
+                style={{ marginBottom: 8 }}
+              >
+                <MdEditor
+                  style={{ 
+                    height: '650px', 
+                    border: '1px solid #d9d9d9', 
+                    borderRadius: 4,
+                    overflow: 'hidden'
+                  }}
+                  renderHTML={text => mdParser.render(text)}
+                  onChange={handleEditorChange}
+                  value={editorContent}
+                  placeholder="请在此输入您的写作内容..."
+                />
+              </Form.Item>
+            </Card>
+          </Col>
+        </Row>
 
-        <Form.Item style={{ textAlign: 'right', marginTop: 16, marginBottom: 0 }}>
+        <Form.Item style={{ textAlign: 'right', marginTop: 8, marginBottom: 0 }}>
           <Space size="small">
             <Button 
               type="primary" 
@@ -532,6 +652,7 @@ const WritingPracticeFormPage: React.FC = () => {
         </Form.Item>
       </Form>
     </Card>
+    </div>
   );
 };
 
