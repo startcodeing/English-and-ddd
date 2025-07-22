@@ -1,0 +1,3 @@
+com\englishlearning\domain\practice\model\entity\WritingPractice.class
+com\englishlearning\domain\practice\model\entity\WritingPractice$WritingPracticeBuilder.class
+com\englishlearning\domain\practice\repository\WritingPracticeRepository.class

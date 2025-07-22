@@ -19,6 +19,9 @@ const ArticleForm = React.lazy(() => import('../pages/content/Article/ArticleFor
 const WritingTopicList = React.lazy(() => import('../pages/content/WritingTopicListPage'));
 const WritingTopicForm = React.lazy(() => import('../pages/content/WritingTopicFormPage'));
 const WritingTopicDetail = React.lazy(() => import('../pages/content/WritingTopicDetailPage'));
+const ListeningMaterialList = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialListPage'));
+const ListeningMaterialForm = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialFormPage'));
+const ListeningMaterialDetail = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialDetailPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -177,6 +180,38 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <WritingTopicDetail />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/listening-materials/page',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ListeningMaterialList />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/listening-materials/create',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ListeningMaterialForm />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/listening-materials/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ListeningMaterialForm />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/listening-materials/detail/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ListeningMaterialDetail />
           </React.Suspense>
         ),
       },

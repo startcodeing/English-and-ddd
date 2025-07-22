@@ -1,7 +1,6 @@
 server:
   port: 8080
-  servlet:
-    context-path: /
+  context-path: /
 
 spring:
   application:
@@ -26,11 +25,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
   h2:
     console:
       enabled: true
       path: /h2-console
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
 
 management:
   endpoints:
@@ -42,6 +45,13 @@ logging:
   level:
     com.englishlearning: info
     org.springframework: warn
+
+# 文件存储配置
+file:
+  upload-dir: uploads
+  access-url: /files
+  max-file-size: 10485760 # 10MB
+
 axon:
   axonserver:
     enabled: false

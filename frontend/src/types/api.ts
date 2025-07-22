@@ -135,3 +135,19 @@ export interface SubmitWritingRequest {
   writingId: string;
   content: string;
 }
+
+// 以下类型已移至listeningMaterial.ts，这里仅保留注释以避免导入冲突
+/**
+ * 听力资料查询参数
+ */
+// export interface ListeningMaterialQuery
+
+/**
+ * 听力资料创建参数（不包含文件）
+ */
+// export interface CreateListeningMaterialRequest
+
+/**
+ * 听力资料更新参数（不包含文件）
+ */
+// export interface UpdateListeningMaterialRequest

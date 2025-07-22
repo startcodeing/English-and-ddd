@@ -1,4 +1,5 @@
 import { Word, PartOfSpeech, WordBook, Sentence, Article, Dictation, Writing } from './models';
+import { ListeningMaterial } from './listeningMaterial';
 
 /**
  * 应用全局状态接口
@@ -48,6 +49,12 @@ export interface ContentState {
     loading: boolean;
     error: string | null;
     selectedArticle: Article | null;
+  };
+  listeningMaterials: {
+    items: ListeningMaterial[];
+    loading: boolean;
+    error: string | null;
+    selectedListeningMaterial: ListeningMaterial | null;
   };
 }
 
@@ -101,5 +108,7 @@ export interface UIState {
     editArticle: boolean;
     createDictation: boolean;
     createWriting: boolean;
+    createListeningMaterial: boolean;
+    editListeningMaterial: boolean;
   };
 }

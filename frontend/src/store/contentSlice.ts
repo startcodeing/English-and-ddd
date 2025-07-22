@@ -14,6 +14,12 @@ const initialState: ContentState = {
     loading: false,
     error: null,
     selectedArticle: null
+  },
+  listeningMaterials: {
+    items: [],
+    loading: false,
+    error: null,
+    selectedListeningMaterial: null
   }
 };
 
@@ -56,6 +62,24 @@ const contentSlice = createSlice({
     },
     setSelectedArticle: (state, action) => {
       state.articles.selectedArticle = action.payload;
+    },
+    
+    // ListeningMaterials reducers
+    fetchListeningMaterialsStart: (state) => {
+      state.listeningMaterials.loading = true;
+      state.listeningMaterials.error = null;
+    },
+    fetchListeningMaterialsSuccess: (state, action) => {
+      state.listeningMaterials.loading = false;
+      state.listeningMaterials.items = action.payload;
+      state.listeningMaterials.error = null;
+    },
+    fetchListeningMaterialsFailure: (state, action: PayloadAction<string>) => {
+      state.listeningMaterials.loading = false;
+      state.listeningMaterials.error = action.payload;
+    },
+    setSelectedListeningMaterial: (state, action) => {
+      state.listeningMaterials.selectedListeningMaterial = action.payload;
     }
   }
 });
@@ -69,7 +93,11 @@ export const {
   fetchArticlesStart,
   fetchArticlesSuccess,
   fetchArticlesFailure,
-  setSelectedArticle
+  setSelectedArticle,
+  fetchListeningMaterialsStart,
+  fetchListeningMaterialsSuccess,
+  fetchListeningMaterialsFailure,
+  setSelectedListeningMaterial
 } = contentSlice.actions;
 
 // 导出 reducer

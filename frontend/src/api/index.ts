@@ -9,3 +9,4 @@ export * from './dictation';
 export * from './writing';
 export * from './userApi';
 export * from './userActivityApi';
+export * from './listeningMaterial';

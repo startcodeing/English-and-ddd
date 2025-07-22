@@ -58,16 +58,7 @@
                 <artifactId>domain-content</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.englishlearning</groupId>
-                <artifactId>domain-dictation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.englishlearning</groupId>
-                <artifactId>domain-writing</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- 练习领域模块已合并到domain-practice中 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
                 <artifactId>domain-activity</artifactId>
@@ -91,16 +82,7 @@
                 <artifactId>application-content</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.englishlearning</groupId>
-                <artifactId>application-dictation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.englishlearning</groupId>
-                <artifactId>application-writing</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- 练习应用模块已合并到application-practice中 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
                 <artifactId>application-practice</artifactId>
@@ -118,14 +100,16 @@
                 <artifactId>infrastructure-event</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.englishlearning</groupId>
-                <artifactId>infrastructure-message</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- 消息基础设施模块暂未实现 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
                 <artifactId>infrastructure-activity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>infrastructure-file</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

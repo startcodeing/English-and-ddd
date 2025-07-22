@@ -17,7 +17,9 @@ const initialState: UIState = {
     createArticle: false,
     editArticle: false,
     createDictation: false,
-    createWriting: false
+    createWriting: false,
+    createListeningMaterial: false,
+    editListeningMaterial: false
   }
 };
 

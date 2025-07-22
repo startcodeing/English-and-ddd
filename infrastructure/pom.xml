@@ -16,6 +16,7 @@
         <module>infrastructure-db</module>
         <module>infrastructure-event</module>
         <module>infrastructure-activity</module>
+        <module>infrastructure-file</module>
         <!-- 更多基础设施模块将在后续添加 -->
     </modules>
 

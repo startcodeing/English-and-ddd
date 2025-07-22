@@ -77,6 +77,11 @@ const MainLayout: React.FC = () => {
           label: '写作主题管理',
           onClick: () => navigate('/content/writing-topics'),
         },
+        {
+          key: 'listening-materials',
+          label: '听力资料管理',
+          onClick: () => navigate('/content/listening-materials/page'),
+        },
       ],
     },
     {
