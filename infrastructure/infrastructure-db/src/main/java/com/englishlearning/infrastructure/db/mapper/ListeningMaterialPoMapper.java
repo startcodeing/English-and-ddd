@@ -1,6 +1,7 @@
 package com.englishlearning.infrastructure.db.mapper;
 
 import com.englishlearning.domain.content.model.entity.ListeningMaterial;
+import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import com.englishlearning.infrastructure.db.po.ListeningMaterialPO;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +29,9 @@ public class ListeningMaterialPoMapper {
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .originContent(entity.getOriginContent())
-                .difficulty(entity.getDifficulty())
+                .difficulty(DifficultyLevel.fromCode(entity.getDifficulty()))
                 .audioPath(entity.getAudioPath())
+                .originFileName(entity.getOriginFileName())
                 .fileSize(entity.getFileSize())
                 .durationInSeconds(entity.getDurationInSeconds())
                 .createTime(entity.getCreateTime())
@@ -52,8 +54,9 @@ public class ListeningMaterialPoMapper {
                 .id(po.getId())
                 .title(po.getTitle())
                 .originContent(po.getOriginContent())
-                .difficulty(po.getDifficulty())
+                .difficulty(po.getDifficulty().getCode())
                 .audioPath(po.getAudioPath())
+                .originFileName(po.getOriginFileName())
                 .fileSize(po.getFileSize())
                 .durationInSeconds(po.getDurationInSeconds())
                 .createTime(po.getCreateTime())

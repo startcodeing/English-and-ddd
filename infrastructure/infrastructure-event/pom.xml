@@ -25,6 +25,11 @@
             <groupId>com.englishlearning</groupId>
             <artifactId>domain-content</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.englishlearning</groupId>
+            <artifactId>domain-practice</artifactId>
+        </dependency>
         <!-- 移除对domain-content-api的依赖，因为该模块将被删除 -->
         <dependency>
             <groupId>org.springframework</groupId>

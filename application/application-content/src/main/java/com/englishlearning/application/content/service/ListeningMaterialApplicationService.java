@@ -16,18 +16,22 @@ public interface ListeningMaterialApplicationService {
      *
      * @param dto        听力资料DTO
      * @param audioFile  音频文件
+     * @param userId     用户ID
+     * @param username   用户名
      * @return 创建后的听力资料DTO
      */
-    ListeningMaterialDTO create(ListeningMaterialDTO dto, MultipartFile audioFile);
+    ListeningMaterialDTO create(ListeningMaterialDTO dto, MultipartFile audioFile, String userId, String username);
     
     /**
      * 更新听力资料
      *
      * @param dto        听力资料DTO
      * @param audioFile  音频文件（可选）
+     * @param userId     用户ID
+     * @param username   用户名
      * @return 更新后的听力资料DTO
      */
-    ListeningMaterialDTO update(ListeningMaterialDTO dto, MultipartFile audioFile);
+    ListeningMaterialDTO update(ListeningMaterialDTO dto, MultipartFile audioFile, String userId, String username);
     
     /**
      * 根据ID查询听力资料
@@ -57,9 +61,20 @@ public interface ListeningMaterialApplicationService {
     /**
      * 根据ID删除听力资料
      *
-     * @param id 听力资料ID
+     * @param id       听力资料ID
+     * @param userId   用户ID
+     * @param username 用户名
      */
-    void deleteById(Long id);
+    void deleteById(Long id, String userId, String username);
+    
+    /**
+     * 批量删除听力资料
+     *
+     * @param ids      听力资料ID列表
+     * @param userId   用户ID
+     * @param username 用户名
+     */
+    void deleteByIds(List<Long> ids, String userId, String username);
     
     /**
      * 根据标题模糊查询听力资料列表

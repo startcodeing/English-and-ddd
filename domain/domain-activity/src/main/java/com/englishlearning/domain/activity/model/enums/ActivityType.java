@@ -34,11 +34,20 @@ public enum ActivityType {
     ARTICLE_UPDATED("更新文章", "content"),
     ARTICLE_DELETED("删除文章", "content"),
     ARTICLE_BATCH_DELETED("批量删除文章", "content"),
+    LISTENING_MATERIAL_CREATED("创建听力资料", "content"),
+    LISTENING_MATERIAL_UPDATED("更新听力资料", "content"),
+    LISTENING_MATERIAL_DELETED("删除听力资料", "content"),
+    LISTENING_MATERIAL_BATCH_DELETED("批量删除听力资料", "content"),
     
     // 学习活动
     DICTATION_COMPLETED("完成听写练习", "practice"),
     WRITING_SUBMITTED("提交写作练习", "practice"),
-    COMPREHENSIVE_TEST_COMPLETED("完成综合测试", "practice");
+    COMPREHENSIVE_TEST_COMPLETED("完成综合测试", "practice"),
+    WORD_PRACTICE_COMPLETED("完成单词练习", "practice"),
+    ARTICLE_READING_COMPLETED("完成文章阅读", "practice"),
+    LISTENING_PRACTICE_COMPLETED("完成听力练习", "practice"),
+    WORD_REVIEW_COMPLETED("完成单词复习", "practice"),
+    SENTENCE_TRANSLATION_COMPLETED("完成句子翻译", "practice");
     
     private final String description;
     private final String module;

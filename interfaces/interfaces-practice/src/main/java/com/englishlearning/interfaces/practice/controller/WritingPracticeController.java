@@ -4,6 +4,7 @@ import com.englishlearning.application.practice.dto.WritingPracticeDTO;
 import com.englishlearning.application.practice.dto.WritingPracticeQueryDTO;
 import com.englishlearning.application.practice.service.WritingPracticeApplicationService;
 import com.englishlearning.common.types.Result;
+import com.englishlearning.common.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ public class WritingPracticeController {
      */
     @PostMapping
     public Result<WritingPracticeDTO> createWritingPractice(@RequestBody WritingPracticeDTO writingPracticeDTO) {
+        // 设置当前用户信息
+        writingPracticeDTO.setUserId(UserContext.getCurrentUserId());
+        writingPracticeDTO.setUsername(UserContext.getCurrentUsername());
         return Result.success(writingPracticeApplicationService.createWritingPractice(writingPracticeDTO));
     }
     
@@ -34,6 +38,9 @@ public class WritingPracticeController {
     public Result<WritingPracticeDTO> updateWritingPractice(
             @PathVariable Long id,
             @RequestBody WritingPracticeDTO writingPracticeDTO) {
+        // 设置当前用户信息
+        writingPracticeDTO.setUserId(UserContext.getCurrentUserId());
+        writingPracticeDTO.setUsername(UserContext.getCurrentUsername());
         return Result.success(writingPracticeApplicationService.updateWritingPractice(id, writingPracticeDTO));
     }
     
@@ -42,7 +49,9 @@ public class WritingPracticeController {
      */
     @PutMapping("/{id}/submit")
     public Result<WritingPracticeDTO> submitWritingPractice(@PathVariable Long id) {
-        return Result.success(writingPracticeApplicationService.submitWritingPractice(id));
+        Long userId = UserContext.getCurrentUserId();
+        String username = UserContext.getCurrentUsername();
+        return Result.success(writingPracticeApplicationService.submitWritingPractice(id, userId, username));
     }
     
     /**
@@ -52,7 +61,9 @@ public class WritingPracticeController {
     public Result<WritingPracticeDTO> scoreWritingPractice(
             @PathVariable Long id,
             @RequestParam Integer score) {
-        return Result.success(writingPracticeApplicationService.scoreWritingPractice(id, score));
+        Long userId = UserContext.getCurrentUserId();
+        String username = UserContext.getCurrentUsername();
+        return Result.success(writingPracticeApplicationService.scoreWritingPractice(id, score, userId, username));
     }
     
     /**
@@ -84,7 +95,9 @@ public class WritingPracticeController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> deleteWritingPractice(@PathVariable Long id) {
-        writingPracticeApplicationService.deleteWritingPractice(id);
+        Long userId = UserContext.getCurrentUserId();
+        String username = UserContext.getCurrentUsername();
+        writingPracticeApplicationService.deleteWritingPractice(id, userId, username);
         return Result.success();
     }
     
@@ -93,7 +106,9 @@ public class WritingPracticeController {
      */
     @DeleteMapping("/batch")
     public Result<Void> batchDeleteWritingPractices(@RequestBody List<Long> ids) {
-        writingPracticeApplicationService.batchDeleteWritingPractices(ids);
+        Long userId = UserContext.getCurrentUserId();
+        String username = UserContext.getCurrentUsername();
+        writingPracticeApplicationService.batchDeleteWritingPractices(ids, userId, username);
         return Result.success();
     }
 }

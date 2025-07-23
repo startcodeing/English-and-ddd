@@ -50,6 +50,11 @@ public class ListeningMaterialRepositoryImpl implements ListeningMaterialReposit
     }
     
     @Override
+    public void deleteByIdIn(List<Long> ids) {
+        jpaRepository.deleteAllById(ids);
+    }
+    
+    @Override
     public List<ListeningMaterial> findByTitleContaining(String title) {
         return mapper.toEntityList(jpaRepository.findByTitleContaining(title));
     }

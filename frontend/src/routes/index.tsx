@@ -22,6 +22,7 @@ const WritingTopicDetail = React.lazy(() => import('../pages/content/WritingTopi
 const ListeningMaterialList = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialListPage'));
 const ListeningMaterialForm = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialFormPage'));
 const ListeningMaterialDetail = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialDetailPage'));
+const ListeningMaterialPlayer = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialPlayerPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -207,11 +208,18 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
-      {
-        path: '/content/listening-materials/detail/:id',
+      {        path: '/content/listening-materials/detail/:id',
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <ListeningMaterialDetail />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/listening-materials/player/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ListeningMaterialPlayer />
           </React.Suspense>
         ),
       },

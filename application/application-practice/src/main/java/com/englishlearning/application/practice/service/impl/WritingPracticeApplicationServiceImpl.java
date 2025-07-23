@@ -3,6 +3,7 @@ package com.englishlearning.application.practice.service.impl;
 import com.englishlearning.application.practice.dto.WritingPracticeDTO;
 import com.englishlearning.application.practice.dto.WritingPracticeQueryDTO;
 import com.englishlearning.application.practice.service.WritingPracticeApplicationService;
+import com.englishlearning.domain.practice.event.*;
 import com.englishlearning.domain.practice.model.entity.WritingPractice;
 import com.englishlearning.domain.practice.repository.WritingPracticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class WritingPracticeApplicationServiceImpl implements WritingPracticeApplicationService {
     
     private final WritingPracticeRepository writingPracticeRepository;
+    private final PracticeEventPublisher practiceEventPublisher;
     
     @Override
     @Transactional
@@ -34,6 +36,13 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
         
         // 保存实体
         WritingPractice savedPractice = writingPracticeRepository.save(writingPractice);
+        
+        // 发布事件
+        WritingCreatedEvent event = new WritingCreatedEvent();
+        event.setUserId(writingPracticeDTO.getUserId());
+        event.setUsername(writingPracticeDTO.getUsername());
+        event.setWritingPractice(savedPractice);
+        practiceEventPublisher.publishWritingCreatedEvent(event);
         
         // 转换为DTO返回
         WritingPracticeDTO resultDTO = new WritingPracticeDTO();
@@ -54,6 +63,13 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
         // 保存实体
         WritingPractice updatedPractice = writingPracticeRepository.save(writingPractice);
         
+        // 发布事件
+        WritingUpdatedEvent event = new WritingUpdatedEvent();
+        event.setUserId(writingPracticeDTO.getUserId());
+        event.setUsername(writingPracticeDTO.getUsername());
+        event.setWritingPractice(updatedPractice);
+        practiceEventPublisher.publishWritingUpdatedEvent(event);
+        
         // 转换为DTO返回
         WritingPracticeDTO resultDTO = new WritingPracticeDTO();
         BeanUtils.copyProperties(updatedPractice, resultDTO);
@@ -62,7 +78,7 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
     
     @Override
     @Transactional
-    public WritingPracticeDTO submitWritingPractice(Long id) {
+    public WritingPracticeDTO submitWritingPractice(Long id, Long userId, String username) {
         // 查找实体
         WritingPractice writingPractice = writingPracticeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("写作练习不存在: " + id));
@@ -73,6 +89,13 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
         // 保存实体
         WritingPractice submittedPractice = writingPracticeRepository.save(writingPractice);
         
+        // 发布事件
+        WritingSubmittedEvent event = new WritingSubmittedEvent();
+        event.setUserId(userId);
+        event.setUsername(username);
+        event.setWritingPractice(submittedPractice);
+        practiceEventPublisher.publishWritingSubmittedEvent(event);
+        
         // 转换为DTO返回
         WritingPracticeDTO resultDTO = new WritingPracticeDTO();
         BeanUtils.copyProperties(submittedPractice, resultDTO);
@@ -81,7 +104,7 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
     
     @Override
     @Transactional
-    public WritingPracticeDTO scoreWritingPractice(Long id, Integer score) {
+    public WritingPracticeDTO scoreWritingPractice(Long id, Integer score, Long userId, String username) {
         // 查找实体
         WritingPractice writingPractice = writingPracticeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("写作练习不存在: " + id));
@@ -91,6 +114,14 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
         
         // 保存实体
         WritingPractice scoredPractice = writingPracticeRepository.save(writingPractice);
+        
+        // 发布事件
+        WritingScoredEvent event = new WritingScoredEvent();
+        event.setUserId(userId);
+        event.setUsername(username);
+        event.setWritingPractice(scoredPractice);
+        event.setScore(score);
+        practiceEventPublisher.publishWritingScoredEvent(event);
         
         // 转换为DTO返回
         WritingPracticeDTO resultDTO = new WritingPracticeDTO();
@@ -144,11 +175,18 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
     
     @Override
     @Transactional
-    public void deleteWritingPractice(Long id) {
+    public void deleteWritingPractice(Long id, Long userId, String username) {
         // 检查实体是否存在
         if (writingPracticeRepository.findById(id).isEmpty()) {
             throw new RuntimeException("写作练习不存在: " + id);
         }
+        
+        // 发布事件
+        WritingDeletedEvent event = new WritingDeletedEvent();
+        event.setUserId(userId);
+        event.setUsername(username);
+        event.setWritingPracticeId(id);
+        practiceEventPublisher.publishWritingDeletedEvent(event);
         
         // 删除实体
         writingPracticeRepository.deleteById(id);
@@ -156,7 +194,14 @@ public class WritingPracticeApplicationServiceImpl implements WritingPracticeApp
     
     @Override
     @Transactional
-    public void batchDeleteWritingPractices(List<Long> ids) {
+    public void batchDeleteWritingPractices(List<Long> ids, Long userId, String username) {
+        // 发布事件
+        WritingBatchDeletedEvent event = new WritingBatchDeletedEvent();
+        event.setUserId(userId);
+        event.setUsername(username);
+        event.setWritingPracticeIds(ids);
+        practiceEventPublisher.publishWritingBatchDeletedEvent(event);
+        
         // 批量删除实体
         writingPracticeRepository.deleteByIdIn(ids);
     }

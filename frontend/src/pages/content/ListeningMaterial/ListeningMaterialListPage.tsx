@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Space, Input, Select, Popconfirm, message, Card, Typography, Tag } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined, AudioOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { RootState } from '../../../types/store';
 import type { ListeningMaterial } from '../../../types/listeningMaterial';
 import { ListeningMaterialDifficultyLevel } from '../../../types/listeningMaterial';
 import { fetchListeningMaterialsStart, fetchListeningMaterialsSuccess, fetchListeningMaterialsFailure } from '../../../store/contentSlice';
-import { getAllListeningMaterials, getListeningMaterialsByPage, getListeningMaterialsByTitle, getListeningMaterialsByDifficultyLevel, deleteListeningMaterial } from '../../../api/listeningMaterial';
+import { getAllListeningMaterials, getListeningMaterialsByPage, getListeningMaterialsByTitle, getListeningMaterialsByDifficultyLevel, deleteListeningMaterial, batchDeleteListeningMaterials } from '../../../api/listeningMaterial';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
@@ -20,6 +20,8 @@ const ListeningMaterialListPage: React.FC = () => {
   
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<ListeningMaterialDifficultyLevel | null>(null);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [batchDeleteLoading, setBatchDeleteLoading] = useState<boolean>(false);
 
   // 加载听力资料列表
   const loadListeningMaterials = async () => {
@@ -117,6 +119,44 @@ const ListeningMaterialListPage: React.FC = () => {
       });
     }
   };
+  
+  // 批量删除听力资料
+  const handleBatchDelete = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请至少选择一项进行删除');
+      return;
+    }
+    
+    try {
+      setBatchDeleteLoading(true);
+      await batchDeleteListeningMaterials(selectedRowKeys as string[]);
+      message.success('批量删除成功');
+      setSelectedRowKeys([]);
+      loadListeningMaterials();
+    } catch (error: any) {
+      const errorMsg = error.message || '未知错误';
+      const statusCode = error.response?.status || 'N/A';
+      message.error(`批量删除失败: ${errorMsg}，状态码: ${statusCode}`);
+      console.error('Batch delete listening materials error:', error);
+      console.error('Error details:', {
+        message: errorMsg,
+        statusCode,
+        endpoint: 'batchDeleteListeningMaterials',
+        params: { ids: selectedRowKeys },
+        stack: error.stack
+      });
+    } finally {
+      setBatchDeleteLoading(false);
+    }
+  };
+  
+  // 行选择配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    }
+  };
 
   // 初始加载
   useEffect(() => {
@@ -196,11 +236,6 @@ const ListeningMaterialListPage: React.FC = () => {
           />
           <Button 
             type="text" 
-            icon={<AudioOutlined />} 
-            onClick={() => window.open(record.audioUrl)}
-          />
-          <Button 
-            type="text" 
             icon={<EditOutlined />} 
             onClick={() => navigate(`/content/listening-materials/edit/${record.id}`)}
           />
@@ -256,9 +291,27 @@ const ListeningMaterialListPage: React.FC = () => {
             <Option value={ListeningMaterialDifficultyLevel.HARD}>高级</Option>
           </Select>
           <Button onClick={loadListeningMaterials}>重置</Button>
+          <Popconfirm
+            title="确定要删除选中的听力资料吗？"
+            description="删除后将无法恢复，请谨慎操作！"
+            onConfirm={handleBatchDelete}
+            okText="确定"
+            cancelText="取消"
+            disabled={selectedRowKeys.length === 0}
+          >
+            <Button 
+              danger 
+              loading={batchDeleteLoading}
+              disabled={selectedRowKeys.length === 0}
+              icon={<DeleteOutlined />}
+            >
+              批量删除({selectedRowKeys.length})
+            </Button>
+          </Popconfirm>
         </div>
         
         <Table
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={items}
           rowKey="id"

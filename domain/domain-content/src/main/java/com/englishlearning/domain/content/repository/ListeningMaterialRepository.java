@@ -52,6 +52,13 @@ public interface ListeningMaterialRepository {
     void deleteById(Long id);
     
     /**
+     * 批量删除听力资料
+     *
+     * @param ids 听力资料ID列表
+     */
+    void deleteByIdIn(List<Long> ids);
+    
+    /**
      * 根据标题模糊查询听力资料列表
      *
      * @param title 标题关键字

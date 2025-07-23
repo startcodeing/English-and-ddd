@@ -43,6 +43,11 @@ public class ListeningMaterialDTO {
     private String audioPath;
     
     /**
+     * 音频文件原始文件名
+     */
+    private String originFileName;
+    
+    /**
      * 文件大小（字节）
      */
     private Long fileSize;
@@ -61,4 +66,19 @@ public class ListeningMaterialDTO {
      * 更新时间
      */
     private LocalDateTime updateTime;
+    
+    /**
+     * 是否清除音频文件
+     */
+    private boolean clearAudio;
+    
+    /**
+     * 用户ID
+     */
+    private String userId;
+    
+    /**
+     * 用户名
+     */
+    private String username;
 }

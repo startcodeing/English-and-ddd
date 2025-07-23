@@ -20,6 +20,11 @@ export enum RoutePath {
   ARTICLES = '/content/articles',
   ARTICLE_DETAIL = '/content/articles/:id',
   ARTICLE_READ = '/content/article/read/:id',
+  LISTENING_MATERIALS = '/content/listening-materials/page',
+  LISTENING_MATERIAL_DETAIL = '/content/listening-materials/detail/:id',
+  LISTENING_MATERIAL_FORM = '/content/listening-materials/:action',
+  LISTENING_MATERIAL_EDIT = '/content/listening-materials/edit/:id',
+  LISTENING_MATERIAL_PLAYER = '/content/listening-materials/player/:id',
   
   // 练习模块
   PRACTICE = '/practice',

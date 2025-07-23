@@ -18,6 +18,7 @@ export interface ListeningMaterial extends BaseEntity {
   originContent: string; // 后端返回的原文字段
   difficulty: ListeningMaterialDifficultyLevel;
   audioUrl: string;
+  originFileName?: string; // 音频文件的原始文件名
   fileSize: number;
   duration: number;
   createdAt?: number;
@@ -50,4 +51,5 @@ export interface UpdateListeningMaterialRequest {
   transcript?: string;
   difficulty?: ListeningMaterialDifficultyLevel;
   audioFile?: File;
+  clearAudio?: boolean; // 是否清除音频文件
 }

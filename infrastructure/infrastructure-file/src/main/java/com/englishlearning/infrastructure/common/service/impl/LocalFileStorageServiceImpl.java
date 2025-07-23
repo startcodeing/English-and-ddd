@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,37 +35,55 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
             throw new IOException("无法存储空文件");
         }
         
-        // 获取文件名
-        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        
-        // 检查文件名是否包含无效字符
-        if (originalFilename.contains("..")) {
-            throw new IOException("文件名包含无效路径序列: " + originalFilename);
+        try {
+            // 获取文件名
+            String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            
+            // 检查文件名是否包含无效字符
+            if (originalFilename.contains("..")) {
+                throw new IOException("文件名包含无效路径序列: " + originalFilename);
+            }
+            
+            // 生成唯一文件名
+            String fileExtension = getFileExtension(originalFilename);
+            String newFilename = UUID.randomUUID() + (StringUtils.hasText(fileExtension) ? "." + fileExtension : "");
+            
+            // 创建目标目录
+            String targetDir = uploadDir + File.separator + directory;
+            Path targetLocation = Paths.get(targetDir).toAbsolutePath().normalize();
+            Files.createDirectories(targetLocation);
+            
+            // 确保目录存在
+            if (!Files.exists(targetLocation)) {
+                Files.createDirectories(targetLocation);
+            }
+            
+            // 存储文件
+            Path targetPath = targetLocation.resolve(newFilename);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            // 返回相对路径
+            return directory + "/" + newFilename;
+        } catch (IOException e) {
+            throw new IOException("存储文件失败: " + e.getMessage(), e);
         }
-        
-        // 生成唯一文件名
-        String fileExtension = getFileExtension(originalFilename);
-        String newFilename = UUID.randomUUID() + (StringUtils.hasText(fileExtension) ? "." + fileExtension : "");
-        
-        // 创建目标目录
-        String targetDir = uploadDir + File.separator + directory;
-        Path targetLocation = Paths.get(targetDir).toAbsolutePath().normalize();
-        Files.createDirectories(targetLocation);
-        
-        // 存储文件
-        Path targetPath = targetLocation.resolve(newFilename);
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        
-        // 返回相对路径
-        return directory + "/" + newFilename;
     }
     
     @Override
     public boolean deleteFile(String filePath) {
         try {
             Path path = Paths.get(uploadDir + File.separator + filePath).toAbsolutePath().normalize();
-            return Files.deleteIfExists(path);
+            if (Files.exists(path)) {
+                Files.delete(path);
+                return true;
+            } else {
+                // 文件不存在，视为删除成功
+                return true;
+            }
         } catch (IOException e) {
+            // 记录错误信息，但不抛出异常，返回删除失败
+            System.err.println("删除文件失败: " + filePath + ", 错误: " + e.getMessage());
             return false;
         }
     }

@@ -1,6 +1,9 @@
 server:
   port: 8080
   context-path: /
+  tomcat:
+    basedir: ${java.io.tmpdir}/tomcat-english-learning
+    max-threads: 200
 
 spring:
   application:
@@ -34,6 +37,8 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
       enabled: true
+      location: ${java.io.tmpdir}/english-learning-uploads
+      file-size-threshold: 2MB
 
 management:
   endpoints:

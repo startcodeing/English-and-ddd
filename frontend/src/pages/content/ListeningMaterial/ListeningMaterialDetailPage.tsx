@@ -89,34 +89,16 @@ const ListeningMaterialDetailPage: React.FC = () => {
         ) : material ? (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <Space>
-                <Button 
-                  icon={<ArrowLeftOutlined />} 
-                  onClick={() => navigate('/content/listening-materials/page')}
-                >
-                  返回
-                </Button>
-                <Title level={4}>{material.title}</Title>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Title level={4} style={{ marginBottom: 0, marginRight: '8px' }}>{material.title}</Title>
                 {material.difficulty && getDifficultyTag(material.difficulty)}
-              </Space>
-              
-              <Space>
-                <Button 
-                  type="primary" 
-                  icon={<EditOutlined />} 
-                  onClick={() => navigate(`/content/listening-materials/edit/${id}`)}
-                >
-                  编辑
-                </Button>
-                <Popconfirm
-                  title="确定要删除这个听力资料吗？"
-                  onConfirm={handleDelete}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <Button danger icon={<DeleteOutlined />}>删除</Button>
-                </Popconfirm>
-              </Space>
+              </div>
+              <Button 
+                icon={<ArrowLeftOutlined />} 
+                onClick={() => navigate('/content/listening-materials/page')}
+              >
+                返回
+              </Button>
             </div>
             
             <Divider orientation="left">基本信息</Divider>
@@ -141,14 +123,25 @@ const ListeningMaterialDetailPage: React.FC = () => {
             {material.audioUrl ? (
               <div style={{ marginBottom: '20px' }}>
                 <audio controls style={{ width: '100%' }} src={material.audioUrl} />
-                <div style={{ marginTop: '8px' }}>
-                  <Button 
-                    type="link" 
-                    icon={<AudioOutlined />}
-                    onClick={() => window.open(material.audioUrl)}
-                  >
-                    在新窗口中打开
-                  </Button>
+                <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Space>
+                    <Button 
+                      type="link" 
+                      icon={<AudioOutlined />}
+                      onClick={() => window.open(material.audioUrl)}
+                    >
+                      在新窗口中打开
+                    </Button>
+                    <Button 
+                      type="primary" 
+                      onClick={() => navigate(`/content/listening-materials/player/${id}`)}
+                    >
+                      播放模式
+                    </Button>
+                  </Space>
+                  {material.originFileName && (
+                    <span style={{ color: '#666' }}>原始文件名: {material.originFileName}</span>
+                  )}
                 </div>
               </div>
             ) : (
@@ -157,8 +150,28 @@ const ListeningMaterialDetailPage: React.FC = () => {
             
             <Divider orientation="left">原文</Divider>
             
-            <div style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px' }}>
+            <div style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px', marginBottom: '20px' }}>
               {material.originContent}
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+              <Space>
+                <Button 
+                  type="primary" 
+                  icon={<EditOutlined />} 
+                  onClick={() => navigate(`/content/listening-materials/edit/${id}`)}
+                >
+                  编辑
+                </Button>
+                <Popconfirm
+                  title="确定要删除这个听力资料吗？"
+                  onConfirm={handleDelete}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button danger icon={<DeleteOutlined />}>删除</Button>
+                </Popconfirm>
+              </Space>
             </div>
           </>
         ) : (

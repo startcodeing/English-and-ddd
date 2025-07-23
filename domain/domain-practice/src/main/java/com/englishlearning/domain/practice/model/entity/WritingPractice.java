@@ -42,6 +42,16 @@ public class WritingPractice {
     private Integer score;
     
     /**
+     * 用户ID
+     */
+    private Long userId;
+    
+    /**
+     * 用户名
+     */
+    private String username;
+    
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

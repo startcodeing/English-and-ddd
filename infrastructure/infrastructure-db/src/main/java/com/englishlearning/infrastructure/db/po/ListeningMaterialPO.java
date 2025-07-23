@@ -53,6 +53,12 @@ public class ListeningMaterialPO {
     private String audioPath;
     
     /**
+     * 音频文件原始文件名
+     */
+    @Column(length = 255)
+    private String originFileName;
+    
+    /**
      * 文件大小（字节）
      */
     private Long fileSize;

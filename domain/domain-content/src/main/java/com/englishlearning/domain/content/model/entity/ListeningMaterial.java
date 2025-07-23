@@ -35,12 +35,17 @@ public class ListeningMaterial {
     /**
      * 难度级别
      */
-    private DifficultyLevel difficulty;
+    private String difficulty;
     
     /**
      * 音频文件路径
      */
     private String audioPath;
+    
+    /**
+     * 音频文件原始文件名
+     */
+    private String originFileName;
     
     /**
      * 文件大小（字节）

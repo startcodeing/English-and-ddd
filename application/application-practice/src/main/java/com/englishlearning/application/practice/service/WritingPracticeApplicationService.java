@@ -31,18 +31,22 @@ public interface WritingPracticeApplicationService {
      * 提交写作练习
      * 
      * @param id 写作练习ID
+     * @param userId 用户ID
+     * @param username 用户名
      * @return 提交后的写作练习DTO
      */
-    WritingPracticeDTO submitWritingPractice(Long id);
+    WritingPracticeDTO submitWritingPractice(Long id, Long userId, String username);
     
     /**
      * 评分写作练习
      * 
      * @param id 写作练习ID
      * @param score 分数
+     * @param userId 用户ID
+     * @param username 用户名
      * @return 评分后的写作练习DTO
      */
-    WritingPracticeDTO scoreWritingPractice(Long id, Integer score);
+    WritingPracticeDTO scoreWritingPractice(Long id, Integer score, Long userId, String username);
     
     /**
      * 根据ID获取写作练习
@@ -72,13 +76,17 @@ public interface WritingPracticeApplicationService {
      * 删除写作练习
      * 
      * @param id 写作练习ID
+     * @param userId 用户ID
+     * @param username 用户名
      */
-    void deleteWritingPractice(Long id);
+    void deleteWritingPractice(Long id, Long userId, String username);
     
     /**
      * 批量删除写作练习
      * 
      * @param ids 写作练习ID列表
+     * @param userId 用户ID
+     * @param username 用户名
      */
-    void batchDeleteWritingPractices(List<Long> ids);
+    void batchDeleteWritingPractices(List<Long> ids, Long userId, String username);
 }

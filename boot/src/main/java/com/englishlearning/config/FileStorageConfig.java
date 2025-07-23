@@ -75,6 +75,27 @@ public class FileStorageConfig implements WebMvcConfigurer {
      */
     @Bean
     public MultipartResolver multipartResolver() {
+        // 确保使用StandardServletMultipartResolver，它会使用application.yml中配置的临时目录
         return new StandardServletMultipartResolver();
+    }
+    
+    /**
+     * 确保临时目录存在
+     */
+    @Bean
+    public void ensureMultipartTempDirExists() {
+        // 创建Tomcat临时目录
+        String tomcatTempDir = System.getProperty("java.io.tmpdir") + "/tomcat-english-learning";
+        File tomcatDir = new File(tomcatTempDir);
+        if (!tomcatDir.exists()) {
+            tomcatDir.mkdirs();
+        }
+        
+        // 创建上传临时目录
+        String uploadTempDir = System.getProperty("java.io.tmpdir") + "/english-learning-uploads";
+        File uploadDir = new File(uploadTempDir);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
     }
 }

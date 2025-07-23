@@ -12,9 +12,7 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring")
 public interface VocabularyExampleSentencePoMapper {
-    
-    VocabularyExampleSentencePoMapper INSTANCE = Mappers.getMapper(VocabularyExampleSentencePoMapper.class);
-    
+
     /**
      * 将领域实体转换为PO
      */

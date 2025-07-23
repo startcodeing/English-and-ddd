@@ -29,5 +29,9 @@
             <groupId>com.englishlearning</groupId>
             <artifactId>domain-content</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.englishlearning</groupId>
+            <artifactId>domain-practice</artifactId>
+        </dependency>
     </dependencies>
 </project>
