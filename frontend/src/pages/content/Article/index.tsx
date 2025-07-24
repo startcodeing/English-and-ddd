@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, message, Tag, Tooltip } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, DeleteColumnOutlined, ReadOutlined, FileTextOutlined, BookOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getAllArticles, deleteArticle, batchDeleteArticles } from '../../../api/article';
+import { getAllArticles, deleteArticle, batchDeleteArticles, getArticlesByPage, getArticlesByTitle, getArticlesCount } from '../../../api/article';
 import { Article } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
 import './style.css';
@@ -14,6 +14,11 @@ const ArticlePage: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  });
   
   // 处理阅读按钮点击
   const handleReadArticle = (id: string) => {
@@ -28,6 +33,33 @@ const ArticlePage: React.FC = () => {
     try {
       const response = await getAllArticles();
       setArticles(response.data);
+      setPagination({
+        ...pagination,
+        total: response.data.length
+      });
+    } catch (error) {
+      message.error('获取文章列表失败');
+      console.error('获取文章列表失败:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // 分页获取文章列表
+  const fetchArticlesByPage = async (page: number, pageSize: number) => {
+    setLoading(true);
+    try {
+      const [articlesResponse, countResponse] = await Promise.all([
+        getArticlesByPage(page, pageSize),
+        getArticlesCount()
+      ]);
+      setArticles(articlesResponse.data);
+      setPagination({
+        ...pagination,
+        current: page,
+        pageSize: pageSize,
+        total: countResponse.data
+      });
     } catch (error) {
       message.error('获取文章列表失败');
       console.error('获取文章列表失败:', error);
@@ -38,7 +70,7 @@ const ArticlePage: React.FC = () => {
 
   // 初始化加载
   useEffect(() => {
-    fetchArticles();
+    fetchArticlesByPage(pagination.current, pagination.pageSize);
   }, []);
 
   // 导航到创建文章页面
@@ -116,20 +148,34 @@ const ArticlePage: React.FC = () => {
   // 搜索文章
   const handleSearch = async () => {
     if (!searchText) {
-      fetchArticles();
+      fetchArticlesByPage(1, pagination.pageSize);
       return;
     }
     
     // 在实际应用中，应该调用API进行搜索
-    // 这里简单实现为前端过滤
-    const filteredArticles = articles.filter(article => 
-      article.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      article.content.toLowerCase().includes(searchText.toLowerCase()) ||
-      (article.author && article.author.toLowerCase().includes(searchText.toLowerCase())) ||
-      (article.source && article.source.toLowerCase().includes(searchText.toLowerCase()))
-    );
-    
-    setArticles(filteredArticles);
+    // 这里调用标题搜索API，后续可以扩展为更复杂的搜索
+    setLoading(true);
+    try {
+      const response = await getArticlesByTitle(searchText);
+      setArticles(response.data);
+      
+      // 搜索结果的总数就是返回的数据长度
+      setPagination({
+        ...pagination,
+        current: 1,
+        total: response.data.length
+      });
+      
+      // 如果搜索结果为空，显示提示信息
+      if (response.data.length === 0) {
+        message.info('没有找到匹配的文章');
+      }
+    } catch (error) {
+      message.error('搜索文章失败');
+      console.error('搜索文章失败:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 表格列定义
@@ -138,7 +184,7 @@ const ArticlePage: React.FC = () => {
       title: '标题',
       dataIndex: 'title',
       key: 'title',
-      width: '20%',
+      width: '18%',
       ellipsis: {
         showTitle: false,
       },
@@ -153,7 +199,7 @@ const ArticlePage: React.FC = () => {
       title: '内容',
       dataIndex: 'content',
       key: 'content',
-      width: '30%',
+      width: '32%',
       ellipsis: true,
       render: (text: string) => (
         <div className="article-content">{text}</div>
@@ -225,11 +271,12 @@ const ArticlePage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: '25%',
+      width: '15%',
       render: (_: any, record: Article) => (
         <Space size="middle">
           <Button 
             type="primary" 
+            size="small"
             icon={<ReadOutlined />} 
             onClick={() => handleReadArticle(record.id)}
           >
@@ -237,6 +284,7 @@ const ArticlePage: React.FC = () => {
           </Button>
           <Button 
             type="primary" 
+            size="small"
             icon={<EditOutlined />} 
             onClick={() => handleEditArticle(record)}
           >
@@ -244,6 +292,7 @@ const ArticlePage: React.FC = () => {
           </Button>
           <Button 
             danger 
+            size="small"
             icon={<DeleteOutlined />} 
             onClick={() => handleDeleteArticle(record.id)}
           >
@@ -301,8 +350,24 @@ const ArticlePage: React.FC = () => {
         dataSource={articles}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 条记录`,
+          position: ['bottomRight'],
+          onChange: (page, pageSize) => {
+            fetchArticlesByPage(page, pageSize || pagination.pageSize);
+          },
+          onShowSizeChange: (current, size) => {
+            fetchArticlesByPage(1, size);
+          },
+          style: { marginBottom: 0 }
+        }}
         rowSelection={rowSelection}
+        scroll={{ x: true }}
       />
     </div>
   );

@@ -307,7 +307,12 @@ const SentencePage: React.FC = () => {
         dataSource={sentences}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 个句子`
+        }}
       />
       
       {drawerMode === 'view' ? (

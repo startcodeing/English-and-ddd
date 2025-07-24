@@ -352,7 +352,12 @@ const WordPage: React.FC = () => {
         dataSource={words}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 个单词`
+        }}
         rowSelection={{
           selectedRowKeys,
           onChange: (selectedKeys) => {

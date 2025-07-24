@@ -61,6 +61,15 @@ public interface ArticleRepository {
     List<Article> findAll();
     
     /**
+     * 分页查询文章列表
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页大小
+     * @return 文章列表
+     */
+    List<Article> findByPage(int pageNum, int pageSize);
+    
+    /**
      * 删除文章
      */
     void deleteById(String id);
@@ -69,4 +78,11 @@ public interface ArticleRepository {
      * 批量删除文章
      */
     void deleteAllById(List<String> ids);
+    
+    /**
+     * 获取文章总数
+     * 
+     * @return 文章总数
+     */
+    long count();
 }

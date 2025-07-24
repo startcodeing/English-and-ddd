@@ -7,6 +7,7 @@ import com.englishlearning.infrastructure.db.mapper.ArticlePoMapper;
 import com.englishlearning.infrastructure.db.po.ArticlePO;
 import com.englishlearning.infrastructure.db.repository.jpa.ArticleJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -95,6 +96,12 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
     
     @Override
+    public List<Article> findByPage(int pageNum, int pageSize) {
+        // 页码从0开始
+        return mapper.toEntityList(jpaRepository.findAll(PageRequest.of(pageNum - 1, pageSize)).getContent());
+    }
+    
+    @Override
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
     }
@@ -102,5 +109,10 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     @Override
     public void deleteAllById(List<String> ids) {
         jpaRepository.deleteAllById(ids);
+    }
+    
+    @Override
+    public long count() {
+        return jpaRepository.count();
     }
 }

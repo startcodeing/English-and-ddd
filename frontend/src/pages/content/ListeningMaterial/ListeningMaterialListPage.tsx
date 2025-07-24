@@ -9,6 +9,7 @@ import { ListeningMaterialDifficultyLevel } from '../../../types/listeningMateri
 import { fetchListeningMaterialsStart, fetchListeningMaterialsSuccess, fetchListeningMaterialsFailure } from '../../../store/contentSlice';
 import { getAllListeningMaterials, getListeningMaterialsByPage, getListeningMaterialsByTitle, getListeningMaterialsByDifficultyLevel, deleteListeningMaterial, batchDeleteListeningMaterials } from '../../../api/listeningMaterial';
 import dayjs from 'dayjs';
+import './style.css';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -230,22 +231,34 @@ const ListeningMaterialListPage: React.FC = () => {
       render: (_: any, record: ListeningMaterial) => (
         <Space size="middle">
           <Button 
-            type="text" 
+            type="primary" 
+            size="small"
             icon={<EyeOutlined />} 
             onClick={() => navigate(`/content/listening-materials/detail/${record.id}`)}
-          />
+          >
+            查看
+          </Button>
           <Button 
-            type="text" 
+            type="primary" 
+            size="small"
             icon={<EditOutlined />} 
             onClick={() => navigate(`/content/listening-materials/edit/${record.id}`)}
-          />
+          >
+            编辑
+          </Button>
           <Popconfirm
             title="确定要删除这个听力资料吗？"
             onConfirm={() => handleDelete(record.id)}
             okText="确定"
             cancelText="取消"
           >
-            <Button type="text" danger icon={<DeleteOutlined />} />
+            <Button 
+              danger 
+              size="small"
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -253,10 +266,10 @@ const ListeningMaterialListPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <Title level={4}>听力资料管理</Title>
+    <div className="listening-material-page">
+      <div className="article-page-header">
+        <h1>听力资料管理</h1>
+        <div className="article-page-actions">
           <Button 
             type="primary" 
             icon={<PlusOutlined />} 
@@ -265,82 +278,110 @@ const ListeningMaterialListPage: React.FC = () => {
             添加听力资料
           </Button>
         </div>
+      </div>
         
-        <div style={{ marginBottom: '16px', display: 'flex', gap: '16px' }}>
-          <Input
-            placeholder="搜索标题"
-            value={searchTitle}
-            onChange={(e) => setSearchTitle(e.target.value)}
-            style={{ width: '200px' }}
-            suffix={<SearchOutlined onClick={searchByTitle} />}
-            onPressEnter={searchByTitle}
-          />
-          <Select
-            placeholder="选择难度级别"
-            style={{ width: '150px' }}
-            value={selectedDifficulty || undefined}
-            onChange={(value) => {
-              setSelectedDifficulty(value);
-              setTimeout(filterByDifficulty, 0);
-            }}
-            allowClear
-            dropdownMatchSelectWidth={false}
-          >
-            <Option value={ListeningMaterialDifficultyLevel.EASY}>初级</Option>
-            <Option value={ListeningMaterialDifficultyLevel.MEDIUM}>中级</Option>
-            <Option value={ListeningMaterialDifficultyLevel.HARD}>高级</Option>
-          </Select>
-          <Button onClick={loadListeningMaterials}>重置</Button>
-          <Popconfirm
-            title="确定要删除选中的听力资料吗？"
-            description="删除后将无法恢复，请谨慎操作！"
-            onConfirm={handleBatchDelete}
-            okText="确定"
-            cancelText="取消"
-            disabled={selectedRowKeys.length === 0}
-          >
-            <Button 
-              danger 
-              loading={batchDeleteLoading}
-              disabled={selectedRowKeys.length === 0}
-              icon={<DeleteOutlined />}
-            >
-              批量删除({selectedRowKeys.length})
-            </Button>
-          </Popconfirm>
-        </div>
-        
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={items}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-            onChange: async (page, pageSize) => {
-              try {
-                dispatch(fetchListeningMaterialsStart());
-                const response = await getListeningMaterialsByPage(page, pageSize);
-                dispatch(fetchListeningMaterialsSuccess(response.data));
-              } catch (error: any) {
-                const errorMsg = error.message || '未知错误';
-                const statusCode = error.response?.status || 'N/A';
-                dispatch(fetchListeningMaterialsFailure(errorMsg));
-                message.error(`加载听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
-                console.error('Pagination error:', error);
-                console.error('Error details:', {
-                  message: errorMsg,
-                  statusCode,
-                  endpoint: 'getListeningMaterialsByPage',
-                  params: { page, pageSize },
-                  stack: error.stack
-                });
-              }
-            }
-          }}
+      <div className="article-page-actions" style={{ marginBottom: '16px', flexShrink: 0 }}>
+        <Input
+          placeholder="搜索标题"
+          value={searchTitle}
+          onChange={(e) => setSearchTitle(e.target.value)}
+          onPressEnter={searchByTitle}
+          style={{ width: 250, marginRight: 16 }}
+          prefix={<SearchOutlined />}
         />
-      </Card>
+        <Select
+          placeholder="选择难度级别"
+          style={{ width: '150px', marginRight: 16 }}
+          value={selectedDifficulty || undefined}
+          onChange={(value) => {
+            setSelectedDifficulty(value);
+            setTimeout(filterByDifficulty, 0);
+          }}
+          allowClear
+          dropdownMatchSelectWidth={false}
+        >
+          <Option value={ListeningMaterialDifficultyLevel.EASY}>初级</Option>
+          <Option value={ListeningMaterialDifficultyLevel.MEDIUM}>中级</Option>
+          <Option value={ListeningMaterialDifficultyLevel.HARD}>高级</Option>
+        </Select>
+        <Button onClick={loadListeningMaterials}>重置</Button>
+        {selectedRowKeys.length > 0 && (
+          <div className="batch-actions-area">
+            <span className="selected-count">
+              已选择 <span className="count-number">{selectedRowKeys.length}</span> 个听力资料
+            </span>
+            <Space>
+              <Button size="small" onClick={() => setSelectedRowKeys([])}>清除选择</Button>
+              <Popconfirm
+                title="确定要删除选中的听力资料吗？"
+                description="删除后将无法恢复，请谨慎操作！"
+                onConfirm={handleBatchDelete}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button 
+                  danger 
+                  size="small"
+                  loading={batchDeleteLoading}
+                  icon={<DeleteOutlined />}
+                >
+                  批量删除
+                </Button>
+              </Popconfirm>
+            </Space>
+          </div>
+        )}
+      </div>
+      
+      <Table
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 个听力资料`,
+          position: ['bottomRight'],
+          onChange: async (page, pageSize) => {
+            try {
+              dispatch(fetchListeningMaterialsStart());
+              const response = await getListeningMaterialsByPage(page, pageSize);
+              dispatch(fetchListeningMaterialsSuccess(response.data));
+            } catch (error: any) {
+              const errorMsg = error.message || '未知错误';
+              const statusCode = error.response?.status || 'N/A';
+              dispatch(fetchListeningMaterialsFailure(errorMsg));
+              message.error(`加载听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
+              console.error('Pagination error:', error);
+              console.error('Error details:', {
+                message: errorMsg,
+                statusCode,
+                endpoint: 'getListeningMaterialsByPage',
+                params: { page, pageSize },
+                stack: error.stack
+              });
+            }
+          },
+          onShowSizeChange: async (current, size) => {
+            try {
+              dispatch(fetchListeningMaterialsStart());
+              const response = await getListeningMaterialsByPage(current, size);
+              dispatch(fetchListeningMaterialsSuccess(response.data));
+            } catch (error: any) {
+              const errorMsg = error.message || '未知错误';
+              const statusCode = error.response?.status || 'N/A';
+              dispatch(fetchListeningMaterialsFailure(errorMsg));
+              message.error(`加载听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
+              console.error('Page size change error:', error);
+            }
+          },
+          style: { marginBottom: 0 }
+        }}
+        scroll={{ x: true }}
+      />
     </div>
   );
 };

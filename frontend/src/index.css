@@ -1,5 +1,13 @@
-body {
+html, body, #root {
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  max-width: 100vw;
+}
+
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -10,4 +18,22 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* 全局覆盖Ant Design组件样式，确保不出现滚动条 */
+.ant-layout,
+.ant-layout-content,
+.ant-layout-header,
+.ant-layout-footer,
+.ant-layout-sider,
+.ant-table,
+.ant-table-container,
+.ant-table-body {
+  overflow: hidden !important;
+}
+
+/* 确保所有容器不超出视口宽度 */
+div {
+  max-width: 100%;
+  box-sizing: border-box;
 }

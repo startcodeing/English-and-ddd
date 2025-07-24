@@ -8,6 +8,20 @@ export const getAllArticles = () => {
   return axios.get<Article[]>(`${BASE_URL}`);
 };
 
+// 分页查询文章
+export const getArticlesByPage = async (page: number, size: number) => {
+  const response = await axios.get(`${BASE_URL}/page`, {
+    params: { pageNum: page, pageSize: size }
+  });
+  return response;
+};
+
+// 获取文章总数
+export const getArticlesCount = async () => {
+  const response = await axios.get(`${BASE_URL}/count`);
+  return response;
+};
+
 // 根据ID获取文章
 export const getArticleById = (id: number | string) => {
   return axios.get<Article>(`${BASE_URL}/${id}`);
@@ -15,35 +29,37 @@ export const getArticleById = (id: number | string) => {
 
 // 根据标题模糊查询文章
 export const getArticlesByTitle = (title: string) => {
-  return axios.get<Article[]>(`${BASE_URL}/title`, {
+  return axios.get<Article[]>(`${BASE_URL}/search/title`, {
     params: { title }
   });
 };
 
 // 根据内容模糊查询文章
 export const getArticlesByContent = (content: string) => {
-  return axios.get<Article[]>(`${BASE_URL}/content`, {
+  return axios.get<Article[]>(`${BASE_URL}/search/content`, {
     params: { content }
   });
 };
 
 // 根据出处查询文章
 export const getArticlesBySource = (source: string) => {
-  return axios.get<Article[]>(`${BASE_URL}/source`, {
+  return axios.get<Article[]>(`${BASE_URL}/search/source`, {
     params: { source }
   });
 };
 
 // 根据作者查询文章
 export const getArticlesByAuthor = (author: string) => {
-  return axios.get<Article[]>(`${BASE_URL}/author`, {
+  return axios.get<Article[]>(`${BASE_URL}/search/author`, {
     params: { author }
   });
 };
 
 // 根据难度级别查询文章
 export const getArticlesByDifficultyLevel = (level: number) => {
-  return axios.get<Article[]>(`${BASE_URL}/difficulty/${level}`);
+  return axios.get<Article[]>(`${BASE_URL}/search/difficulty`, {
+    params: { level }
+  });
 };
 
 // 创建文章

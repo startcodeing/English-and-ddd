@@ -112,6 +112,24 @@ public class ArticleController {
     public Result<List<ArticleDTO>> getAllArticles() {
         return Result.success(articleService.findAllArticles());
     }
+    
+    /**
+     * 分页查询文章列表
+     */
+    @GetMapping("/page")
+    public Result<List<ArticleDTO>> getArticlesByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return Result.success(articleService.findByPage(pageNum, pageSize));
+    }
+    
+    /**
+     * 获取文章总数
+     */
+    @GetMapping("/count")
+    public Result<Long> getArticlesCount() {
+        return Result.success(articleService.countArticles());
+    }
 
     /**
      * 根据标题查询文章

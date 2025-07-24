@@ -1,8 +1,6 @@
 package com.englishlearning.application.content.service;
 
 import com.englishlearning.application.content.dto.ArticleDTO;
-import com.englishlearning.application.content.dto.SentenceDTO;
-import com.englishlearning.application.vocabulary.dto.WordDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +79,22 @@ public interface ArticleApplicationService {
      * 批量删除文章
      */
     void batchDeleteArticles(List<String> ids);
+    
+    /**
+      * 分页查询文章列表
+      *
+      * @param pageNum  页码
+      * @param pageSize 每页大小
+      * @return 文章列表
+      */
+     List<ArticleDTO> findByPage(int pageNum, int pageSize);
+     
+     /**
+      * 获取文章总数
+      *
+      * @return 文章总数
+      */
+     long countArticles();
 
     /**
      * 识别文章中不认识的单词

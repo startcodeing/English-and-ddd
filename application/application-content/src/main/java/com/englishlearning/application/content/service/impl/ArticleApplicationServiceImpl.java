@@ -264,6 +264,17 @@ public class ArticleApplicationServiceImpl implements ArticleApplicationService 
                 .map(articleMapper::toDTO);
     }
     
+    @Override
+    public List<ArticleDTO> findByPage(int pageNum, int pageSize) {
+        List<Article> articles = articleRepository.findByPage(pageNum, pageSize);
+        return articleMapper.toDTOList(articles);
+    }
+    
+    @Override
+    public long countArticles() {
+        return articleRepository.count();
+    }
+    
     /**
      * 查找所有文章
      */
