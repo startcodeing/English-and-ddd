@@ -3,6 +3,7 @@ import { ListeningMaterial, ListeningMaterialDifficultyLevel } from '../types/li
 import type { ListeningMaterialQuery } from '../types/listeningMaterial';
 import type { CreateListeningMaterialRequest, UpdateListeningMaterialRequest } from '../types/listeningMaterial';
 import { ListeningMaterialAdapter } from '../adapters/ListeningMaterialAdapter';
+import { StandardApiResponse } from '../types/response';
 
 const BASE_URL = '/api/v1';
 
@@ -92,4 +93,25 @@ export const deleteListeningMaterial = (id: string) => {
 // 批量删除听力资料
 export const batchDeleteListeningMaterials = (ids: string[]) => {
   return axios.delete(`${BASE_URL}/listening-materials/batch`, { data: { ids } });
+};
+
+// 获取听力资料总数
+export const countListeningMaterials = async (): Promise<StandardApiResponse<number>> => {
+  const response = await axios.get(`${BASE_URL}/listening-materials/count`);
+  return {
+    success: response.status >= 200 && response.status < 300,
+    message: response.statusText,
+    data: response.data
+  };
+};
+
+// 如果后端没有直接提供计数接口，可以通过获取所有资料来计算总数
+export const getListeningMaterialsCount = async (): Promise<number> => {
+  try {
+    const response = await getAllListeningMaterials();
+    return response.data?.length || 0;
+  } catch (error) {
+    console.error('获取听力资料总数失败:', error);
+    return 0;
+  }
 };

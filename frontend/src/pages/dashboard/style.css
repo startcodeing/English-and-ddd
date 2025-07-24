@@ -14,14 +14,31 @@
 }
 
 /* 统计卡片样式 */
+.stats-container {
+  margin-bottom: 16px;
+}
+
 .stat-row {
   margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .stat-card {
   height: 100%;
   transition: all 0.3s;
   padding: 8px;
+}
+
+.stat-card .ant-statistic-title {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-card .ant-statistic-content {
+  font-size: 16px;
 }
 
 .stat-card:hover {
@@ -134,17 +151,18 @@
     padding: 4px;
   }
   
-  .ant-statistic-title {
+  .stat-card .ant-statistic-title {
     font-size: 12px;
     margin-bottom: 2px;
   }
   
-  .ant-statistic-content {
+  .stat-card .ant-statistic-content {
     font-size: 14px;
   }
   
-  .ant-statistic-content-prefix {
+  .stat-card .ant-statistic-content-prefix {
     margin-right: 4px;
+    font-size: 14px;
   }
   
   .detail-row {
@@ -167,6 +185,22 @@
   
   .stat-row, .detail-row, .shortcut-row {
     margin-bottom: 8px;
+  }
+  
+  .stat-card {
+    padding: 4px;
+  }
+  
+  .stat-card .ant-statistic-title {
+    font-size: 10px;
+  }
+  
+  .stat-card .ant-statistic-content {
+    font-size: 12px;
+  }
+  
+  .stat-card .ant-statistic-content-prefix {
+    font-size: 12px;
   }
   
   .shortcut-icon {

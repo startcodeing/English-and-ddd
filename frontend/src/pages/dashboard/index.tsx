@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, Progress, Typography } from 'antd';
-import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined } from '@ant-design/icons';
+import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -11,6 +11,8 @@ import { getAllSentences } from '../../api/sentence';
 import { getAllArticles } from '../../api/article';
 import { getDictationStatistics } from '../../api/dictation';
 import { getWritingStatistics } from '../../api/writing';
+import { countWritingTopics } from '../../api/writingTopic';
+import { getListeningMaterialsCount, countListeningMaterials } from '../../api/listeningMaterial';
 import RecentActivities from '../../components/RecentActivities';
 import './style.css';
 
@@ -67,6 +69,20 @@ const Dashboard: React.FC = () => {
       route: '/content/article'
     },
     {
+      title: '写作主题数',
+      value: 0,
+      icon: <FileOutlined />,
+      color: '#2f54eb',
+      route: '/content/writing-topics'
+    },
+    {
+      title: '听力资料数',
+      value: 0,
+      icon: <AudioOutlined />,
+      color: '#08979c',
+      route: '/content/listening-material'
+    },
+    {
       title: '听写总数',
       value: 0,
       icon: <SoundOutlined />,
@@ -117,6 +133,38 @@ const Dashboard: React.FC = () => {
         const articlesResponse = await getAllArticles();
         const articlesCount = articlesResponse.data.length;
         
+        // 获取写作主题总数
+        let writingTopicsCount = 0;
+        try {
+          const writingTopicsResponse = await countWritingTopics({});
+          if (writingTopicsResponse.success) {
+            writingTopicsCount = writingTopicsResponse.data || 0;
+          }
+        } catch (error) {
+          console.error('获取写作主题总数失败:', error);
+        }
+        
+        // 获取听力资料总数
+        let listeningMaterialsCount = 0;
+        try {
+          // 尝试使用countListeningMaterials API
+          const listeningMaterialsResponse = await countListeningMaterials();
+          if (listeningMaterialsResponse.success) {
+            listeningMaterialsCount = listeningMaterialsResponse.data || 0;
+          } else {
+            // 如果API调用失败，使用备选方法
+            listeningMaterialsCount = await getListeningMaterialsCount();
+          }
+        } catch (error) {
+          console.error('获取听力资料总数失败:', error);
+          // 出错时尝试使用备选方法
+          try {
+            listeningMaterialsCount = await getListeningMaterialsCount();
+          } catch (fallbackError) {
+            console.error('备选方法获取听力资料总数也失败:', fallbackError);
+          }
+        }
+        
         // 听写练习和写作练习使用模拟数据
         const dictationCount = 32;
         const writingCount = 16;
@@ -149,14 +197,24 @@ const Dashboard: React.FC = () => {
             ...newStats[4],
             value: articlesCount
           };
-          // 更新听写练习数量（模拟数据）
+          // 更新写作主题总数
           newStats[5] = {
             ...newStats[5],
+            value: writingTopicsCount
+          };
+          // 更新听力资料总数
+          newStats[6] = {
+            ...newStats[6],
+            value: listeningMaterialsCount
+          };
+          // 更新听写练习数量（模拟数据）
+          newStats[7] = {
+            ...newStats[7],
             value: dictationCount
           };
           // 更新写作练习数量（模拟数据）
-          newStats[6] = {
-            ...newStats[6],
+          newStats[8] = {
+            ...newStats[8],
             value: writingCount
           };
           return newStats;
@@ -186,27 +244,54 @@ const Dashboard: React.FC = () => {
         <Paragraph>欢迎使用英语学习平台，这里是您的学习概览</Paragraph>
       </div>
 
-      {/* 统计卡片 - 所有放在同一行 */}
-      <Row gutter={[16, 16]} className="stat-row">
-        {stats.map((stat, index) => (
-          <Col xs={12} sm={6} md={3} lg={3} xl={3} key={index}>
-            <Card 
-              className="stat-card" 
-              bordered={false} 
-              hoverable 
-              onClick={() => navigate(stat.route)}
-              size="small"
-            >
-              <Statistic
-                title={stat.title}
-                value={stat.value}
-                valueStyle={{ color: stat.color }}
-                prefix={stat.icon}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      {/* 统计卡片 - 第一行6个，第二行剩余的 */}
+      <div className="stats-container">
+        {/* 第一行 - 6个卡片 */}
+        <Row gutter={[16, 16]} className="stat-row">
+          {stats.slice(0, 6).map((stat, index) => (
+            <Col xs={12} sm={8} md={6} lg={4} xl={4} xxl={4} key={index}>
+              <Card 
+                className="stat-card" 
+                bordered={false} 
+                hoverable 
+                onClick={() => navigate(stat.route)}
+                size="small"
+              >
+                <Statistic
+                  title={stat.title}
+                  value={stat.value}
+                  valueStyle={{ color: stat.color }}
+                  prefix={stat.icon}
+                  formatter={(value) => <span style={{ fontSize: '16px' }}>{value}</span>}
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+        
+        {/* 第二行 - 剩余的卡片 */}
+        <Row gutter={[16, 16]} className="stat-row">
+          {stats.slice(6).map((stat, index) => (
+            <Col xs={12} sm={8} md={6} lg={4} xl={4} xxl={4} key={index + 6}>
+              <Card 
+                className="stat-card" 
+                bordered={false} 
+                hoverable 
+                onClick={() => navigate(stat.route)}
+                size="small"
+              >
+                <Statistic
+                  title={stat.title}
+                  value={stat.value}
+                  valueStyle={{ color: stat.color }}
+                  prefix={stat.icon}
+                  formatter={(value) => <span style={{ fontSize: '16px' }}>{value}</span>}
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       {/* 学习进度和最近活动 */}
       <Row gutter={[16, 16]} className="detail-row">
