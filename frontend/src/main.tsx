@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import './utils/dayjs';
 
 const root = ReactDOM.createRoot(
@@ -10,7 +9,7 @@ const root = ReactDOM.createRoot(
 );
 
 // 开发环境禁用严格模式
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   root.render(
     <React.StrictMode>
       <App />
@@ -20,4 +19,7 @@ if (process.env.NODE_ENV === 'production') {
   root.render(<App />);
 }
 
-reportWebVitals();
+// 替代 reportWebVitals
+if (import.meta.env.DEV) {
+  console.log('Running in development mode');
+}

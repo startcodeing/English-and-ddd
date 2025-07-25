@@ -4,9 +4,9 @@ import { AppConfig, ThemeConfig, DifficultyLevel, DifficultyLevelConfig, Sentenc
  * 应用配置
  */
 export const appConfig: AppConfig = {
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080',
-  appName: process.env.REACT_APP_NAME || '英语学习平台',
-  defaultLanguage: process.env.REACT_APP_DEFAULT_LANGUAGE || 'zh-CN',
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  appName: import.meta.env.VITE_APP_NAME || '英语学习平台',
+  defaultLanguage: import.meta.env.VITE_DEFAULT_LOCALE || 'zh-CN',
   supportedLanguages: [
     { code: 'zh-CN', name: '简体中文' },
     { code: 'en-US', name: 'English' }
