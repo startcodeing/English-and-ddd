@@ -4,25 +4,28 @@
   min-height: 100vh;
 }
 
-.page-header {
+.wordbook-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
-  padding: 24px;
+  padding: 16px 24px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.page-header h2 {
-  margin: 0 0 8px 0;
-  color: #1890ff;
+.wordbook-page-header h1 {
+  margin: 0;
+  color: #262626;
   font-size: 24px;
   font-weight: 600;
 }
 
-.page-header p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
+.wordbook-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .page-content {
@@ -32,20 +35,7 @@
   overflow: hidden;
 }
 
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #f0f0f0;
-  background-color: #fafafa;
-}
 
-.search-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
 
 /* 批量操作区域样式 */
 .batch-actions-area {
@@ -68,11 +58,7 @@
   margin: 0 4px;
 }
 
-.action-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+
 
 /* 表格样式优化 */
 .ant-table {

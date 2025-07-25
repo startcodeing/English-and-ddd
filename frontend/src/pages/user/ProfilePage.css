@@ -1,0 +1,140 @@
+.profile-page {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.profile-header .ant-card-body {
+  padding: 32px;
+}
+
+.profile-header h2 {
+  color: white !important;
+}
+
+.profile-overview {
+  padding: 16px 0;
+}
+
+.profile-achievements {
+  padding: 16px 0;
+}
+
+.achievement-card {
+  text-align: center;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.achievement-card.unlocked {
+  border-color: #52c41a;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.15);
+}
+
+.achievement-card.locked {
+  border-color: #d9d9d9;
+  opacity: 0.6;
+}
+
+.achievement-card:hover.unlocked {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(82, 196, 26, 0.25);
+}
+
+.achievement-content {
+  padding: 16px;
+}
+
+.achievement-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-name {
+  margin-bottom: 8px !important;
+  color: #262626;
+}
+
+.achievement-description {
+  margin-bottom: 12px !important;
+  color: #8c8c8c;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.achievement-progress {
+  margin-top: 8px;
+}
+
+.profile-settings {
+  padding: 16px 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 16px;
+  }
+  
+  .profile-header .ant-card-body {
+    padding: 24px 16px;
+  }
+  
+  .achievement-card {
+    margin-bottom: 16px;
+  }
+}
+
+/* 统计卡片样式优化 */
+.ant-statistic-title {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.ant-statistic-content {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 列表项样式 */
+.ant-list-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 进度条样式 */
+.ant-progress-line {
+  margin-bottom: 4px;
+}
+
+/* 标签样式 */
+.ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 卡片标题样式 */
+.ant-card-head-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* 空状态样式 */
+.ant-empty {
+  padding: 40px 0;
+}

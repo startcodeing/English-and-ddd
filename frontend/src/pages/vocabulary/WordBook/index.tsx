@@ -298,33 +298,27 @@ const WordBookPage: React.FC = () => {
 
   return (
     <div className="wordbook-page">
-      <div className="page-header">
-        <h2>单词本管理</h2>
-        <p>管理您的单词本，组织和学习单词</p>
+      <div className="wordbook-page-header">
+        <h1>单词本管理</h1>
+        <div className="wordbook-page-actions">
+          <Input
+            placeholder="搜索单词本名称或描述"
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ width: 300, marginRight: 16 }}
+          />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAddWordBook}
+          >
+            创建单词本
+          </Button>
+        </div>
       </div>
 
       <div className="page-content">
-        {/* 搜索和操作栏 */}
-        <div className="toolbar">
-          <div className="search-section">
-            <Input
-              placeholder="搜索单词本名称或描述"
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              style={{ width: 300 }}
-            />
-          </div>
-          <div className="action-section">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddWordBook}
-            >
-              创建单词本
-            </Button>
-          </div>
-        </div>
 
         {/* 批量操作区域 */}
         {selectedRowKeys.length > 0 && (

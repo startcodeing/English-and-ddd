@@ -36,6 +36,7 @@ const Comprehensive = React.lazy(() => import('../pages/test/comprehensive'));
 
 // 用户相关页面
 const UserActivity = React.lazy(() => import('../pages/user/UserActivityPage'));
+const ProfilePage = React.lazy(() => import('../pages/user/ProfilePage'));
 
 // 认证页面
 const Login = React.lazy(() => import('../pages/auth/Login'));
@@ -278,6 +279,14 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <UserActivity />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/profile',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <ProfilePage />
           </React.Suspense>
         ),
       },

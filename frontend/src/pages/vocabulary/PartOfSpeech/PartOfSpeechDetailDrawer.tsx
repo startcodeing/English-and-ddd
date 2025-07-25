@@ -64,37 +64,63 @@ const PartOfSpeechDetailDrawer: React.FC<PartOfSpeechDetailDrawerProps> = ({
 
   return (
     <Drawer
-      title={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>词性详情</span>}
+      title={
+        <div className="drawer-header">
+          <span className="drawer-title">词性详情</span>
+        </div>
+      }
       open={visible}
       onClose={onClose}
-      width={900}
+      width={800}
       placement="right"
       footer={null}
       className="part-of-speech-detail-drawer"
-      headerStyle={{ borderBottom: '1px solid #f0f0f0', padding: '16px 24px' }}
-      bodyStyle={{ padding: '24px' }}
+      headerStyle={{ 
+        borderBottom: '1px solid #e8e8e8', 
+        padding: '12px 20px',
+        background: 'linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%)'
+      }}
+      bodyStyle={{ padding: '0' }}
     >
       <div className="part-of-speech-detail">
-        <Title level={2}>
-          {partOfSpeech.englishName}
-          <Tag color="blue" style={{ marginLeft: '12px', fontSize: '14px', padding: '0 8px' }}>
-            {partOfSpeech.chineseMeaning}
-          </Tag>
-        </Title>
-        
-        <Divider orientation="left">中文含义</Divider>
-        <div className="detail-section">
-          {renderMarkdown(partOfSpeech.chineseMeaning)}
+        {/* 标题区域 */}
+        <div className="title-section">
+          <div className="title-content">
+            <h1 className="english-name">{partOfSpeech.englishName}</h1>
+            <Tag className="chinese-tag">
+              {partOfSpeech.chineseMeaning}
+            </Tag>
+          </div>
         </div>
         
-        <Divider orientation="left">用法概述</Divider>
-        <div className="detail-section">
-          {renderMarkdown(partOfSpeech.usageSummary)}
-        </div>
-        
-        <Divider orientation="left">常用短语</Divider>
-        <div className="detail-section">
-          {renderCommonPhrases(partOfSpeech.commonPhrases)}
+        {/* 内容区域 */}
+        <div className="content-sections">
+          <Card className="info-card" size="small">
+            <div className="section-header">
+              <span className="section-title">中文含义</span>
+            </div>
+            <div className="section-content">
+              {renderMarkdown(partOfSpeech.chineseMeaning)}
+            </div>
+          </Card>
+          
+          <Card className="info-card" size="small">
+            <div className="section-header">
+              <span className="section-title">用法概述</span>
+            </div>
+            <div className="section-content">
+              {renderMarkdown(partOfSpeech.usageSummary)}
+            </div>
+          </Card>
+          
+          <Card className="info-card" size="small">
+            <div className="section-header">
+              <span className="section-title">常用短语</span>
+            </div>
+            <div className="section-content">
+              {renderCommonPhrases(partOfSpeech.commonPhrases)}
+            </div>
+          </Card>
         </div>
       </div>
     </Drawer>

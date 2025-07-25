@@ -80,7 +80,7 @@ const Dashboard: React.FC = () => {
       value: 0,
       icon: <AudioOutlined />,
       color: '#08979c',
-      route: '/content/listening-material'
+      route: '/content/listening-materials/page'
     },
     {
       title: '听写总数',
