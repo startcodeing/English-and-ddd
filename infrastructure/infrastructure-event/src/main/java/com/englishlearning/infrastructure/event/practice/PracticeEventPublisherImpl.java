@@ -55,4 +55,40 @@ public class PracticeEventPublisherImpl implements PracticeEventPublisher {
         log.info("Publishing writing scored event: {}", event);
         eventBus.publish(event);
     }
+    
+    @Override
+    public void publishDictationCreatedEvent(DictationCreatedEvent event) {
+        log.info("Publishing dictation created event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishDictationUpdatedEvent(DictationUpdatedEvent event) {
+        log.info("Publishing dictation updated event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishDictationDeletedEvent(DictationDeletedEvent event) {
+        log.info("Publishing dictation deleted event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishDictationBatchDeletedEvent(DictationBatchDeletedEvent event) {
+        log.info("Publishing dictation batch deleted event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishDictationSubmittedEvent(DictationSubmittedEvent event) {
+        log.info("Publishing dictation submitted event: {}", event);
+        eventBus.publish(event);
+    }
+    
+    @Override
+    public void publishDictationScoredEvent(DictationScoredEvent event) {
+        log.info("Publishing dictation scored event: {}", event);
+        eventBus.publish(event);
+    }
 }

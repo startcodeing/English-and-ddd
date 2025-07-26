@@ -26,6 +26,9 @@ const ListeningMaterialPlayer = React.lazy(() => import('../pages/content/Listen
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
+const DictationPracticeListPage = React.lazy(() => import('../pages/practice/dictation/DictationPracticeListPage'));
+const DictationPracticeFormPage = React.lazy(() => import('../pages/practice/dictation/DictationPracticeFormPage'));
+const DictationPracticeViewPage = React.lazy(() => import('../pages/practice/dictation/DictationPracticeViewPage'));
 const Writing = React.lazy(() => import('../pages/practice/writing'));
 const WritingPracticeList = React.lazy(() => import('../pages/practice/writing/WritingPracticeListPage'));
 const WritingPracticeForm = React.lazy(() => import('../pages/practice/writing/WritingPracticeFormPage'));
@@ -229,7 +232,31 @@ const router = createBrowserRouter([
         path: '/practice/dictation',
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
-            <Dictation />
+            <DictationPracticeListPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/practice/dictation/create',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <DictationPracticeFormPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/practice/dictation/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <DictationPracticeFormPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/practice/dictation/view/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <DictationPracticeViewPage />
           </React.Suspense>
         ),
       },

@@ -46,4 +46,46 @@ public interface PracticeEventPublisher {
      * @param event 写作评分事件
      */
     void publishWritingScoredEvent(WritingScoredEvent event);
+    
+    /**
+     * 发布听写练习创建事件
+     *
+     * @param event 听写练习创建事件
+     */
+    void publishDictationCreatedEvent(DictationCreatedEvent event);
+    
+    /**
+     * 发布听写练习更新事件
+     *
+     * @param event 听写练习更新事件
+     */
+    void publishDictationUpdatedEvent(DictationUpdatedEvent event);
+    
+    /**
+     * 发布听写练习删除事件
+     *
+     * @param event 听写练习删除事件
+     */
+    void publishDictationDeletedEvent(DictationDeletedEvent event);
+    
+    /**
+     * 发布听写练习批量删除事件
+     *
+     * @param event 听写练习批量删除事件
+     */
+    void publishDictationBatchDeletedEvent(DictationBatchDeletedEvent event);
+    
+    /**
+     * 发布听写提交事件
+     *
+     * @param event 听写提交事件
+     */
+    void publishDictationSubmittedEvent(DictationSubmittedEvent event);
+    
+    /**
+     * 发布听写评分事件
+     *
+     * @param event 听写评分事件
+     */
+    void publishDictationScoredEvent(DictationScoredEvent event);
 }
