@@ -83,4 +83,11 @@ public interface ListeningMaterialApplicationService {
      * @return 听力资料DTO列表
      */
     List<ListeningMaterialDTO> findByTitleContaining(String title);
+    
+    /**
+     * 获取听力资料总数
+     *
+     * @return 听力资料总数
+     */
+    long count();
 }

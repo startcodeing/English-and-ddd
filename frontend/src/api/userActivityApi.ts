@@ -1,4 +1,5 @@
 import axios from './axios';
+import { StandardApiResponse } from '../types/response';
 
 export interface UserActivity {
   id: string;
@@ -23,15 +24,32 @@ export interface UserActivity {
  * @param size 每页大小
  * @returns 用户活动列表
  */
-export const getUserRecentActivities = async (userId: string, page: number = 0, size: number = 10): Promise<UserActivity[]> => {
+export const getUserRecentActivities = async (userId: string, page: number = 0, size: number = 10): Promise<StandardApiResponse<UserActivity[]>> => {
   try {
-    // axios拦截器已经处理了response.data，所以这里直接返回响应
-    return await axios.get<UserActivity[]>(`/api/activities/recent`, {
+    const response = await axios.get<UserActivity[]>(`/api/activities/recent`, {
       params: { userId, page, size }
-    }) as unknown as UserActivity[];
-  } catch (error) {
-    console.error('获取用户最近活动失败:', error);
-    throw error;
+    });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取用户最近活动成功',
+      data: response || []
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '获取用户最近活动失败',
+      data: []
+    };
   }
 };
 
@@ -49,15 +67,32 @@ export const getUserActivitiesByType = async (
   activityType: string, 
   page: number = 0, 
   size: number = 10
-): Promise<UserActivity[]> => {
+): Promise<StandardApiResponse<UserActivity[]>> => {
   try {
-    // axios拦截器已经处理了response.data，所以这里直接返回响应
-    return await axios.get<UserActivity[]>(`/api/activities/by-type`, {
+    const response = await axios.get<UserActivity[]>(`/api/activities/by-type`, {
       params: { userId, activityType, page, size }
-    }) as unknown as UserActivity[];
-  } catch (error) {
-    console.error('获取用户特定类型活动失败:', error);
-    throw error;
+    });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取用户特定类型活动成功',
+      data: response || []
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '获取用户特定类型活动失败',
+      data: []
+    };
   }
 };
 
@@ -77,15 +112,32 @@ export const getUserActivitiesByTimeRange = async (
   endTime: number, 
   page: number = 0, 
   size: number = 10
-): Promise<UserActivity[]> => {
+): Promise<StandardApiResponse<UserActivity[]>> => {
   try {
-    // axios拦截器已经处理了response.data，所以这里直接返回响应
-    return await axios.get<UserActivity[]>(`/api/activities/by-time-range`, {
+    const response = await axios.get<UserActivity[]>(`/api/activities/by-time-range`, {
       params: { userId, startTime, endTime, page, size }
-    }) as unknown as UserActivity[];
-  } catch (error) {
-    console.error('获取用户时间范围内活动失败:', error);
-    throw error;
+    });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取用户时间范围内活动成功',
+      data: response || []
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<UserActivity[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '获取用户时间范围内活动失败',
+      data: []
+    };
   }
 };
 
@@ -96,14 +148,31 @@ export const getUserActivitiesByTimeRange = async (
  * @param activityType 活动类型
  * @returns 活动数量
  */
-export const countUserActivitiesByType = async (userId: string, activityType: string): Promise<number> => {
+export const countUserActivitiesByType = async (userId: string, activityType: string): Promise<StandardApiResponse<number>> => {
   try {
-    // axios拦截器已经处理了response.data，所以这里直接返回响应
-    return await axios.get<number>(`/api/activities/count-by-type`, {
+    const response = await axios.get<number>(`/api/activities/count-by-type`, {
       params: { userId, activityType }
-    }) as unknown as number;
-  } catch (error) {
-    console.error('统计用户特定类型活动数量失败:', error);
-    throw error;
+    });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<number>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '统计用户特定类型活动数量成功',
+      data: response || 0
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<number>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '统计用户特定类型活动数量失败',
+      data: 0
+    };
   }
 };

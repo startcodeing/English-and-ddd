@@ -206,4 +206,19 @@ public class ListeningMaterialController {
             return ResultUtils.error(e.getMessage());
         }
     }
+    
+    /**
+     * 获取听力资料总数
+     *
+     * @return 听力资料总数
+     */
+    @GetMapping("/count")
+    public Object countListeningMaterials() {
+        try {
+            long count = listeningMaterialApplicationService.count();
+            return ResultUtils.success(count);
+        } catch (Exception e) {
+            return ResultUtils.error(e.getMessage());
+        }
+    }
 }

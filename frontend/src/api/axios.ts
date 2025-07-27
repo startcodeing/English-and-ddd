@@ -29,8 +29,20 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // 直接返回响应数据
-    return response.data as any;
+    // 检查响应数据格式
+    const data = response.data;
+    
+    // 如果响应已经是标准格式，直接返回
+    if (data && (data.success !== undefined || data.data !== undefined)) {
+      return data;
+    }
+    
+    // 否则，将响应包装为标准格式
+    return {
+      success: true,
+      message: response.statusText || '请求成功',
+      data: data
+    };
   },
   (error: AxiosError) => {
     if (error.response) {
@@ -74,16 +86,41 @@ instance.interceptors.response.use(
         default:
           console.error(`未处理的错误状态码: ${error.response.status}`, errorMessage);
       }
+      
+      // 返回标准格式的错误响应
+      return Promise.reject({
+        success: false,
+        message: errorMessage,
+        data: null,
+        errorCode: error.response.status.toString()
+      });
     } else if (error.request) {
       // 请求已发送但没有收到响应
-      console.error('网络错误，无法连接到服务器');
-      (error as any).errorMessage = '网络错误，无法连接到服务器';
+      const errorMessage = '网络错误，无法连接到服务器';
+      console.error(errorMessage);
+      (error as any).errorMessage = errorMessage;
+      
+      // 返回标准格式的错误响应
+      return Promise.reject({
+        success: false,
+        message: errorMessage,
+        data: null,
+        errorCode: 'NETWORK_ERROR'
+      });
     } else {
       // 请求配置有误
-      console.error('请求配置错误:', error.message);
-      (error as any).errorMessage = `请求配置错误: ${error.message}`;
+      const errorMessage = `请求配置错误: ${error.message}`;
+      console.error(errorMessage);
+      (error as any).errorMessage = errorMessage;
+      
+      // 返回标准格式的错误响应
+      return Promise.reject({
+        success: false,
+        message: errorMessage,
+        data: null,
+        errorCode: 'REQUEST_ERROR'
+      });
     }
-    return Promise.reject(error);
   }
 );
 

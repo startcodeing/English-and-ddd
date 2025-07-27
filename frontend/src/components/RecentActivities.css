@@ -1,46 +1,91 @@
 .recent-activities-container {
   height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  overflow: auto;
+  max-height: 300px;
+}
+
+/* 隐藏滚动条 */
+.recent-activities-container::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+.recent-activities-container::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 3px;
+}
+
+.recent-activities-container::-webkit-scrollbar-thumb:hover {
+  background-color: #ccc;
+}
+
+.recent-activities-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.activity-card {
+  height: 100%;
 }
 
 .activity-item {
-  padding: 12px 0;
-  transition: background-color 0.3s;
+  padding: 8px 12px;
+  transition: all 0.3s;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
+  margin: 0 -16px;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
 }
 
 .activity-item:hover {
-  background-color: #f9f9f9;
+  background-color: #f5f7fa;
 }
 
 .activity-item:active {
-  background-color: #f0f0f0;
+  background-color: #e6f7ff;
 }
 
 .activity-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  font-weight: 500;
+  color: #262626;
+  font-size: 13px;
 }
 
 .activity-description {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  font-size: 11px;
+  color: #8c8c8c;
 }
 
 .activity-time {
   font-size: 12px;
-  color: #999;
+  color: #bfbfbf;
   white-space: nowrap;
   margin-left: 10px;
 }
 
 .activity-icon {
-  font-size: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f5f7fa;
+  margin-right: 8px;
 }
 
 .empty-message {
@@ -48,7 +93,8 @@
   justify-content: center;
   align-items: center;
   height: 100px;
-  color: rgba(0, 0, 0, 0.45);
+  color: #bfbfbf;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
@@ -60,5 +106,17 @@
   .activity-time {
     margin-top: 4px;
     margin-left: 0;
+  }
+  
+  .activity-item {
+    padding: 10px 12px;
+    margin: 0 -12px;
+  }
+  
+  .activity-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    margin-right: 8px;
   }
 }

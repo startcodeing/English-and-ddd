@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Progress, Typography } from 'antd';
-import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Statistic, Progress, Typography, Button, Space } from 'antd';
+import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined, TrophyOutlined, ClockCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -239,124 +239,253 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
+      {/* 仪表盘头部 */}
       <div className="dashboard-header">
-        <Title level={3}>仪表盘</Title>
-        <Paragraph>欢迎使用英语学习平台，这里是您的学习概览</Paragraph>
+        <div className="welcome-section">
+          <div className="welcome-content">
+            <Title level={2} className="dashboard-title">仪表盘</Title>
+            <Paragraph className="dashboard-subtitle">
+              欢迎回来！今天也要继续努力学习英语哦 🎯
+            </Paragraph>
+          </div>
+          {/* 移除了标红的按钮 */}
+        </div>
       </div>
 
-      {/* 统计卡片 - 第一行6个，第二行剩余的 */}
-      <div className="stats-container">
-        {/* 第一行 - 6个卡片 */}
-        <Row gutter={[16, 16]} className="stat-row">
-          {stats.slice(0, 6).map((stat, index) => (
-            <Col xs={12} sm={8} md={6} lg={4} xl={4} xxl={4} key={index}>
+      {/* 统计卡片网格 */}
+      <div className="stats-grid">
+        {/* 所有统计卡片放在一行 */}
+        <Row gutter={[8, 8]} className="stats-row">
+          {stats.map((stat, index) => (
+            <Col xs={8} sm={6} md={4} lg={2.6} xl={2.6} key={index} style={{ flex: '1 1 0', width: '11.11%', minWidth: '100px', maxWidth: '150px' }}>
               <Card 
-                className="stat-card" 
+                className="enhanced-stat-card" 
                 bordered={false} 
                 hoverable 
                 onClick={() => navigate(stat.route)}
-                size="small"
+                style={{ height: '100%' }}
               >
-                <Statistic
-                  title={stat.title}
-                  value={stat.value}
-                  valueStyle={{ color: stat.color }}
-                  prefix={stat.icon}
-                  formatter={(value) => <span style={{ fontSize: '16px' }}>{value}</span>}
-                />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-        
-        {/* 第二行 - 剩余的卡片 */}
-        <Row gutter={[16, 16]} className="stat-row">
-          {stats.slice(6).map((stat, index) => (
-            <Col xs={12} sm={8} md={6} lg={4} xl={4} xxl={4} key={index + 6}>
-              <Card 
-                className="stat-card" 
-                bordered={false} 
-                hoverable 
-                onClick={() => navigate(stat.route)}
-                size="small"
-              >
-                <Statistic
-                  title={stat.title}
-                  value={stat.value}
-                  valueStyle={{ color: stat.color }}
-                  prefix={stat.icon}
-                  formatter={(value) => <span style={{ fontSize: '16px' }}>{value}</span>}
-                />
+                <div className="stat-card-content">
+                  <div className="stat-icon" style={{ color: stat.color }}>
+                    {stat.icon}
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-value" style={{ color: stat.color }}>
+                      {stat.value}
+                    </div>
+                    <div className="stat-title">{stat.title}</div>
+                  </div>
+                </div>
               </Card>
             </Col>
           ))}
         </Row>
       </div>
 
-      {/* 学习进度和最近活动 */}
-      <Row gutter={[16, 16]} className="detail-row">
-        {/* 学习进度 */}
-        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
-          <Card title="学习进度" bordered={false} className="progress-card" size="small" style={{ flex: 1 }}>
-            <div className="progress-item">
-              <span className="progress-label">词汇量</span>
-              <Progress percent={progress.vocabulary} strokeColor="#1890ff" size="small" />
-            </div>
-            <div className="progress-item">
-              <span className="progress-label">听力</span>
-              <Progress percent={progress.listening} strokeColor="#52c41a" size="small" />
-            </div>
-            <div className="progress-item">
-              <span className="progress-label">口语</span>
-              <Progress percent={progress.speaking} strokeColor="#722ed1" size="small" />
-            </div>
-            <div className="progress-item">
-              <span className="progress-label">写作</span>
-              <Progress percent={progress.writing} strokeColor="#fa8c16" size="small" />
-            </div>
-          </Card>
-        </Col>
+      {/* 主要内容区域 */}
+      <div className="dashboard-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Row gutter={[24, 24]} style={{ flex: 1 }}>
+          {/* 学习进度 */}
+          <Col xs={24} lg={12}>
+            <Card 
+              title="学习进度" 
+              bordered={false} 
+              className="enhanced-progress-card"
+              extra={<Button type="link" size="small">查看详情</Button>}
+              style={{ height: '100%' }}
+            >
+              <div className="progress-grid">
+                <div className="progress-item">
+                  <div className="progress-header">
+                    <span className="progress-label">词汇量</span>
+                    <span className="progress-percent">{progress.vocabulary}%</span>
+                  </div>
+                  <Progress 
+                    percent={progress.vocabulary} 
+                    strokeColor="var(--color-primary)" 
+                    showInfo={false}
+                    strokeWidth={8}
+                  />
+                </div>
+                <div className="progress-item">
+                  <div className="progress-header">
+                    <span className="progress-label">听力</span>
+                    <span className="progress-percent">{progress.listening}%</span>
+                  </div>
+                  <Progress 
+                    percent={progress.listening} 
+                    strokeColor="var(--color-success)" 
+                    showInfo={false}
+                    strokeWidth={8}
+                  />
+                </div>
+                <div className="progress-item">
+                  <div className="progress-header">
+                    <span className="progress-label">口语</span>
+                    <span className="progress-percent">{progress.speaking}%</span>
+                  </div>
+                  <Progress 
+                    percent={progress.speaking} 
+                    strokeColor="var(--color-purple)" 
+                    showInfo={false}
+                    strokeWidth={8}
+                  />
+                </div>
+                <div className="progress-item">
+                  <div className="progress-header">
+                    <span className="progress-label">写作</span>
+                    <span className="progress-percent">{progress.writing}%</span>
+                  </div>
+                  <Progress 
+                    percent={progress.writing} 
+                    strokeColor="var(--color-orange)" 
+                    showInfo={false}
+                    strokeWidth={8}
+                  />
+                </div>
+              </div>
+            </Card>
+          </Col>
 
-        {/* 最近活动 */}
-        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
-          {/* 不再依赖于user?.id，直接使用RecentActivities组件 */}
-          <RecentActivities userId="system" limit={5} />
-        </Col>
-      </Row>
+          {/* 最近活动 */}
+          <Col xs={24} lg={12}>
+            <div className="enhanced-activities-card" style={{ height: '100%' }}>
+              <RecentActivities userId="system" limit={5} />
+            </div>
+          </Col>
+        </Row>
+      </div>
 
-      {/* 快速入口 */}
-      <Row gutter={[16, 16]} className="shortcut-row">
-        <Col span={24}>
-          <Card title="快速入口" bordered={false} size="small">
-            <Row gutter={[16, 16]}>
-              <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => navigate('/vocabulary/word')}>
-                  <BookOutlined className="shortcut-icon" />
-                  <div className="shortcut-title">单词学习</div>
-                </Card>
+      {/* 快速入口 - 移到最下面 */}
+      <div className="quick-actions" style={{ marginTop: '24px' }}>
+        <Card 
+          title="快速入口" 
+          bordered={false} 
+          className="enhanced-quick-actions-card"
+          extra={<Button type="link" size="small">更多功能</Button>}
+        >
+          <div className="quick-actions-scroll-container">
+            <Row gutter={[8, 8]} className="quick-actions-row">
+              {/* 词性 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/vocabulary/part-of-speech')}>
+                  <div className="action-icon" style={{ color: '#eb2f96' }}>
+                    <TagsOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">词性学习</div>
+                    <div className="action-desc">词性基础</div>
+                  </div>
+                </div>
               </Col>
-              <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => navigate('/content/article')}>
-                  <ReadOutlined className="shortcut-icon" />
-                  <div className="shortcut-title">阅读文章</div>
-                </Card>
+              
+              {/* 单词 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/vocabulary/word')}>
+                  <div className="action-icon" style={{ color: '#1890ff' }}>
+                    <BookOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">单词学习</div>
+                    <div className="action-desc">学习新单词</div>
+                  </div>
+                </div>
               </Col>
-              <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => navigate('/practice/dictation')}>
-                  <SoundOutlined className="shortcut-icon" />
-                  <div className="shortcut-title">听写练习</div>
-                </Card>
+              
+              {/* 单词本 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/vocabulary/word-book')}>
+                  <div className="action-icon" style={{ color: '#13c2c2' }}>
+                    <BookFilled />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">单词本</div>
+                    <div className="action-desc">单词收藏</div>
+                  </div>
+                </div>
               </Col>
-              <Col xs={12} sm={6}>
-                <Card className="shortcut-card" hoverable onClick={() => navigate('/practice/writing')}>
-                  <EditOutlined className="shortcut-icon" />
-                  <div className="shortcut-title">写作练习</div>
-                </Card>
+              
+              {/* 句子 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/content/sentence')}>
+                  <div className="action-icon" style={{ color: '#faad14' }}>
+                    <FileTextOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">句子学习</div>
+                    <div className="action-desc">句子练习</div>
+                  </div>
+                </div>
+              </Col>
+              
+              {/* 文章 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/content/article')}>
+                  <div className="action-icon" style={{ color: '#52c41a' }}>
+                    <ReadOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">阅读文章</div>
+                    <div className="action-desc">提升阅读能力</div>
+                  </div>
+                </div>
+              </Col>
+              
+              {/* 写作主题 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/content/writing-topics')}>
+                  <div className="action-icon" style={{ color: '#2f54eb' }}>
+                    <FileOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">写作主题</div>
+                    <div className="action-desc">写作素材</div>
+                  </div>
+                </div>
+              </Col>
+              
+              {/* 听力资料 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/content/listening-materials/page')}>
+                  <div className="action-icon" style={{ color: '#08979c' }}>
+                    <AudioOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">听力资料</div>
+                    <div className="action-desc">听力素材</div>
+                  </div>
+                </div>
+              </Col>
+              
+              {/* 听写练习 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/practice/dictation')}>
+                  <div className="action-icon" style={{ color: '#722ed1' }}>
+                    <SoundOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">听写练习</div>
+                    <div className="action-desc">训练听力技能</div>
+                  </div>
+                </div>
+              </Col>
+              
+              {/* 写作练习 */}
+              <Col className="quick-action-col">
+                <div className="quick-action-item" onClick={() => navigate('/practice/writing')}>
+                  <div className="action-icon" style={{ color: '#fa8c16' }}>
+                    <EditOutlined />
+                  </div>
+                  <div className="action-content">
+                    <div className="action-title">写作练习</div>
+                    <div className="action-desc">提高写作水平</div>
+                  </div>
+                </div>
               </Col>
             </Row>
-          </Card>
-        </Col>
-      </Row>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

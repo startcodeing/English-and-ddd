@@ -65,4 +65,11 @@ public interface ListeningMaterialRepository {
      * @return 听力资料列表
      */
     List<ListeningMaterial> findByTitleContaining(String title);
+    
+    /**
+     * 获取听力资料总数
+     *
+     * @return 听力资料总数
+     */
+    long count();
 }

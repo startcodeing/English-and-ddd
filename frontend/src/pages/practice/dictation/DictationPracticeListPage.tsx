@@ -15,58 +15,55 @@ const DictationPracticeListPage: React.FC = () => {
   
   // 状态管理
   const [practices, setPractices] = useState<DictationPractice[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
   const [current, setCurrent] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [searchParams, setSearchParams] = useState<DictationPracticeQuery>({});
+  const [filters, setFilters] = useState<Partial<DictationPracticeQuery>>({});
   const [materialsMap, setMaterialsMap] = useState<Record<number, any>>({});
+  const [searchParams, setSearchParams] = useState<DictationPracticeQuery>({});
 
   // 获取听写练习列表
-  const fetchPractices = async () => {
+  const fetchPractices = async (page = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      const params = {
-        ...searchParams,
-        pageNum: current,
+      // 构建查询参数
+      const queryParams: DictationPracticeQuery = {
+        pageNum: page,
         pageSize,
+        ...filters
       };
-      
-      // 单独处理每个API调用，以便更好地处理错误
-      try {
-        const practicesRes = await getDictationPractices(params);
-        if (practicesRes.success) {
-          const practicesList = practicesRes.data || [];
-          setPractices(practicesList);
-          
-          // 获取所有听力资料信息
-          fetchMaterialsInfo(practicesList);
-        } else {
-          console.error('获取听写练习列表失败:', practicesRes.message);
-          message.error(practicesRes.message || '获取听写练习列表失败');
-          return;
-        }
-      } catch (practicesError: any) {
-        console.error('获取听写练习列表出错:', practicesError);
-        message.error(practicesError.message || '获取听写练习列表失败');
-        return;
+
+      // 并行请求听写练习列表和总数
+      const [practicesResponse, countResponse] = await Promise.all([
+        getDictationPractices(queryParams),
+        countDictationPractices(queryParams)
+      ]);
+
+      // 检查听写练习列表请求是否成功
+      if (practicesResponse.success) {
+        const practicesList = practicesResponse.data || [];
+        setPractices(practicesList);
+        
+        // 获取所有听力资料信息
+        fetchMaterialsInfo(practicesList);
+      } else {
+        message.error(practicesResponse.message || '获取听写练习列表失败');
+        setPractices([]);
       }
-      
-      try {
-        const countRes = await countDictationPractices(params);
-        if (countRes.success) {
-          setTotal(countRes.data || 0);
-        } else {
-          console.error('获取听写练习总数失败:', countRes.message);
-          message.error(countRes.message || '获取听写练习总数失败');
-        }
-      } catch (countError: any) {
-        console.error('获取听写练习总数出错:', countError);
-        message.error(countError.message || '获取听写练习总数失败');
+
+      // 检查总数请求是否成功
+      if (countResponse.success) {
+        setTotal(countResponse.data || 0);
+      } else {
+        message.error(countResponse.message || '获取听写练习总数失败');
+        setTotal(0);
       }
     } catch (error: any) {
-      console.error('获取听写练习数据出错:', error);
-      message.error(error.message || '获取听写练习数据失败');
+      console.error('获取听写练习列表失败:', error);
+      message.error(error.message || '获取听写练习列表失败');
+      setPractices([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -101,30 +98,31 @@ const DictationPracticeListPage: React.FC = () => {
     }
   };
 
-  // 初始加载和条件变化时获取数据
+  // 组件挂载和筛选条件变化时获取数据
   useEffect(() => {
-    fetchPractices();
-  }, [current, pageSize, searchParams]);
+    fetchPractices(current, pageSize);
+  }, [current, pageSize, filters]);
 
   // 处理搜索
   const handleSearch = (values: any) => {
     setCurrent(1); // 重置到第一页
-    setSearchParams(values);
+    setFilters(values);
   };
 
   // 重置搜索
   const handleReset = () => {
     form.resetFields();
     setCurrent(1);
-    setSearchParams({});
+    setFilters({});
   };
 
   // 处理分页变化
-  const handlePageChange = (page: number, size?: number) => {
+  const handlePageChange = (page: number, pageSize?: number) => {
     setCurrent(page);
-    if (size && size !== pageSize) {
-      setPageSize(size);
+    if (pageSize) {
+      setPageSize(pageSize);
     }
+    fetchPractices(page, pageSize || 10);
   };
 
   // 删除听写练习

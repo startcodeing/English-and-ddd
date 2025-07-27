@@ -246,6 +246,11 @@ public class ListeningMaterialApplicationServiceImpl implements ListeningMateria
                 .collect(Collectors.toList());
     }
     
+    @Override
+    public long count() {
+        return listeningMaterialRepository.count();
+    }
+    
     /**
      * 将实体转换为DTO
      *

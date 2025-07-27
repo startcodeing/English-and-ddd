@@ -58,4 +58,9 @@ public class ListeningMaterialRepositoryImpl implements ListeningMaterialReposit
     public List<ListeningMaterial> findByTitleContaining(String title) {
         return mapper.toEntityList(jpaRepository.findByTitleContaining(title));
     }
+    
+    @Override
+    public long count() {
+        return jpaRepository.count();
+    }
 }
