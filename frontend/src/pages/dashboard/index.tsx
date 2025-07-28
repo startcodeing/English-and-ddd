@@ -248,22 +248,30 @@ const Dashboard: React.FC = () => {
               欢迎回来！今天也要继续努力学习英语哦 🎯
             </Paragraph>
           </div>
-          {/* 移除了标红的按钮 */}
+          <div className="header-actions">
+            <Space>
+              <Button type="primary" icon={<TrophyOutlined />}>
+                今日目标
+              </Button>
+              <Button icon={<ClockCircleOutlined />}>
+                学习计划
+              </Button>
+            </Space>
+          </div>
         </div>
       </div>
 
       {/* 统计卡片网格 */}
       <div className="stats-grid">
-        {/* 所有统计卡片放在一行 */}
-        <Row gutter={[8, 8]} className="stats-row">
+        {/* 所有统计卡片放在同一行 */}
+        <Row gutter={[4, 4]} className="stats-row all-stats-row" wrap={false}>
           {stats.map((stat, index) => (
-            <Col xs={8} sm={6} md={4} lg={2.6} xl={2.6} key={index} style={{ flex: '1 1 0', width: '11.11%', minWidth: '100px', maxWidth: '150px' }}>
+            <Col flex="1" key={index}>
               <Card 
                 className="enhanced-stat-card" 
                 bordered={false} 
                 hoverable 
                 onClick={() => navigate(stat.route)}
-                style={{ height: '100%' }}
               >
                 <div className="stat-card-content">
                   <div className="stat-icon" style={{ color: stat.color }}>
@@ -282,105 +290,103 @@ const Dashboard: React.FC = () => {
         </Row>
       </div>
 
-      {/* 主要内容区域 */}
-      <div className="dashboard-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Row gutter={[24, 24]} style={{ flex: 1 }}>
+      {/* 学习进度和最近活动区域 */}
+      <Row gutter={[16, 16]} className="dashboard-content-row">
+        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
           {/* 学习进度 */}
-          <Col xs={24} lg={12}>
-            <Card 
-              title="学习进度" 
-              bordered={false} 
-              className="enhanced-progress-card"
-              extra={<Button type="link" size="small">查看详情</Button>}
-              style={{ height: '100%' }}
-            >
-              <div className="progress-grid">
-                <div className="progress-item">
-                  <div className="progress-header">
-                    <span className="progress-label">词汇量</span>
-                    <span className="progress-percent">{progress.vocabulary}%</span>
-                  </div>
-                  <Progress 
-                    percent={progress.vocabulary} 
-                    strokeColor="var(--color-primary)" 
-                    showInfo={false}
-                    strokeWidth={8}
-                  />
+          <Card 
+            title="学习进度" 
+            bordered={false} 
+            className="enhanced-progress-card"
+            extra={<Button type="link" size="small">查看详情</Button>}
+            style={{ flex: 1 }}
+          >
+            <div className="progress-grid">
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="progress-label">词汇量</span>
+                  <span className="progress-percent">{progress.vocabulary}%</span>
                 </div>
-                <div className="progress-item">
-                  <div className="progress-header">
-                    <span className="progress-label">听力</span>
-                    <span className="progress-percent">{progress.listening}%</span>
-                  </div>
-                  <Progress 
-                    percent={progress.listening} 
-                    strokeColor="var(--color-success)" 
-                    showInfo={false}
-                    strokeWidth={8}
-                  />
-                </div>
-                <div className="progress-item">
-                  <div className="progress-header">
-                    <span className="progress-label">口语</span>
-                    <span className="progress-percent">{progress.speaking}%</span>
-                  </div>
-                  <Progress 
-                    percent={progress.speaking} 
-                    strokeColor="var(--color-purple)" 
-                    showInfo={false}
-                    strokeWidth={8}
-                  />
-                </div>
-                <div className="progress-item">
-                  <div className="progress-header">
-                    <span className="progress-label">写作</span>
-                    <span className="progress-percent">{progress.writing}%</span>
-                  </div>
-                  <Progress 
-                    percent={progress.writing} 
-                    strokeColor="var(--color-orange)" 
-                    showInfo={false}
-                    strokeWidth={8}
-                  />
-                </div>
+                <Progress 
+                  percent={progress.vocabulary} 
+                  strokeColor="var(--color-primary)" 
+                  showInfo={false}
+                  strokeWidth={8}
+                />
               </div>
-            </Card>
-          </Col>
-
-          {/* 最近活动 */}
-          <Col xs={24} lg={12}>
-            <div className="enhanced-activities-card" style={{ height: '100%' }}>
-              <RecentActivities userId="system" limit={5} />
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="progress-label">听力</span>
+                  <span className="progress-percent">{progress.listening}%</span>
+                </div>
+                <Progress 
+                  percent={progress.listening} 
+                  strokeColor="var(--color-success)" 
+                  showInfo={false}
+                  strokeWidth={8}
+                />
+              </div>
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="progress-label">口语</span>
+                  <span className="progress-percent">{progress.speaking}%</span>
+                </div>
+                <Progress 
+                  percent={progress.speaking} 
+                  strokeColor="var(--color-purple)" 
+                  showInfo={false}
+                  strokeWidth={8}
+                />
+              </div>
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="progress-label">写作</span>
+                  <span className="progress-percent">{progress.writing}%</span>
+                </div>
+                <Progress 
+                  percent={progress.writing} 
+                  strokeColor="var(--color-orange)" 
+                  showInfo={false}
+                  strokeWidth={8}
+                />
+              </div>
             </div>
-          </Col>
-        </Row>
-      </div>
+          </Card>
+        </Col>
 
-      {/* 快速入口 - 移到最下面 */}
-      <div className="quick-actions" style={{ marginTop: '24px' }}>
-        <Card 
-          title="快速入口" 
-          bordered={false} 
-          className="enhanced-quick-actions-card"
-          extra={<Button type="link" size="small">更多功能</Button>}
-        >
-          <div className="quick-actions-scroll-container">
-            <Row gutter={[8, 8]} className="quick-actions-row">
-              {/* 词性 */}
-              <Col className="quick-action-col">
+        {/* 最近活动 */}
+        <Col xs={24} md={12} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="enhanced-activities-card" style={{ flex: 1 }}>
+            <RecentActivities userId="system" limit={5} />
+          </div>
+        </Col>
+      </Row>
+
+      {/* 快速入口区域 */}
+      <Row gutter={[16, 16]} className="quick-actions-row">
+        <Col xs={24} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          <Card 
+            title="快速入口" 
+            bordered={false} 
+            className="enhanced-quick-actions-card"
+            extra={<Button type="link" size="small">更多功能</Button>}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+          >
+            <Row gutter={[12, 12]} className="all-quick-actions" style={{ flex: 1, overflow: 'visible', marginBottom: '10px' }}>
+              {/* 词性总数 */}
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/vocabulary/part-of-speech')}>
                   <div className="action-icon" style={{ color: '#eb2f96' }}>
                     <TagsOutlined />
                   </div>
                   <div className="action-content">
                     <div className="action-title">词性学习</div>
-                    <div className="action-desc">词性基础</div>
+                    <div className="action-desc">掌握词性知识</div>
                   </div>
                 </div>
               </Col>
-              
-              {/* 单词 */}
-              <Col className="quick-action-col">
+              {/* 单词学习 */}
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/vocabulary/word')}>
                   <div className="action-icon" style={{ color: '#1890ff' }}>
                     <BookOutlined />
@@ -391,35 +397,32 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </Col>
-              
               {/* 单词本 */}
-              <Col className="quick-action-col">
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/vocabulary/word-book')}>
                   <div className="action-icon" style={{ color: '#13c2c2' }}>
                     <BookFilled />
                   </div>
                   <div className="action-content">
                     <div className="action-title">单词本</div>
-                    <div className="action-desc">单词收藏</div>
+                    <div className="action-desc">管理单词本</div>
                   </div>
                 </div>
               </Col>
-              
-              {/* 句子 */}
-              <Col className="quick-action-col">
+              {/* 句子学习 */}
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/content/sentence')}>
                   <div className="action-icon" style={{ color: '#faad14' }}>
                     <FileTextOutlined />
                   </div>
                   <div className="action-content">
                     <div className="action-title">句子学习</div>
-                    <div className="action-desc">句子练习</div>
+                    <div className="action-desc">学习句子结构</div>
                   </div>
                 </div>
               </Col>
-              
-              {/* 文章 */}
-              <Col className="quick-action-col">
+              {/* 阅读文章 */}
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/content/article')}>
                   <div className="action-icon" style={{ color: '#52c41a' }}>
                     <ReadOutlined />
@@ -430,35 +433,32 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </Col>
-              
               {/* 写作主题 */}
-              <Col className="quick-action-col">
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/content/writing-topics')}>
                   <div className="action-icon" style={{ color: '#2f54eb' }}>
                     <FileOutlined />
                   </div>
                   <div className="action-content">
                     <div className="action-title">写作主题</div>
-                    <div className="action-desc">写作素材</div>
+                    <div className="action-desc">浏览写作主题</div>
                   </div>
                 </div>
               </Col>
-              
               {/* 听力资料 */}
-              <Col className="quick-action-col">
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/content/listening-materials/page')}>
                   <div className="action-icon" style={{ color: '#08979c' }}>
                     <AudioOutlined />
                   </div>
                   <div className="action-content">
                     <div className="action-title">听力资料</div>
-                    <div className="action-desc">听力素材</div>
+                    <div className="action-desc">浏览听力资料</div>
                   </div>
                 </div>
               </Col>
-              
               {/* 听写练习 */}
-              <Col className="quick-action-col">
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/practice/dictation')}>
                   <div className="action-icon" style={{ color: '#722ed1' }}>
                     <SoundOutlined />
@@ -469,9 +469,8 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </Col>
-              
               {/* 写作练习 */}
-              <Col className="quick-action-col">
+              <Col xs={12} sm={8} md={6} lg={4} xl={2} style={{ flex: '1 0 auto' }}>
                 <div className="quick-action-item" onClick={() => navigate('/practice/writing')}>
                   <div className="action-icon" style={{ color: '#fa8c16' }}>
                     <EditOutlined />
@@ -483,9 +482,9 @@ const Dashboard: React.FC = () => {
                 </div>
               </Col>
             </Row>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

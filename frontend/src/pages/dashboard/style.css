@@ -2,18 +2,20 @@
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 24px;
+  padding: 12px;
+  padding-bottom: 30px;
   animation: fadeInUp 0.6s ease-out;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 /* 仪表盘头部样式 */
 .dashboard-header {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   background-color: #fff;
   border-radius: 8px;
-  padding: 16px 20px;
+  padding: 10px 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -43,31 +45,44 @@
 /* 统计卡片网格样式 */
 .stats-grid {
   margin-bottom: 16px;
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .stats-row {
-  margin-bottom: 0;
-  width: 100%;
-  flex-wrap: nowrap;
   display: flex;
-  justify-content: space-between;
   gap: 8px;
+  margin-bottom: 16px;
+  justify-content: space-between;
 }
 
+.all-stats-row {
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  padding-bottom: 4px;
+}
+
+.stats-row.first-row {
+  margin-bottom: 12px;
+}
+
+.stats-row.second-row {
+  margin-bottom: 0;
+}
 .enhanced-stat-card {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s;
-  height: 100%;
+  transition: all 0.3s ease;
+  width: 100%;
+  flex: 1;
   padding: 0;
-  margin: 0;
+  margin: 0 4px;
   overflow: hidden;
 }
 
 .enhanced-stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -75,13 +90,13 @@
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 12px;
+  padding: 8px;
   overflow: hidden;
 }
 
 .stat-icon {
-  font-size: 18px;
-  margin-right: 8px;
+  font-size: 12px;
+  margin-right: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,15 +110,16 @@
 }
 
 .stat-value {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 2px;
+  line-height: 1.1;
+  margin-bottom: 0;
 }
 
 .stat-title {
-  font-size: 11px;
+  font-size: 8px;
   color: #8c8c8c;
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -111,37 +127,39 @@
 }
 
 /* 快速入口样式 */
-.quick-actions {
-  margin-bottom: 16px;
-}
-
 .enhanced-quick-actions-card {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   overflow: visible;
-  min-height: auto;
+  height: 100%;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .enhanced-quick-actions-card .ant-card-head {
-  min-height: 48px;
-  padding: 0 16px;
+  min-height: 36px;
+  padding: 0 10px;
 }
 
 .enhanced-quick-actions-card .ant-card-head-title {
-  padding: 12px 0;
-  font-size: 16px;
+  padding: 8px 0;
+  font-size: 14px;
   font-weight: 600;
   color: #262626;
 }
 
 .enhanced-quick-actions-card .ant-card-extra {
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .enhanced-quick-actions-card .ant-card-body {
-  padding: 16px;
+  padding: 10px;
   overflow: visible;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .quick-actions-scroll-container {
@@ -152,46 +170,45 @@
 }
 
 .quick-actions-row {
-  flex-wrap: wrap;
+  margin-bottom: 0;
   width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  gap: 12px;
 }
 
-.quick-action-col {
-  flex: 0 0 auto;
-  min-width: 160px;
-  max-width: none;
-  width: calc(33.333% - 8px);
+.all-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  flex: 1;
+  overflow: visible;
 }
 
 .quick-action-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 16px 12px;
+  justify-content: center;
+  padding: 8px 4px;
   border-radius: 8px;
-  background-color: #fafafa;
-  transition: all 0.3s;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
   cursor: pointer;
-  min-height: 80px;
-  height: auto;
-  white-space: nowrap;
-  overflow: hidden;
-  border: 1px solid #f0f0f0;
-  margin-bottom: 12px;
+  min-height: 60px;
+  margin-bottom: 8px;
+  overflow: visible;
+  text-align: center;
+  width: 100%;
 }
 
 .quick-action-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  border-color: #d9d9d9;
 }
 
 .action-icon {
-  font-size: 22px;
-  margin-right: 12px;
+  font-size: 16px;
+  margin-right: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -207,32 +224,44 @@
 
 .action-title {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 11px;
   color: #262626;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  margin-bottom: 4px;
-  line-height: 1.2;
+  margin-bottom: 0;
+  line-height: 1.1;
 }
 
 .action-desc {
-  font-size: 13px;
+  font-size: 9px;
   color: #8c8c8c;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1;
   max-width: 100%;
-  line-height: 1.2;
 }
 
 /* 主要内容区域样式 */
-.dashboard-content {
-  margin-top: 24px;
-  flex: 1;
+.dashboard-content-row {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  flex: 0.4;
+  max-height: 30vh;
+}
+
+/* 快速入口区域样式 */
+.quick-actions-row {
+  margin-bottom: 12px;
+  width: 100%;
+  margin-top: auto;
+  flex: 1;
+  min-height: 40vh;
+  overflow: visible;
 }
 
 /* 学习进度卡片样式 */
@@ -242,32 +271,37 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
 }
 
 .enhanced-progress-card .ant-card-head {
-  min-height: 48px;
-  padding: 0 16px;
+  min-height: 36px;
+  padding: 0 10px;
 }
 
 .enhanced-progress-card .ant-card-head-title {
-  padding: 12px 0;
-  font-size: 16px;
+  padding: 8px 0;
+  font-size: 14px;
   font-weight: 600;
   color: #262626;
 }
 
 .enhanced-progress-card .ant-card-extra {
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .enhanced-progress-card .ant-card-body {
-  padding: 16px;
+  padding: 10px;
+  flex: 1;
+  overflow: auto;
 }
 
 .progress-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 8px;
 }
 
 .progress-item {
@@ -277,18 +311,18 @@
 .progress-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .progress-label {
   font-weight: 600;
   color: #262626;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .progress-percent {
   color: #8c8c8c;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* 最近活动样式 */
@@ -298,6 +332,15 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.enhanced-activities-card .ant-card-body {
+  padding: 10px;
+  flex: 1;
+  overflow: auto;
 }
 
 
@@ -308,14 +351,19 @@
     gap: 8px;
   }
   
-  .quick-actions-row {
+  .all-quick-actions {
     gap: 8px;
   }
+}
+
+@media (max-width: 992px) {
+  .dashboard-content-row > .ant-col {
+    margin-bottom: 16px;
+  }
   
-  .quick-action-col {
-    width: calc(50% - 6px);
-    min-width: 140px;
-    max-width: none;
+  .all-quick-actions > .ant-col {
+    flex: 0 0 25%;
+    max-width: 25%;
   }
 }
 
@@ -360,16 +408,6 @@
     gap: 16px;
   }
   
-  .quick-action-col {
-    width: 100%;
-    min-width: 100%;
-    max-width: none;
-  }
-  
-  .quick-actions-row {
-    gap: 8px;
-  }
-  
   .quick-action-item {
     height: 70px;
     padding: 12px 10px;
@@ -384,104 +422,142 @@
   .action-title {
     font-size: 13px;
   }
+  
+  .all-quick-actions > .ant-col {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
 }
 
 @media (max-width: 576px) {
   .dashboard-container {
-    padding: 12px;
+    padding: 8px;
+    height: 100vh;
+    overflow: auto;
   }
   
   .dashboard-header {
-    padding: 12px 16px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
   }
   
   .dashboard-title {
-    font-size: 20px !important;
+    font-size: 18px !important;
   }
   
   .dashboard-subtitle {
-    font-size: 13px !important;
+    font-size: 12px !important;
+  }
+  
+  .stats-grid {
+    margin-bottom: 8px;
   }
   
   .stats-row {
-    gap: 6px;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .all-stats-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
   
   .stat-card-content {
-    padding: 10px;
+    padding: 6px;
   }
   
   .stat-icon {
-    font-size: 18px;
-    width: 36px;
-    height: 36px;
-    margin-right: 8px;
+    font-size: 12px;
+    margin-right: 3px;
   }
   
   .stat-value {
-    font-size: 16px;
-  }
-  
-  .stat-title {
-    font-size: 11px;
-  }
-  
-  .quick-actions-row {
-    gap: 6px;
-  }
-  
-  .quick-action-col {
-    min-width: 90px;
-    max-width: none;
-    width: calc(50% - 3px);
-  }
-  
-  .quick-action-item {
-    padding: 10px;
-  }
-  
-  .action-icon {
-    font-size: 16px;
-    width: 32px;
-    height: 32px;
-    margin-right: 8px;
-  }
-  
-  .action-title {
     font-size: 12px;
   }
   
+  .stat-title {
+    font-size: 8px;
+  }
+  
+  .dashboard-content-row {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .all-quick-actions {
+    gap: 4px;
+  }
+  
+  .all-quick-actions > .ant-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .quick-action-item {
+    padding: 8px;
+    min-height: 50px;
+    margin-bottom: 4px;
+  }
+  
+  .action-icon {
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    margin-right: 4px;
+  }
+  
+  .action-title {
+    font-size: 11px;
+    margin-bottom: 1px;
+  }
+  
   .action-desc {
-    font-size: 10px;
+    font-size: 9px;
   }
   
   .enhanced-progress-card .ant-card-body,
   .enhanced-quick-actions-card .ant-card-body {
-    padding: 16px;
+    padding: 10px;
+  }
+  
+  .progress-grid {
+    gap: 8px;
   }
 }
 
 
 
 /* 滚动条样式 */
-.quick-actions-scroll-container::-webkit-scrollbar,
-.stats-grid::-webkit-scrollbar {
+.quick-actions-scroll-container::-webkit-scrollbar {
   height: 4px;
 }
 
-.quick-actions-scroll-container::-webkit-scrollbar-track,
-.stats-grid::-webkit-scrollbar-track {
+.quick-actions-scroll-container::-webkit-scrollbar-track {
   background: #f5f5f5;
   border-radius: 2px;
 }
 
-.quick-actions-scroll-container::-webkit-scrollbar-thumb,
-.stats-grid::-webkit-scrollbar-thumb {
+.quick-actions-scroll-container::-webkit-scrollbar-thumb {
   background: #d9d9d9;
   border-radius: 2px;
 }
 
-.quick-actions-scroll-container::-webkit-scrollbar-thumb:hover,
-.stats-grid::-webkit-scrollbar-thumb:hover {
+.quick-actions-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #bfbfbf;
+}
+
+/* 隐藏统计区域滚动条 */
+.stats-grid::-webkit-scrollbar {
+  height: 0;
+  display: none;
+}
+
+/* 确保快速入口区域完整显示 */
+.dashboard-container {
+  padding-bottom: 20px;
 }

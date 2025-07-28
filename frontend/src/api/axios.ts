@@ -32,8 +32,8 @@ instance.interceptors.response.use(
     // 检查响应数据格式
     const data = response.data;
     
-    // 如果响应已经是标准格式，直接返回
-    if (data && (data.success !== undefined || data.data !== undefined)) {
+    // 如果响应已经是标准格式（包含success字段），直接返回
+    if (data && typeof data === 'object' && 'success' in data) {
       return data;
     }
     

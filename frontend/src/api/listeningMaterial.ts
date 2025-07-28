@@ -352,12 +352,33 @@ export const batchDeleteListeningMaterials = async (ids: string[]): Promise<Stan
 
 // 获取听力资料总数
 export const countListeningMaterials = async (): Promise<StandardApiResponse<number>> => {
-  const response = await axios.get(`${BASE_URL}/listening-materials/count`);
-  return {
-    success: response.status >= 200 && response.status < 300,
-    message: response.statusText,
-    data: response.data
-  };
+  try {
+    const response = await axios.get(`${BASE_URL}/listening-materials/count`);
+    
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<number>;
+    }
+    
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取听力资料总数成功',
+      data: response || 0
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<number>;
+    }
+    
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '获取听力资料总数失败',
+      data: 0
+    };
+  }
 };
 
 // 如果后端没有直接提供计数接口，可以通过获取所有资料来计算总数

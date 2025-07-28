@@ -29,12 +29,22 @@ export interface WritingTopicQuery {
 export const getWritingTopics = async (params: WritingTopicQuery): Promise<StandardApiResponse<WritingTopic[]>> => {
   try {
     const response = await axios.get(BASE_URL, { params });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<WritingTopic[]>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
-      data: response.data
+      success: true,
+      message: '获取写作主题列表成功',
+      data: response || []
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<WritingTopic[]>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '获取写作主题列表失败',
@@ -47,12 +57,22 @@ export const getWritingTopics = async (params: WritingTopicQuery): Promise<Stand
 export const countWritingTopics = async (params: WritingTopicQuery): Promise<StandardApiResponse<number>> => {
   try {
     const response = await axios.get(`${BASE_URL}/count`, { params });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<number>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
-      data: response.data
+      success: true,
+      message: '获取写作主题总数成功',
+      data: response || 0
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<number>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '获取写作主题总数失败',
@@ -65,12 +85,22 @@ export const countWritingTopics = async (params: WritingTopicQuery): Promise<Sta
 export const getWritingTopicById = async (id: string | number): Promise<StandardApiResponse<WritingTopic>> => {
   try {
     const response = await axios.get(`${BASE_URL}/${id}`);
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
-      data: response.data
+      success: true,
+      message: '获取写作主题详情成功',
+      data: response || null
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '获取写作主题详情失败',
@@ -83,12 +113,22 @@ export const getWritingTopicById = async (id: string | number): Promise<Standard
 export const createWritingTopic = async (data: Partial<WritingTopic>): Promise<StandardApiResponse<WritingTopic>> => {
   try {
     const response = await axios.post(BASE_URL, data);
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
-      data: response.data
+      success: true,
+      message: '创建写作主题成功',
+      data: response || null
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '创建写作主题失败',
@@ -101,12 +141,22 @@ export const createWritingTopic = async (data: Partial<WritingTopic>): Promise<S
 export const updateWritingTopic = async (id: number, data: Partial<WritingTopic>): Promise<StandardApiResponse<WritingTopic>> => {
   try {
     const response = await axios.put(`${BASE_URL}/${id}`, data);
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
-      data: response.data
+      success: true,
+      message: '更新写作主题成功',
+      data: response || null
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<WritingTopic>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '更新写作主题失败',
@@ -119,12 +169,22 @@ export const updateWritingTopic = async (id: number, data: Partial<WritingTopic>
 export const deleteWritingTopic = async (id: number): Promise<StandardApiResponse<boolean>> => {
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<boolean>;
+    }
+    // 否则包装为标准格式
     return {
-      success: response.status >= 200 && response.status < 300,
-      message: response.statusText,
+      success: true,
+      message: '删除写作主题成功',
       data: true
     };
   } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<boolean>;
+    }
+    // 否则包装为标准格式
     return {
       success: false,
       message: error.response?.data?.message || error.message || '删除写作主题失败',
@@ -134,6 +194,29 @@ export const deleteWritingTopic = async (id: number): Promise<StandardApiRespons
 };
 
 // 批量删除写作主题
-export const batchDeleteWritingTopics = (ids: (string | number)[]): Promise<StandardApiResponse<boolean>> => {
-  return axios.delete(BASE_URL, { data: { ids } });
+export const batchDeleteWritingTopics = async (ids: (string | number)[]): Promise<StandardApiResponse<boolean>> => {
+  try {
+    const response = await axios.delete(BASE_URL, { data: { ids } });
+    // 检查响应是否已经是标准格式
+    if (typeof response === 'object' && 'success' in response) {
+      return response as StandardApiResponse<boolean>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '批量删除写作主题成功',
+      data: true
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<boolean>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message || '批量删除写作主题失败',
+      data: false
+    };
+  }
 };
