@@ -9,14 +9,14 @@ export const getAllSentences = async (): Promise<StandardApiResponse<Sentence[]>
   try {
     const response = await axios.get<Sentence[]>(`${BASE_URL}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence[]>;
-    }
+    // if (typeof response.data === 'object' && 'success' in response.data) {
+    //   return response.data as StandardApiResponse<Sentence[]>;
+    // }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取所有句子成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -37,14 +37,14 @@ export const getSentenceById = async (id: string): Promise<StandardApiResponse<S
   try {
     const response = await axios.get<Sentence>(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence>;
-    }
+    // if (typeof response.data === 'object' && 'success' in response.data) {
+    //   return response.data as StandardApiResponse<Sentence>;
+    // }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取句子成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -67,14 +67,14 @@ export const getSentencesByEnglishContent = async (content: string): Promise<Sta
       params: { content }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<Sentence[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '根据英文内容查询句子成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -97,14 +97,14 @@ export const getSentencesByChineseMeaning = async (meaning: string): Promise<Sta
       params: { meaning }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<Sentence[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '根据中文意思查询句子成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -120,19 +120,24 @@ export const getSentencesByChineseMeaning = async (meaning: string): Promise<Sta
   }
 };
 
-// 创建句子
-export const createSentence = async (sentence: Omit<Sentence, 'id'>): Promise<StandardApiResponse<Sentence>> => {
+/**
+ * 创建句子
+ * 
+ * @param sentence 句子数据
+ * @returns 创建结果
+ */
+export const createSentence = async (sentence: Omit<Sentence, 'id' | 'createdAt' | 'updatedAt'>): Promise<StandardApiResponse<Sentence>> => {
   try {
-    const response = await axios.post<Sentence>(`${BASE_URL}`, sentence);
+    const response = await axios.post<Sentence>('/api/sentences', sentence);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<Sentence>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '创建句子成功',
-      data: response || null
+      data: response.data
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -143,24 +148,31 @@ export const createSentence = async (sentence: Omit<Sentence, 'id'>): Promise<St
     return {
       success: false,
       message: error.message || '创建句子失败',
-      data: null
+      data: null as any
     };
   }
 };
 
 // 更新句子
+/**
+ * 更新句子
+ * 
+ * @param id 句子ID
+ * @param sentence 更新的句子数据
+ * @returns 更新结果
+ */
 export const updateSentence = async (id: string, sentence: Partial<Sentence>): Promise<StandardApiResponse<Sentence>> => {
   try {
-    const response = await axios.put<Sentence>(`${BASE_URL}/${id}`, sentence);
+    const response = await axios.put<Sentence>(`/api/sentences/${id}`, sentence);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<Sentence>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<Sentence>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '更新句子成功',
-      data: response || null
+      data: response.data
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -171,7 +183,7 @@ export const updateSentence = async (id: string, sentence: Partial<Sentence>): P
     return {
       success: false,
       message: error.message || '更新句子失败',
-      data: null
+      data: null as any
     };
   }
 };
@@ -181,8 +193,8 @@ export const deleteSentence = async (id: string): Promise<StandardApiResponse<vo
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
@@ -209,8 +221,8 @@ export const batchDeleteSentences = async (ids: string[]): Promise<StandardApiRe
   try {
     const response = await axios.delete(`${BASE_URL}/batch`, { data: { ids } });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
@@ -237,8 +249,8 @@ export const addUnfamiliarWordToSentence = async (sentenceId: string, wordId: st
   try {
     const response = await axios.post(`${BASE_URL}/${sentenceId}/unfamiliar-words/${wordId}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
@@ -265,8 +277,8 @@ export const removeUnfamiliarWordFromSentence = async (sentenceId: string, wordI
   try {
     const response = await axios.delete(`${BASE_URL}/${sentenceId}/unfamiliar-words/${wordId}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {

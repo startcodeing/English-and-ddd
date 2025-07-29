@@ -29,7 +29,7 @@ const SentencePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllSentences();
-      setSentences(response.data);
+      setSentences(response.data || []);
     } catch (error) {
       message.error('获取句子列表失败');
       console.error('获取句子列表失败:', error);

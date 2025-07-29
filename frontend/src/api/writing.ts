@@ -9,14 +9,14 @@ export const createWritingExercise = async (exercise: Omit<WritingExercise, 'id'
   try {
     const response = await axios.post<WritingExercise>(`${BASE_URL}/exercise`, exercise);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingExercise>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<WritingExercise>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '创建写作练习成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -37,14 +37,14 @@ export const getWritingExerciseById = async (id: string): Promise<StandardApiRes
   try {
     const response = await axios.get<WritingExercise>(`${BASE_URL}/exercise/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingExercise>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<WritingExercise>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作练习成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -65,14 +65,14 @@ export const getUserWritingExercises = async (): Promise<StandardApiResponse<Wri
   try {
     const response = await axios.get<WritingExercise[]>(`${BASE_URL}/exercise/user`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingExercise[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingExercise[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取用户写作练习列表成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -89,18 +89,19 @@ export const getUserWritingExercises = async (): Promise<StandardApiResponse<Wri
 };
 
 // 更新写作练习
+// 更新写作练习
 export const updateWritingExercise = async (id: string, exercise: Partial<WritingExercise>): Promise<StandardApiResponse<WritingExercise>> => {
   try {
     const response = await axios.put<WritingExercise>(`${BASE_URL}/exercise/${id}`, exercise);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingExercise>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<WritingExercise>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '更新写作练习成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -121,8 +122,8 @@ export const deleteWritingExercise = async (id: string): Promise<StandardApiResp
   try {
     const response = await axios.delete(`${BASE_URL}/exercise/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
@@ -149,14 +150,14 @@ export const submitWritingFeedback = async (exerciseId: string, feedback: Omit<W
   try {
     const response = await axios.post<WritingFeedback>(`${BASE_URL}/exercise/${exerciseId}/feedback`, feedback);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingFeedback>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<WritingFeedback>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '提交写作反馈成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -177,14 +178,14 @@ export const getWritingFeedbackById = async (id: string): Promise<StandardApiRes
   try {
     const response = await axios.get<WritingFeedback>(`${BASE_URL}/feedback/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingFeedback>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
+      return response.data as StandardApiResponse<WritingFeedback>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作反馈成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -205,14 +206,14 @@ export const getWritingFeedbacksByExerciseId = async (exerciseId: string): Promi
   try {
     const response = await axios.get<WritingFeedback[]>(`${BASE_URL}/exercise/${exerciseId}/feedbacks`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingFeedback[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingFeedback[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作练习反馈列表成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -233,14 +234,14 @@ export const getWritingStatistics = async (): Promise<StandardApiResponse<any>> 
   try {
     const response = await axios.get(`${BASE_URL}/statistics`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<any>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<any>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作统计数据成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -252,6 +253,43 @@ export const getWritingStatistics = async (): Promise<StandardApiResponse<any>> 
       success: false,
       message: error.message || '获取写作统计数据失败',
       data: null
+    };
+  }
+};
+
+/**
+ * 获取写作练习列表
+ * 
+ * @param page 页码
+ * @param size 每页大小
+ * @param topicId 主题ID（可选）
+ * @returns 写作练习列表
+ */
+export const getWritingExercises = async (page: number = 0, size: number = 10, topicId?: string): Promise<StandardApiResponse<WritingExercise[]>> => {
+  try {
+    const response = await axios.get<WritingExercise[]>('/api/writing/exercises', {
+      params: { page, size, topicId }
+    });
+    // 检查响应是否已经是标准格式
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingExercise[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取写作练习列表成功',
+      data: response.data || []
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as StandardApiResponse<WritingExercise[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: error.message || '获取写作练习列表失败',
+      data: []
     };
   }
 };

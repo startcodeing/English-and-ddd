@@ -31,11 +31,15 @@ const UserActivityStats: React.FC<UserActivityStatsProps> = ({ userId }) => {
       const systemUserId = "system";
       
       // 并行获取各类统计数据
-      const [wordData, sentenceData, articleData] = await Promise.all([
+      const [wordResponse, sentenceResponse, articleResponse] = await Promise.all([
         countUserActivitiesByType(systemUserId, 'WORD_CREATED'),
         countUserActivitiesByType(systemUserId, 'SENTENCE_CREATED'),
         countUserActivitiesByType(systemUserId, 'ARTICLE_CREATED')
       ]);
+      
+      const wordData = wordResponse.data || 0;
+      const sentenceData = sentenceResponse.data || 0;
+      const articleData = articleResponse.data || 0;
       
       setWordCount(wordData);
       setSentenceCount(sentenceData);

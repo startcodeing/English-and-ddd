@@ -24,8 +24,8 @@ const UserRecentActivity: React.FC = () => {
     try {
       setLoading(true);
       // 因为当前系统中的用户模块还未建立，所以使用默认的system作为userId
-      const data = await getUserRecentActivities("system", 0, 10);
-      setActivities(data);
+      const response = await getUserRecentActivities("system", 0, 10);
+      setActivities(response.data || []);
       setLoading(false);
     } catch (error) {
       console.error('获取最近活动失败:', error);

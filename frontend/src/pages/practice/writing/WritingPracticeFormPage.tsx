@@ -69,7 +69,7 @@ const WritingPracticeFormPage: React.FC = () => {
         // 如果是草稿状态，获取对应的主题信息
         if (practice.status === 'draft') {
           const topicResponse = await getWritingTopics({});
-          if (topicResponse.success) {
+          if (topicResponse.success && topicResponse.data) {
             const selectedTopic = topicResponse.data.find(topic => topic.id === practice.topicId);
             if (selectedTopic) {
               setSelectedTopic(selectedTopic);
@@ -260,7 +260,7 @@ const WritingPracticeFormPage: React.FC = () => {
 
       if (response.success) {
         message.success('保存成功');
-        if (!isEdit) {
+        if (!isEdit && response.data) {
           // 如果是新建，保存后跳转到编辑页面
           navigate(`/practice/writing/edit/${response.data.id}`);
         }

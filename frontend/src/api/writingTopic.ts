@@ -30,14 +30,14 @@ export const getWritingTopics = async (params: WritingTopicQuery): Promise<Stand
   try {
     const response = await axios.get(BASE_URL, { params });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingTopic[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingTopic[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作主题列表成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -58,14 +58,14 @@ export const countWritingTopics = async (params: WritingTopicQuery): Promise<Sta
   try {
     const response = await axios.get(`${BASE_URL}/count`, { params });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<number>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<number>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作主题总数成功',
-      data: response || 0
+      data: response.data || 0
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -86,14 +86,14 @@ export const getWritingTopicById = async (id: string | number): Promise<Standard
   try {
     const response = await axios.get(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingTopic>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作主题详情成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -114,14 +114,14 @@ export const createWritingTopic = async (data: Partial<WritingTopic>): Promise<S
   try {
     const response = await axios.post(BASE_URL, data);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingTopic>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '创建写作主题成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -142,14 +142,14 @@ export const updateWritingTopic = async (id: number, data: Partial<WritingTopic>
   try {
     const response = await axios.put(`${BASE_URL}/${id}`, data);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingTopic>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '更新写作主题成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -170,8 +170,8 @@ export const deleteWritingTopic = async (id: number): Promise<StandardApiRespons
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<boolean>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {
@@ -198,8 +198,8 @@ export const batchDeleteWritingTopics = async (ids: (string | number)[]): Promis
   try {
     const response = await axios.delete(BASE_URL, { data: { ids } });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<boolean>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {

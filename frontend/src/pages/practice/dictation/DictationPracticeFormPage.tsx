@@ -9,7 +9,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 interface ListeningMaterial {
-  id: number;
+  id: string;
   title: string;
   difficulty: string;
   transcript: string;
@@ -68,7 +68,7 @@ const DictationPracticeFormPage: React.FC = () => {
         });
         
         // 设置选中的听力资料
-        const material = materials.find(m => m.id === practice.listenMaterialId);
+        const material = materials.find(m => m.id === practice.listenMaterialId.toString());
         if (material) {
           setSelectedMaterial(material);
         }
@@ -98,7 +98,7 @@ const DictationPracticeFormPage: React.FC = () => {
   }, [materials, isEdit, id]);
 
   // 处理听力资料选择
-  const handleMaterialChange = async (materialId: number) => {
+  const handleMaterialChange = async (materialId: string | number) => {
     try {
       const response = await getListeningMaterialById(materialId.toString());
       if (response.success && response.data) {

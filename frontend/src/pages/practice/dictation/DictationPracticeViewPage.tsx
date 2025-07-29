@@ -21,7 +21,7 @@ interface DictationPractice {
 }
 
 interface ListeningMaterial {
-  id: number;
+  id: string;
   title: string;
   difficulty: string;
   transcript: string;
@@ -73,7 +73,7 @@ const DictationPracticeViewPage: React.FC = () => {
   };
 
   // 获取听力资料详情
-  const fetchMaterialDetail = async (materialId: number) => {
+  const fetchMaterialDetail = async (materialId: string | number) => {
     try {
       const response = await getListeningMaterialById(materialId.toString());
       if (response.success && response.data) {

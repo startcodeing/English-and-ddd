@@ -35,7 +35,7 @@ const WritingTopicFormPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getWritingTopicById(id as string);
-      if (response.success) {
+      if (response.success && response.data) {
         const topicData = response.data;
         form.setFieldsValue({
           source: topicData.source,
@@ -82,7 +82,7 @@ const WritingTopicFormPage: React.FC = () => {
       let response;
       if (isEdit) {
         // 更新
-        response = await updateWritingTopic(id as string, submitData);
+        response = await updateWritingTopic(Number(id), submitData);
       } else {
         // 创建
         response = await createWritingTopic(submitData);

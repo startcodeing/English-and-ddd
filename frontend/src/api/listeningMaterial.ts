@@ -18,8 +18,8 @@ export const getAllListeningMaterials = async (): Promise<StandardApiResponse<Li
     const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -56,8 +56,8 @@ export const getListeningMaterialsByPage = async (page: number, size: number): P
     const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -92,8 +92,8 @@ export const getListeningMaterialById = async (id: string): Promise<StandardApiR
     const adaptedData = ListeningMaterialAdapter.adapt(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -130,8 +130,8 @@ export const getListeningMaterialsByTitle = async (title: string): Promise<Stand
     const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -166,8 +166,8 @@ export const getListeningMaterialsByDifficultyLevel = async (difficulty: Listeni
     const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -212,8 +212,8 @@ export const createListeningMaterial = async (data: CreateListeningMaterialReque
     const adaptedData = ListeningMaterialAdapter.adapt(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -261,8 +261,8 @@ export const updateListeningMaterial = async (id: string, data: UpdateListeningM
     const adaptedData = ListeningMaterialAdapter.adapt(response.data);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      const standardResponse = response as StandardApiResponse<ListeningMaterial>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      const standardResponse = response.data as StandardApiResponse<ListeningMaterial>;
       standardResponse.data = adaptedData;
       return standardResponse;
     }
@@ -294,8 +294,8 @@ export const deleteListeningMaterial = async (id: string): Promise<StandardApiRe
     const response = await axios.delete(`${BASE_URL}/listening-materials/${id}`);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     
     // 否则包装为标准格式
@@ -325,8 +325,8 @@ export const batchDeleteListeningMaterials = async (ids: string[]): Promise<Stan
     const response = await axios.delete(`${BASE_URL}/listening-materials/batch`, { data: { ids } });
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<void>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<void>;
     }
     
     // 否则包装为标准格式
@@ -356,15 +356,15 @@ export const countListeningMaterials = async (): Promise<StandardApiResponse<num
     const response = await axios.get(`${BASE_URL}/listening-materials/count`);
     
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<number>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<number>;
     }
     
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取听力资料总数成功',
-      data: response || 0
+      data: response.data || 0
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式

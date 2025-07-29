@@ -6,6 +6,7 @@ import { RootState } from '../../store';
 import dayjs from '../../utils/dayjs';
 import type { Dayjs } from 'dayjs';
 import { UserActivity, getUserRecentActivities, getUserActivitiesByType, getUserActivitiesByTimeRange } from '../../api/userActivityApi';
+import { StandardApiResponse } from '../../types/response';
 import UserActivityIcon from '../../components/UserActivityIcon';
 import UserActivityModuleColor from '../../components/UserActivityModuleColor';
 import UserActivityTypeTag from '../../components/UserActivityTypeTag';
@@ -41,24 +42,26 @@ const UserActivityPage: React.FC = () => {
       setLoading(true);
       // 因为当前系统中的用户模块还未建立，所以使用默认的system作为userId
       const userId = "system";
-      let data: UserActivity[] = [];
+      let response: StandardApiResponse<UserActivity[]>;
       
       // 根据筛选条件获取数据
       if (dateRange && dateRange[0] && dateRange[1] && dateRange[0].isValid() && dateRange[1].isValid()) {
         // 如果有日期范围，优先按日期范围查询
-        const startTime = dateRange[0].valueOf();
-        const endTime = dateRange[1].valueOf();
-        data = await getUserActivitiesByTimeRange(userId, startTime, endTime, page, 20);
+        const startTime = dateRange[0].format('YYYY-MM-DD');
+        const endTime = dateRange[1].format('YYYY-MM-DD');
+        response = await getUserActivitiesByTimeRange(userId, startTime, endTime, page, 20);
       } else if (activityType) {
         // 如果有活动类型筛选
-        data = await getUserActivitiesByType(userId, activityType, page, 20);
+        response = await getUserActivitiesByType(userId, activityType, page, 20);
       } else if (activeTab !== 'all') {
         // 如果选择了特定标签页
-        data = await getUserActivitiesByType(userId, activeTab, page, 20);
+        response = await getUserActivitiesByType(userId, activeTab, page, 20);
       } else {
         // 默认获取最近活动
-        data = await getUserRecentActivities(userId, page, 20);
+        response = await getUserRecentActivities(userId, page, 20);
       }
+      
+      const data = response.data || [];
         
       if (data.length < 20) {
         setHasMore(false);

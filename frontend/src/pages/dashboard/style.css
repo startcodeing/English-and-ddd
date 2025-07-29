@@ -44,16 +44,17 @@
 
 /* 统计卡片网格样式 */
 .stats-grid {
-  margin-bottom: 16px;
+  margin-bottom: 0;
   width: 100%;
   overflow-x: hidden;
 }
 
 .stats-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 0;
   justify-content: space-between;
+  padding: 4px 0;
 }
 
 .all-stats-row {
@@ -70,37 +71,41 @@
   margin-bottom: 0;
 }
 .enhanced-stat-card {
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   width: 100%;
   flex: 1;
   padding: 0;
-  margin: 0 4px;
+  margin: 0 6px;
   overflow: hidden;
+  min-height: 80px;
 }
 
 .enhanced-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background-color: #f9f9f9;
 }
 
 .stat-card-content {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 8px;
+  padding: 12px 16px;
   overflow: hidden;
 }
 
 .stat-icon {
-  font-size: 12px;
-  margin-right: 3px;
+  font-size: 20px;
+  margin-right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  width: 36px;
+  height: 36px;
 }
 
 .stat-info {
@@ -110,20 +115,21 @@
 }
 
 .stat-value {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.1;
-  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 2px;
 }
 
 .stat-title {
-  font-size: 8px;
-  color: #8c8c8c;
-  line-height: 1;
+  font-size: 12px;
+  color: #595959;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  font-weight: 500;
 }
 
 /* 快速入口样式 */
@@ -132,7 +138,7 @@
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   overflow: visible;
-  height: 100%;
+  height: auto;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -348,11 +354,21 @@
 /* 响应式调整 */
 @media (max-width: 1200px) {
   .stats-row {
-    gap: 8px;
+    gap: 10px;
   }
   
   .all-quick-actions {
-    gap: 8px;
+    gap: 10px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
+  
+  .stat-icon {
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
   }
 }
 
@@ -394,9 +410,26 @@
   }
   
   .stat-icon {
-    font-size: 20px;
-    width: 40px;
-    height: 40px;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    margin-right: 6px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
+  
+  .stat-title {
+    font-size: 11px;
+  }
+  
+  .enhanced-stat-card {
+    min-height: 75px;
+  }
+  
+  .stats-row {
+    gap: 8px;
   }
   
   .stat-value {
@@ -454,7 +487,7 @@
   }
   
   .stats-row {
-    gap: 4px;
+    gap: 6px;
     margin-bottom: 8px;
   }
   
@@ -465,20 +498,28 @@
   }
   
   .stat-card-content {
-    padding: 6px;
+    padding: 8px 10px;
   }
   
   .stat-icon {
-    font-size: 12px;
-    margin-right: 3px;
+    font-size: 16px;
+    margin-right: 6px;
+    width: 28px;
+    height: 28px;
   }
   
   .stat-value {
-    font-size: 12px;
+    font-size: 15px;
+    margin-bottom: 1px;
   }
   
   .stat-title {
-    font-size: 8px;
+    font-size: 10px;
+  }
+  
+  .enhanced-stat-card {
+    min-height: 70px;
+    margin: 0 3px;
   }
   
   .dashboard-content-row {

@@ -28,14 +28,14 @@ export const createWritingPractice = async (data: Partial<WritingPractice>): Pro
   try {
     const response = await axios.post(BASE_URL, data);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingPractice>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingPractice>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '创建写作练习成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -56,14 +56,14 @@ export const getWritingPracticeById = async (id: string | number): Promise<Stand
   try {
     const response = await axios.get(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingPractice>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingPractice>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作练习详情成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -85,14 +85,14 @@ export const getWritingPractices = async (params: WritingPracticeQuery): Promise
     // 修改为与听写练习相同的API路径格式
     const response = await axios.get(`${BASE_URL}/search`, { params });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingPractice[]>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingPractice[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作练习列表成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -114,14 +114,14 @@ export const countWritingPractices = async (params: WritingPracticeQuery): Promi
     // 修改为与听写练习相同的API路径格式
     const response = await axios.get(`${BASE_URL}/count/search`, { params });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<number>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<number>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取写作练习总数成功',
-      data: response || 0
+      data: response.data || 0
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -142,14 +142,14 @@ export const updateWritingPractice = async (id: string | number, data: Partial<W
   try {
     const response = await axios.put(`${BASE_URL}/${id}`, data);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<WritingPractice>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<WritingPractice>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '更新写作练习成功',
-      data: response || null
+      data: response.data || null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -170,8 +170,8 @@ export const deleteWritingPractice = async (id: string | number): Promise<Standa
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<boolean>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {
@@ -198,8 +198,8 @@ export const batchDeleteWritingPractices = async (ids: (string | number)[]): Pro
   try {
     const response = await axios.delete(BASE_URL, { data: { ids } });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<boolean>;
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {

@@ -30,14 +30,14 @@ export const getUserRecentActivities = async (userId: string, page: number = 0, 
       params: { userId, page, size }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<UserActivity[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<UserActivity[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取用户最近活动成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -73,14 +73,14 @@ export const getUserActivitiesByType = async (
       params: { userId, activityType, page, size }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<UserActivity[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<UserActivity[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '获取用户特定类型活动成功',
-      data: response || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -100,32 +100,32 @@ export const getUserActivitiesByType = async (
  * 获取用户在特定时间范围内的活动
  * 
  * @param userId 用户ID
- * @param startTime 开始时间（毫秒时间戳）
- * @param endTime 结束时间（毫秒时间戳）
+ * @param startDate 开始日期
+ * @param endDate 结束日期
  * @param page 页码
  * @param size 每页大小
  * @returns 用户活动列表
  */
 export const getUserActivitiesByTimeRange = async (
   userId: string, 
-  startTime: number, 
-  endTime: number, 
+  startDate: string, 
+  endDate: string, 
   page: number = 0, 
   size: number = 10
 ): Promise<StandardApiResponse<UserActivity[]>> => {
   try {
     const response = await axios.get<UserActivity[]>(`/api/activities/by-time-range`, {
-      params: { userId, startTime, endTime, page, size }
+      params: { userId, startDate, endDate, page, size }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<UserActivity[]>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<UserActivity[]>;
     }
     // 否则包装为标准格式
     return {
       success: true,
-      message: '获取用户时间范围内活动成功',
-      data: response || []
+      message: '获取用户时间范围活动成功',
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -135,7 +135,7 @@ export const getUserActivitiesByTimeRange = async (
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取用户时间范围内活动失败',
+      message: error.message || '获取用户时间范围活动失败',
       data: []
     };
   }
@@ -154,14 +154,14 @@ export const countUserActivitiesByType = async (userId: string, activityType: st
       params: { userId, activityType }
     });
     // 检查响应是否已经是标准格式
-    if (typeof response === 'object' && 'success' in response) {
-      return response as StandardApiResponse<number>;
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+      return response.data as StandardApiResponse<number>;
     }
     // 否则包装为标准格式
     return {
       success: true,
-      message: '统计用户特定类型活动数量成功',
-      data: response || 0
+      message: '获取用户活动数量成功',
+      data: response.data || 0
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -171,7 +171,7 @@ export const countUserActivitiesByType = async (userId: string, activityType: st
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '统计用户特定类型活动数量失败',
+      message: error.message || '获取用户活动数量失败',
       data: 0
     };
   }

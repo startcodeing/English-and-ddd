@@ -4,6 +4,6 @@
 export interface StandardApiResponse<T = any> {
   success: boolean;
   message: string;
-  data: T;
+  data: T | null;
   errorCode?: string | null;
 }

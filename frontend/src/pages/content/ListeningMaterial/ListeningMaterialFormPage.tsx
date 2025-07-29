@@ -42,17 +42,22 @@ const ListeningMaterialFormPage: React.FC = () => {
       const response = await getListeningMaterialById(id);
       const data = response.data;
       
-      const transcriptContent = data.originContent || '';
-      
-      form.setFieldsValue({
-        title: data.title,
-        transcript: transcriptContent, // 后端返回的是originContent字段
-        difficulty: data.difficulty,
-      });
-      
-      setTranscriptValue(transcriptContent);
-      setCurrentAudioUrl(data.audioUrl);
-      setCurrentFileName(data.originFileName || '');
+      if (data) {
+        const transcriptContent = data.originContent || '';
+        
+        form.setFieldsValue({
+          title: data.title,
+          transcript: transcriptContent, // 后端返回的是originContent字段
+          difficulty: data.difficulty,
+        });
+        
+        setTranscriptValue(transcriptContent);
+        setCurrentAudioUrl(data.audioUrl);
+        setCurrentFileName(data.originFileName || '');
+      } else {
+        message.error('听力资料不存在');
+        navigate('/content/listening-materials/page');
+      }
     } catch (error) {
       message.error('获取听力资料失败');
     } finally {
