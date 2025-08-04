@@ -1,3 +1,96 @@
+/* 听写练习页面样式 */
+.dictation-practice-page {
+  padding: 24px;
+  height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dictation-practice-page .dictation-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.dictation-practice-page .dictation-page-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.dictation-practice-page .dictation-page-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* 表格包装器样式 */
+.dictation-practice-page .ant-table-wrapper {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.dictation-practice-page .ant-table-wrapper .ant-spin-nested-loading,
+.dictation-practice-page .ant-table-wrapper .ant-spin-container,
+.dictation-practice-page .ant-table-wrapper .ant-table,
+.dictation-practice-page .ant-table-wrapper .ant-table-container {
+  height: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dictation-practice-page .ant-table-wrapper .ant-table-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.dictation-practice-page .ant-table-tbody > tr > td {
+  padding: 10px 16px;
+  vertical-align: top;
+}
+
+.dictation-practice-page .ant-table-thead > tr > th {
+  padding: 12px 16px;
+}
+
+/* 优化表格内容区域，确保不出现滚动条 */
+.dictation-practice-page .ant-table-content {
+  height: auto;
+  max-height: calc(100vh - 250px);
+  overflow: hidden;
+}
+
+/* 批量操作区域样式 */
+.dictation-practice-page .batch-actions-area {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  background-color: #f5f5f5;
+  padding: 6px 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.dictation-practice-page .selected-count {
+  margin-right: 16px;
+  font-size: 14px;
+}
+
+.dictation-practice-page .selected-count .count-number {
+  font-weight: bold;
+  color: #1890ff;
+  margin: 0 4px;
+}
+
+/* 原有样式保留 */
 .dictation-container {
   padding: 16px;
   height: 100%;
@@ -46,33 +139,19 @@
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .dictation-container {
-    padding: 12px;
+  .dictation-practice-page {
+    padding: 16px;
   }
   
-  .menu-title h4 {
-    font-size: 16px;
+  .dictation-practice-page .ant-table-wrapper {
+    margin-top: 16px;
   }
   
-  .developing-message {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .dictation-container {
-    padding: 8px;
+  .dictation-practice-page .ant-table-tbody > tr > td {
+    padding: 8px 12px;
   }
   
-  .menu-title {
-    padding: 6px 12px;
-  }
-  
-  .menu-title h4 {
-    font-size: 14px;
-  }
-  
-  .developing-message {
-    font-size: 18px;
+  .dictation-practice-page .ant-table-thead > tr > th {
+    padding: 10px 12px;
   }
 }

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Button, Card, Col, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getDictationPractices, countDictationPractices, deleteDictationPractice, batchDeleteDictationPractices, DictationPractice, DictationPracticeQuery } from '../../../api/dictationPractice';
 import { getListeningMaterialById } from '../../../api/listeningMaterial';
+import './style.css';
 
 const { confirm } = Modal;
 const { Text } = Typography;
@@ -306,97 +307,116 @@ const DictationPracticeListPage: React.FC = () => {
   };
 
   return (
-    <Card title="听写练习管理">
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleSearch}
-        style={{ marginBottom: 16 }}
-      >
-        <Form.Item name="status" label="状态">
-          <Select
-            placeholder="请选择状态"
-            allowClear
-            style={{ width: 120 }}
-            options={[
-              { value: 'draft', label: '草稿' },
-              { value: 'submitted', label: '已提交' },
-              { value: 'scored', label: '已评分' },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item name="listenMaterialId" label="听力资料">
-          <Select
-            placeholder="请选择听力资料"
-            allowClear
-            showSearch
-            style={{ width: 200 }}
-            optionFilterProp="label"
-            options={Object.values(materialsMap).map((material: any) => ({
-              value: material.id,
-              label: material.title,
-            }))}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              搜索
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
-
-      {/* 操作按钮 */}
-      <Row style={{ marginBottom: 16 }}>
-        <Col span={24}>
-          <Space>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/practice/dictation/create')}
-            >
-              新建听写练习
-            </Button>
-            <Button
-              danger
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => handleBatchDelete(selectedRowKeys as number[])}
-            >
-              批量删除
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
-      {/* 数据表格 */}
+    <div className="dictation-practice-page">
+      <div className="dictation-page-header">
+        <h1>听写练习管理</h1>
+        <div className="dictation-page-actions">
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />} 
+            onClick={() => navigate('/practice/dictation/create')}
+          >
+            添加听写练习
+          </Button>
+        </div>
+      </div>
+        
+      <div className="dictation-page-actions" style={{ marginBottom: '16px', flexShrink: 0 }}>
+        <Input
+          placeholder="搜索练习名称"
+          value={searchTitle}
+          onChange={(e) => setSearchTitle(e.target.value)}
+          onPressEnter={searchByTitle}
+          style={{ width: 250, marginRight: 16 }}
+          prefix={<SearchOutlined />}
+        />
+        <Select
+          placeholder="选择难度级别"
+          style={{ width: '150px', marginRight: 16 }}
+          value={selectedDifficulty || undefined}
+          onChange={(value) => {
+            setSelectedDifficulty(value);
+            setTimeout(filterByDifficulty, 0);
+          }}
+          allowClear
+          dropdownMatchSelectWidth={false}
+        >
+          <Option value={DictationDifficultyLevel.EASY}>初级</Option>
+          <Option value={DictationDifficultyLevel.MEDIUM}>中级</Option>
+          <Option value={DictationDifficultyLevel.HARD}>高级</Option>
+        </Select>
+        <Button onClick={loadDictationPractices}>重置</Button>
+        {selectedRowKeys.length > 0 && (
+          <div className="batch-actions-area">
+            <span className="selected-count">
+              已选择 <span className="count-number">{selectedRowKeys.length}</span> 个听写练习
+            </span>
+            <Space>
+              <Button size="small" onClick={() => setSelectedRowKeys([])}>清除选择</Button>
+              <Popconfirm
+                title="确定要删除选中的听写练习吗？"
+                description="删除后将无法恢复，请谨慎操作！"
+                onConfirm={handleBatchDelete}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button 
+                  danger 
+                  size="small"
+                  loading={batchDeleteLoading}
+                  icon={<DeleteOutlined />}
+                >
+                  批量删除
+                </Button>
+              </Popconfirm>
+            </Space>
+          </div>
+        )}
+      </div>
+      
       <Table
-        rowKey="id"
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={practices}
+        dataSource={items}
+        rowKey="id"
         loading={loading}
-        pagination={false}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 个听写练习`,
+          position: ['bottomRight'],
+          onChange: async (page, pageSize) => {
+            try {
+              dispatch(fetchDictationPracticesStart());
+              const response = await getDictationPracticesByPage(page, pageSize);
+              dispatch(fetchDictationPracticesSuccess(response.data));
+            } catch (error: any) {
+              const errorMsg = error.message || '未知错误';
+              const statusCode = error.response?.status || 'N/A';
+              dispatch(fetchDictationPracticesFailure(errorMsg));
+              message.error(`加载听写练习失败: ${errorMsg}，状态码: ${statusCode}`);
+              console.error('Pagination error:', error);
+            }
+          },
+          onShowSizeChange: async (current, size) => {
+            try {
+              dispatch(fetchDictationPracticesStart());
+              const response = await getDictationPracticesByPage(current, size);
+              dispatch(fetchDictationPracticesSuccess(response.data));
+            } catch (error: any) {
+              const errorMsg = error.message || '未知错误';
+              const statusCode = error.response?.status || 'N/A';
+              dispatch(fetchDictationPracticesFailure(errorMsg));
+              message.error(`加载听写练习失败: ${errorMsg}，状态码: ${statusCode}`);
+              console.error('Page size change error:', error);
+            }
+          },
+          style: { marginBottom: 0 }
+        }}
+        scroll={{ x: true }}
       />
-
-      {/* 分页 */}
-      <Row justify="end" style={{ marginTop: 16 }}>
-        <Col>
-          <Pagination
-            current={current}
-            pageSize={pageSize}
-            total={total}
-            showSizeChanger
-            showQuickJumper
-            showTotal={(total) => `共 ${total} 条记录`}
-            onChange={handlePageChange}
-            onShowSizeChange={handlePageChange}
-          />
-        </Col>
-      </Row>
-    </Card>
+    </div>
   );
 };
 
