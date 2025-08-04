@@ -51,7 +51,7 @@ const RecentActivities: React.FC<RecentActivitiesProps> = ({ userId, limit = 5 }
   };
 
   return (
-    <Card title="最近活动" bordered={false} className="activity-card recent-activities-container" size="small" style={{ flex: 1 }}>
+    <Card title="最近活动" variant="borderless" className="activity-card recent-activities-container" size="small" style={{ flex: 1 }}>
       {loading ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
           <Spin />

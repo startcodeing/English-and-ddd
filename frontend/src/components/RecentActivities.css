@@ -4,7 +4,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   background-color: #fff;
   overflow: auto;
-  max-height: 300px;
+  max-height: 400px;
 }
 
 /* 隐藏滚动条 */

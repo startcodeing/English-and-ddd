@@ -423,7 +423,7 @@ const WritingPracticeFormPage: React.FC = () => {
               {/* 主题信息区域 - 当有选中主题时显示 */}
               {selectedTopic && (
                 <Card 
-                  bordered={false} 
+                  variant="borderless" 
                   style={{ 
                     background: 'rgba(255,255,255,0.9)', 
                     borderRadius: 8,

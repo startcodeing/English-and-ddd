@@ -129,7 +129,7 @@ const WordDetailView: React.FC<WordDetailViewProps> = ({ wordDetail }) => {
     console.error('WordDetailView: wordDetail 为 null 或 undefined');
     return (
       <div className="word-detail-view">
-        <Card className="word-card" bordered={false}>
+        <Card className="word-card" variant="borderless">
           <div className="word-header">
             <Title level={3} className="word-spelling">加载失败</Title>
           </div>
@@ -142,7 +142,7 @@ const WordDetailView: React.FC<WordDetailViewProps> = ({ wordDetail }) => {
   return (
     <div className="word-detail-view">
       {/* 单词基本信息 */}
-      <Card className="word-card" bordered={false}>
+      <Card className="word-card" variant="borderless">
         <div className="word-header">
           <Title level={3} className="word-spelling">{wordDetail.spelling || '未知单词'}</Title>
           {wordDetail.phonetic && (
@@ -165,7 +165,7 @@ const WordDetailView: React.FC<WordDetailViewProps> = ({ wordDetail }) => {
         
         {wordDetail.meanings && wordDetail.meanings.length > 0 ? (
           wordDetail.meanings.map((meaning, index) => (
-            <Card key={meaning.id || index} className="meaning-card" bordered={false}>
+            <Card key={meaning.id || index} className="meaning-card" variant="borderless">
               <div className="meaning-header">
                 <Tag color="blue" title={process.env.NODE_ENV === 'development' ? `ID: ${meaning.partOfSpeechId}` : undefined}>
                   {getPartOfSpeechName(meaning.partOfSpeechId)}

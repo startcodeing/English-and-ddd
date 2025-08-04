@@ -18,6 +18,7 @@ const mdParser = new MarkdownIt();
 const WritingTopicListPage: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [detailForm] = Form.useForm();
   
   // 状态管理
   const [topics, setTopics] = useState<WritingTopic[]>([]);
@@ -351,7 +352,7 @@ const WritingTopicListPage: React.FC = () => {
           <div style={{ textAlign: 'center', padding: '20px 0' }}>加载中...</div>
         ) : currentTopic ? (
           <div style={{ padding: '0 8px' }}>
-            <Form layout="vertical">
+            <Form layout="vertical" form={detailForm}>
               <Form.Item label="主题描述">
                 <MdEditor
                   style={{ 
