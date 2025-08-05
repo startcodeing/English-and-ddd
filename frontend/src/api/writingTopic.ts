@@ -166,29 +166,29 @@ export const updateWritingTopic = async (id: number, data: Partial<WritingTopic>
 };
 
 // 删除写作主题
-export const deleteWritingTopic = async (id: number): Promise<StandardApiResponse<boolean>> => {
+export const deleteWritingTopic = async (id: number): Promise<StandardApiResponse<void>> => {
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response.data === 'object' && 'success' in response.data) {
-      return response.data as StandardApiResponse<boolean>;
+    if (typeof response.data === 'object' && "success" in response && response.success) {
+      return response as unknown as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
       success: true,
       message: '删除写作主题成功',
-      data: true
+      data: null
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
     if (error !== null && typeof error === 'object' && 'success' in error) {
-      return error as StandardApiResponse<boolean>;
+      return error as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
       success: false,
       message: error?.response?.data?.message || error?.message || '删除写作主题失败',
-      data: false
+      data: null
     };
   }
 };

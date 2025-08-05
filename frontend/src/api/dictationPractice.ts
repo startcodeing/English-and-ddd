@@ -276,8 +276,8 @@ export const deleteDictationPractice = async (id: number): Promise<StandardApiRe
   try {
     const response = await axios.delete(`${BASE_URL}/${id}`);
     // 检查响应是否已经是标准格式
-    if (typeof response.data === 'object' && 'success' in response.data) {
-      return response.data as StandardApiResponse<void>;
+    if (typeof response.data === 'object' && "success" in response && response.success) {
+      return response as unknown as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
@@ -287,7 +287,7 @@ export const deleteDictationPractice = async (id: number): Promise<StandardApiRe
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && error !== null && 'success' in error) {
+    if (error && typeof error === 'object') {
       return error as StandardApiResponse<void>;
     }
     // 否则包装为标准格式

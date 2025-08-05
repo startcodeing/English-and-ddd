@@ -62,7 +62,7 @@ const AddWordDrawer: React.FC<AddWordDrawerProps> = ({
       3: { text: '困难', color: 'red' }
     };
     
-    const difficulty = difficultyMap[level || 2];
+    const difficulty = difficultyMap[level || 2] || difficultyMap[2];
     return <Tag color={difficulty.color}>{difficulty.text}</Tag>;
   };
 
