@@ -26,6 +26,7 @@ interface SimpleWord {
 const WordPage: React.FC = () => {
   // 状态定义
   const [words, setWords] = useState<SimpleWord[]>([]);
+  const [originalWords, setOriginalWords] = useState<SimpleWord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'view'>('create');
@@ -58,7 +59,16 @@ const WordPage: React.FC = () => {
     try {
       const response = await getAllWords();
       const simpleWords = response.data.map(convertToSimpleWord);
+      setOriginalWords(simpleWords);
       setWords(simpleWords);
+      // 如果有搜索文本，应用过滤
+      if (searchText) {
+        const filteredWords = simpleWords.filter(word => 
+          word.spelling.toLowerCase().includes(searchText.toLowerCase()) ||
+          word.meaning.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setWords(filteredWords);
+      }
     } catch (error: any) {
       // 从错误对象中提取错误信息
       const errorMessage = error.errorMessage || '获取单词列表失败';
@@ -187,19 +197,25 @@ const WordPage: React.FC = () => {
 
   // 搜索单词
   const handleSearch = () => {
-    // 实际项目中可能需要调用API进行搜索
-    // 这里简单实现为前端过滤
-    if (!searchText) {
-      fetchWords();
+    if (!searchText.trim()) {
+      // 如果搜索文本为空，显示所有原始数据
+      setWords(originalWords);
       return;
     }
     
-    const filteredWords = words.filter(word => 
+    // 基于原始数据进行过滤
+    const filteredWords = originalWords.filter(word => 
       word.spelling.toLowerCase().includes(searchText.toLowerCase()) ||
       word.meaning.toLowerCase().includes(searchText.toLowerCase())
     );
     
     setWords(filteredWords);
+  };
+
+  // 重置搜索
+  const handleResetSearch = () => {
+    setSearchText('');
+    setWords(originalWords);
   };
 
   // 表格列定义
@@ -310,11 +326,32 @@ const WordPage: React.FC = () => {
           <Input
             placeholder="搜索单词或含义"
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
+            onChange={e => {
+              const value = e.target.value;
+              setSearchText(value);
+              // 实时搜索
+              if (!value.trim()) {
+                setWords(originalWords);
+              } else {
+                const filteredWords = originalWords.filter(word => 
+                  word.spelling.toLowerCase().includes(value.toLowerCase()) ||
+                  word.meaning.toLowerCase().includes(value.toLowerCase())
+                );
+                setWords(filteredWords);
+              }
+            }}
             onPressEnter={handleSearch}
-            style={{ width: 200, marginRight: 16 }}
+            style={{ width: 200, marginRight: 8 }}
             prefix={<SearchOutlined />}
+            allowClear
+            onClear={handleResetSearch}
           />
+          <Button
+            onClick={handleResetSearch}
+            style={{ marginRight: 16 }}
+          >
+            重置
+          </Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}

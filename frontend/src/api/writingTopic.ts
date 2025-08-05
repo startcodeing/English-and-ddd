@@ -41,13 +41,13 @@ export const getWritingTopics = async (params: WritingTopicQuery): Promise<Stand
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingTopic[]>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '获取写作主题列表失败',
+      message: error?.response?.data?.message || error?.message || '获取写作主题列表失败',
       data: []
     };
   }
@@ -69,13 +69,13 @@ export const countWritingTopics = async (params: WritingTopicQuery): Promise<Sta
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<number>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '获取写作主题总数失败',
+      message: error?.response?.data?.message || error?.message || '获取写作主题总数失败',
       data: 0
     };
   }
@@ -97,13 +97,13 @@ export const getWritingTopicById = async (id: string | number): Promise<Standard
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '获取写作主题详情失败',
+      message: error?.response?.data?.message || error?.message || '获取写作主题详情失败',
       data: null
     };
   }
@@ -125,13 +125,13 @@ export const createWritingTopic = async (data: Partial<WritingTopic>): Promise<S
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '创建写作主题失败',
+      message: error?.response?.data?.message || error?.message || '创建写作主题失败',
       data: null
     };
   }
@@ -153,13 +153,13 @@ export const updateWritingTopic = async (id: number, data: Partial<WritingTopic>
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingTopic>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '更新写作主题失败',
+      message: error?.response?.data?.message || error?.message || '更新写作主题失败',
       data: null
     };
   }
@@ -181,13 +181,13 @@ export const deleteWritingTopic = async (id: number): Promise<StandardApiRespons
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '删除写作主题失败',
+      message: error?.response?.data?.message || error?.message || '删除写作主题失败',
       data: false
     };
   }
@@ -209,13 +209,13 @@ export const batchDeleteWritingTopics = async (ids: (string | number)[]): Promis
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<boolean>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.response?.data?.message || error.message || '批量删除写作主题失败',
+      message: error?.response?.data?.message || error?.message || '批量删除写作主题失败',
       data: false
     };
   }

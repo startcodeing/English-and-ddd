@@ -15,6 +15,7 @@ const SentencePage: React.FC = () => {
   
   // 状态定义
   const [sentences, setSentences] = useState<Sentence[]>([]);
+  const [originalSentences, setOriginalSentences] = useState<Sentence[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingSentence, setEditingSentence] = useState<Sentence | null>(null);
@@ -29,7 +30,19 @@ const SentencePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllSentences();
-      setSentences(response.data || []);
+      const sentenceData = response.data || [];
+      setOriginalSentences(sentenceData);
+      
+      // 如果有搜索文本，应用过滤
+      if (searchText.trim()) {
+        const filteredSentences = sentenceData.filter(sentence => 
+          sentence.englishContent.toLowerCase().includes(searchText.toLowerCase()) ||
+          sentence.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setSentences(filteredSentences);
+      } else {
+        setSentences(sentenceData);
+      }
     } catch (error) {
       message.error('获取句子列表失败');
       console.error('获取句子列表失败:', error);
@@ -154,19 +167,24 @@ const SentencePage: React.FC = () => {
 
   // 搜索句子
   const handleSearch = async () => {
-    if (!searchText) {
-      fetchSentences();
+    if (!searchText.trim()) {
+      setSentences(originalSentences);
       return;
     }
     
-    // 在实际应用中，应该调用API进行搜索
-    // 这里简单实现为前端过滤
-    const filteredSentences = sentences.filter(sentence => 
+    // 基于原始数据进行过滤
+    const filteredSentences = originalSentences.filter(sentence => 
       sentence.englishContent.toLowerCase().includes(searchText.toLowerCase()) ||
       sentence.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
     );
     
     setSentences(filteredSentences);
+  };
+
+  // 重置搜索
+  const handleResetSearch = () => {
+    setSearchText('');
+    setSentences(originalSentences);
   };
 
   // 表格列定义
@@ -267,11 +285,32 @@ const SentencePage: React.FC = () => {
           <Input
             placeholder="搜索英文内容或中文含义"
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
+            onChange={e => {
+              const value = e.target.value;
+              setSearchText(value);
+              // 实时搜索
+              if (!value.trim()) {
+                setSentences(originalSentences);
+              } else {
+                const filteredSentences = originalSentences.filter(sentence => 
+                  sentence.englishContent.toLowerCase().includes(value.toLowerCase()) ||
+                  sentence.chineseMeaning.toLowerCase().includes(value.toLowerCase())
+                );
+                setSentences(filteredSentences);
+              }
+            }}
             onPressEnter={handleSearch}
-            style={{ width: 200, marginRight: 16 }}
+            allowClear
+            onClear={handleResetSearch}
+            style={{ width: 200, marginRight: 8 }}
             prefix={<SearchOutlined />}
           />
+          <Button
+            onClick={handleResetSearch}
+            style={{ marginRight: 16 }}
+          >
+            重置
+          </Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}

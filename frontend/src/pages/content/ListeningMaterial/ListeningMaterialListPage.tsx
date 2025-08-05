@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Button, Space, Input, Select, Popconfirm, message, Card, Typography, Tag } from 'antd';
+import { Table, Button, Space, Input, Select, Popconfirm, message, Card, Typography, Tag, Form, Row, Col } from 'antd';
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { RootState } from '../../../types/store';
 import type { ListeningMaterial } from '../../../types/listeningMaterial';
@@ -23,6 +23,7 @@ const ListeningMaterialListPage: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<ListeningMaterialDifficultyLevel | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [batchDeleteLoading, setBatchDeleteLoading] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
   // 加载听力资料列表
   const loadListeningMaterials = async () => {
@@ -41,35 +42,48 @@ const ListeningMaterialListPage: React.FC = () => {
         statusCode,
         endpoint: 'getListeningMaterialsByPage',
         params: { page: 1, size: 10 },
-        stack: error.stack
+        stack: error?.stack
       });
     }
   };
 
-  // 根据标题搜索
-  const searchByTitle = async () => {
-    if (!searchTitle.trim()) {
+  // 处理搜索
+  const handleSearch = async (values: any) => {
+    const { title, difficulty } = values;
+    
+    if (title && title.trim()) {
+      try {
+        dispatch(fetchListeningMaterialsStart());
+        const response = await getListeningMaterialsByTitle(title);
+        dispatch(fetchListeningMaterialsSuccess(response.data));
+      } catch (error: any) {
+        const errorMsg = error?.message || '未知错误';
+        const statusCode = error?.response?.status || 'N/A';
+        dispatch(fetchListeningMaterialsFailure(errorMsg));
+        message.error(`搜索听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
+        console.error('Search by title error:', error);
+      }
+    } else if (difficulty) {
+      try {
+        dispatch(fetchListeningMaterialsStart());
+        let difficultyLevel;
+        if (difficulty === 'beginner') difficultyLevel = ListeningMaterialDifficultyLevel.EASY;
+        else if (difficulty === 'intermediate') difficultyLevel = ListeningMaterialDifficultyLevel.MEDIUM;
+        else if (difficulty === 'advanced') difficultyLevel = ListeningMaterialDifficultyLevel.HARD;
+        
+        if (difficultyLevel) {
+          const response = await getListeningMaterialsByDifficultyLevel(difficultyLevel);
+          dispatch(fetchListeningMaterialsSuccess(response.data));
+        }
+      } catch (error: any) {
+        const errorMsg = error?.message || '未知错误';
+        const statusCode = error?.response?.status || 'N/A';
+        dispatch(fetchListeningMaterialsFailure(errorMsg));
+        message.error(`筛选听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
+        console.error('Filter by difficulty error:', error);
+      }
+    } else {
       loadListeningMaterials();
-      return;
-    }
-
-    try {
-      dispatch(fetchListeningMaterialsStart());
-      const response = await getListeningMaterialsByTitle(searchTitle);
-      dispatch(fetchListeningMaterialsSuccess(response.data));
-    } catch (error: any) {
-      const errorMsg = error.message || '未知错误';
-      const statusCode = error.response?.status || 'N/A';
-      dispatch(fetchListeningMaterialsFailure(errorMsg));
-      message.error(`搜索听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
-      console.error('Search by title error:', error);
-      console.error('Error details:', {
-        message: errorMsg,
-        statusCode,
-        endpoint: 'getListeningMaterialsByTitle',
-        params: { title: searchTitle },
-        stack: error.stack
-      });
     }
   };
 
@@ -85,8 +99,8 @@ const ListeningMaterialListPage: React.FC = () => {
       const response = await getListeningMaterialsByDifficultyLevel(selectedDifficulty as ListeningMaterialDifficultyLevel);
       dispatch(fetchListeningMaterialsSuccess(response.data));
     } catch (error: any) {
-      const errorMsg = error.message || '未知错误';
-      const statusCode = error.response?.status || 'N/A';
+      const errorMsg = error?.message || '未知错误';
+      const statusCode = error?.response?.status || 'N/A';
       dispatch(fetchListeningMaterialsFailure(errorMsg));
       message.error(`筛选听力资料失败: ${errorMsg}，状态码: ${statusCode}`);
       console.error('Filter by difficulty error:', error);
@@ -95,7 +109,7 @@ const ListeningMaterialListPage: React.FC = () => {
         statusCode,
         endpoint: 'getListeningMaterialsByDifficultyLevel',
         params: { difficulty: selectedDifficulty },
-        stack: error.stack
+        stack: error?.stack
       });
     }
   };
@@ -107,8 +121,8 @@ const ListeningMaterialListPage: React.FC = () => {
       message.success('删除成功');
       loadListeningMaterials();
     } catch (error: any) {
-      const errorMsg = error.message || '未知错误';
-      const statusCode = error.response?.status || 'N/A';
+      const errorMsg = error?.message || '未知错误';
+      const statusCode = error?.response?.status || 'N/A';
       message.error(`删除失败: ${errorMsg}，状态码: ${statusCode}`);
       console.error('Delete listening material error:', error);
       console.error('Error details:', {
@@ -116,7 +130,7 @@ const ListeningMaterialListPage: React.FC = () => {
         statusCode,
         endpoint: 'deleteListeningMaterial',
         params: { id },
-        stack: error.stack
+        stack: error?.stack
       });
     }
   };
@@ -135,8 +149,8 @@ const ListeningMaterialListPage: React.FC = () => {
       setSelectedRowKeys([]);
       loadListeningMaterials();
     } catch (error: any) {
-      const errorMsg = error.message || '未知错误';
-      const statusCode = error.response?.status || 'N/A';
+      const errorMsg = error?.message || '未知错误';
+      const statusCode = error?.response?.status || 'N/A';
       message.error(`批量删除失败: ${errorMsg}，状态码: ${statusCode}`);
       console.error('Batch delete listening materials error:', error);
       console.error('Error details:', {
@@ -144,7 +158,7 @@ const ListeningMaterialListPage: React.FC = () => {
         statusCode,
         endpoint: 'batchDeleteListeningMaterials',
         params: { ids: selectedRowKeys },
-        stack: error.stack
+        stack: error?.stack
       });
     } finally {
       setBatchDeleteLoading(false);
@@ -269,42 +283,66 @@ const ListeningMaterialListPage: React.FC = () => {
     <div className="listening-material-page">
       <div className="article-page-header">
         <h1>听力资料管理</h1>
-        <div className="article-page-actions">
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />} 
-            onClick={() => navigate('/content/listening-materials/create')}
-          >
-            添加听力资料
-          </Button>
-        </div>
       </div>
-        
-      <div className="article-page-actions" style={{ marginBottom: '16px', flexShrink: 0 }}>
-        <Input
-          placeholder="搜索标题"
-          value={searchTitle}
-          onChange={(e) => setSearchTitle(e.target.value)}
-          onPressEnter={searchByTitle}
-          style={{ width: 250, marginRight: 16 }}
-          prefix={<SearchOutlined />}
-        />
-        <Select
-          placeholder="选择难度级别"
-          style={{ width: '150px', marginRight: 16 }}
-          value={selectedDifficulty || undefined}
-          onChange={(value) => {
-            setSelectedDifficulty(value);
-            setTimeout(filterByDifficulty, 0);
-          }}
-          allowClear
-          dropdownMatchSelectWidth={false}
-        >
-          <Option value={ListeningMaterialDifficultyLevel.EASY}>初级</Option>
-          <Option value={ListeningMaterialDifficultyLevel.MEDIUM}>中级</Option>
-          <Option value={ListeningMaterialDifficultyLevel.HARD}>高级</Option>
-        </Select>
-        <Button onClick={loadListeningMaterials}>重置</Button>
+      
+      <div className="search-form">
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+          <Col>
+            <Form form={form} layout="inline" onFinish={handleSearch}>
+              <Form.Item name="title" label="标题">
+                <Input placeholder="请输入标题" style={{ width: 200 }} />
+              </Form.Item>
+              <Form.Item name="difficulty" label="难度">
+                <Select
+                  placeholder="请选择难度"
+                  allowClear
+                  style={{ width: 120 }}
+                  options={[
+                    { value: 'beginner', label: '初级' },
+                    { value: 'intermediate', label: '中级' },
+                    { value: 'advanced', label: '高级' },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                  搜索
+                </Button>
+              </Form.Item>
+              <Form.Item>
+                <Button onClick={loadListeningMaterials}>重置</Button>
+              </Form.Item>
+            </Form>
+          </Col>
+          <Col>
+            <Space>
+              <Button 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={() => navigate('/content/listening-materials/create')}
+              >
+                新增听力资料
+              </Button>
+              {selectedRowKeys.length > 0 && (
+                <Popconfirm
+                  title="确定要删除选中的听力资料吗？"
+                  description="删除后将无法恢复，请谨慎操作！"
+                  onConfirm={handleBatchDelete}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button 
+                    danger 
+                    loading={batchDeleteLoading}
+                    icon={<DeleteOutlined />}
+                  >
+                    批量删除 ({selectedRowKeys.length})
+                  </Button>
+                </Popconfirm>
+              )}
+            </Space>
+          </Col>
+        </Row>
         {selectedRowKeys.length > 0 && (
           <div className="batch-actions-area">
             <span className="selected-count">
@@ -312,22 +350,6 @@ const ListeningMaterialListPage: React.FC = () => {
             </span>
             <Space>
               <Button size="small" onClick={() => setSelectedRowKeys([])}>清除选择</Button>
-              <Popconfirm
-                title="确定要删除选中的听力资料吗？"
-                description="删除后将无法恢复，请谨慎操作！"
-                onConfirm={handleBatchDelete}
-                okText="确定"
-                cancelText="取消"
-              >
-                <Button 
-                  danger 
-                  size="small"
-                  loading={batchDeleteLoading}
-                  icon={<DeleteOutlined />}
-                >
-                  批量删除
-                </Button>
-              </Popconfirm>
             </Space>
           </div>
         )}

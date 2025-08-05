@@ -10,6 +10,7 @@ import './style.css';
 const ArticlePage: React.FC = () => {
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [originalArticles, setOriginalArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -32,10 +33,12 @@ const ArticlePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllArticles();
-      setArticles(response.data);
+      const articleData = response.data;
+      setOriginalArticles(articleData);
+      setArticles(articleData);
       setPagination({
         ...pagination,
-        total: response.data.length
+        total: articleData.length
       });
     } catch (error) {
       message.error('获取文章列表失败');
@@ -53,7 +56,9 @@ const ArticlePage: React.FC = () => {
         getArticlesByPage(page, pageSize),
         getArticlesCount()
       ]);
-      setArticles(articlesResponse.data);
+      const articleData = articlesResponse.data;
+      setOriginalArticles(articleData);
+      setArticles(articleData);
       setPagination({
         ...pagination,
         current: page,
@@ -147,35 +152,46 @@ const ArticlePage: React.FC = () => {
 
   // 搜索文章
   const handleSearch = async () => {
-    if (!searchText) {
-      fetchArticlesByPage(1, pagination.pageSize);
-      return;
-    }
-    
-    // 在实际应用中，应该调用API进行搜索
-    // 这里调用标题搜索API，后续可以扩展为更复杂的搜索
-    setLoading(true);
-    try {
-      const response = await getArticlesByTitle(searchText);
-      setArticles(response.data);
-      
-      // 搜索结果的总数就是返回的数据长度
+    if (!searchText.trim()) {
+      setArticles(originalArticles);
       setPagination({
         ...pagination,
         current: 1,
-        total: response.data.length
+        total: originalArticles.length
       });
-      
-      // 如果搜索结果为空，显示提示信息
-      if (response.data.length === 0) {
-        message.info('没有找到匹配的文章');
-      }
-    } catch (error) {
-      message.error('搜索文章失败');
-      console.error('搜索文章失败:', error);
-    } finally {
-      setLoading(false);
+      return;
     }
+    
+    // 基于原始数据进行前端过滤搜索
+    const filteredArticles = originalArticles.filter(article => 
+      article.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      article.content.toLowerCase().includes(searchText.toLowerCase()) ||
+      (article.author && article.author.toLowerCase().includes(searchText.toLowerCase())) ||
+      (article.source && article.source.toLowerCase().includes(searchText.toLowerCase()))
+    );
+    
+    setArticles(filteredArticles);
+    setPagination({
+      ...pagination,
+      current: 1,
+      total: filteredArticles.length
+    });
+    
+    // 如果搜索结果为空，显示提示信息
+    if (filteredArticles.length === 0) {
+      message.info('没有找到匹配的文章');
+    }
+  };
+
+  // 重置搜索
+  const handleResetSearch = () => {
+    setSearchText('');
+    setArticles(originalArticles);
+    setPagination({
+      ...pagination,
+      current: 1,
+      total: originalArticles.length
+    });
   };
 
   // 表格列定义
@@ -311,11 +327,44 @@ const ArticlePage: React.FC = () => {
           <Input
             placeholder="搜索标题、内容、作者或来源"
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
+            onChange={e => {
+              const value = e.target.value;
+              setSearchText(value);
+              // 实时搜索
+              if (!value.trim()) {
+                setArticles(originalArticles);
+                setPagination({
+                  ...pagination,
+                  current: 1,
+                  total: originalArticles.length
+                });
+              } else {
+                const filteredArticles = originalArticles.filter(article => 
+                  article.title.toLowerCase().includes(value.toLowerCase()) ||
+                  article.content.toLowerCase().includes(value.toLowerCase()) ||
+                  (article.author && article.author.toLowerCase().includes(value.toLowerCase())) ||
+                  (article.source && article.source.toLowerCase().includes(value.toLowerCase()))
+                );
+                setArticles(filteredArticles);
+                setPagination({
+                  ...pagination,
+                  current: 1,
+                  total: filteredArticles.length
+                });
+              }
+            }}
             onPressEnter={handleSearch}
-            style={{ width: 250, marginRight: 16 }}
+            allowClear
+            onClear={handleResetSearch}
+            style={{ width: 250, marginRight: 8 }}
             prefix={<SearchOutlined />}
           />
+          <Button
+            onClick={handleResetSearch}
+            style={{ marginRight: 16 }}
+          >
+            重置
+          </Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}

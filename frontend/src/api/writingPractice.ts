@@ -39,13 +39,14 @@ export const createWritingPractice = async (data: Partial<WritingPractice>): Pro
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingPractice>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '创建写作练习失败',
+      message: error?.message || '创建写作练习失败',
       data: null
     };
   }
@@ -67,13 +68,14 @@ export const getWritingPracticeById = async (id: string | number): Promise<Stand
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingPractice>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取写作练习详情失败',
+      message: error?.message || '获取写作练习详情失败',
       data: null
     };
   }
@@ -96,13 +98,14 @@ export const getWritingPractices = async (params: WritingPracticeQuery): Promise
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingPractice[]>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取写作练习列表失败',
+      message: error?.message || '获取写作练习列表失败',
       data: []
     };
   }
@@ -125,13 +128,14 @@ export const countWritingPractices = async (params: WritingPracticeQuery): Promi
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<number>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取写作练习总数失败',
+      message: error?.message || '获取写作练习总数失败',
       data: 0
     };
   }
@@ -153,13 +157,14 @@ export const updateWritingPractice = async (id: string | number, data: Partial<W
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<WritingPractice>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '更新写作练习失败',
+      message: error?.message || '更新写作练习失败',
       data: null
     };
   }
@@ -181,13 +186,14 @@ export const deleteWritingPractice = async (id: string | number): Promise<Standa
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<boolean>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '删除写作练习失败',
+      message: error?.message || '删除写作练习失败',
       data: false
     };
   }
@@ -209,13 +215,14 @@ export const batchDeleteWritingPractices = async (ids: (string | number)[]): Pro
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<boolean>;
     }
+    
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '批量删除写作练习失败',
+      message: error?.message || '批量删除写作练习失败',
       data: false
     };
   }

@@ -175,7 +175,7 @@ const WritingPracticeListPage: React.FC = () => {
           }
         } catch (error) {
           console.error('删除写作练习出错:', error);
-          message.error('删除失败');
+          message.error(error?.message || '删除失败');
         }
       },
     });
@@ -204,7 +204,7 @@ const WritingPracticeListPage: React.FC = () => {
           }
         } catch (error) {
           console.error('批量删除写作练习出错:', error);
-          message.error('批量删除失败');
+          message.error(error?.message || '批量删除失败');
         }
       },
     });
@@ -311,51 +311,50 @@ const WritingPracticeListPage: React.FC = () => {
 
   return (
     <Card title="写作练习管理">
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleSearch}
-        style={{ marginBottom: 16 }}
-      >
-        <Form.Item name="status" label="状态">
-          <Select
-            placeholder="请选择状态"
-            allowClear
-            style={{ width: 120 }}
-            options={[
-              { value: 'draft', label: '草稿' },
-              { value: 'published', label: '已提交' },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item name="topicId" label="主题描述">
-          <Select
-            placeholder="请选择主题"
-            allowClear
-            showSearch
-            loading={topicsLoading}
-            style={{ width: 200 }}
-            optionFilterProp="label"
-            options={allTopics.map(topic => ({
-              value: topic.id,
-              label: topic.description,
-            }))}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              搜索
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
-
-      {/* 操作按钮 */}
-      <Row style={{ marginBottom: 16 }}>
-        <Col span={24}>
+      {/* 搜索表单和操作按钮 */}
+      <Row style={{ marginBottom: 16 }} justify="space-between" align="middle">
+        <Col>
+          <Form
+            form={form}
+            layout="inline"
+            onFinish={handleSearch}
+          >
+            <Form.Item name="status" label="状态">
+              <Select
+                placeholder="请选择状态"
+                allowClear
+                style={{ width: 120 }}
+                options={[
+                  { value: 'draft', label: '草稿' },
+                  { value: 'published', label: '已提交' },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item name="topicId" label="主题描述">
+              <Select
+                placeholder="请选择主题"
+                allowClear
+                showSearch
+                loading={topicsLoading}
+                style={{ width: 200 }}
+                optionFilterProp="label"
+                options={allTopics.map(topic => ({
+                  value: topic.id,
+                  label: topic.description,
+                }))}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                  搜索
+                </Button>
+                <Button onClick={handleReset}>重置</Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Col>
+        <Col>
           <Space>
             <Button
               type="primary"

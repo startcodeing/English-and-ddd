@@ -3,6 +3,13 @@ import { StandardApiResponse } from '../types/response';
 
 const BASE_URL = '/api/practice/dictation';
 
+// 听写练习难度级别枚举
+export enum DictationDifficultyLevel {
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM', 
+  HARD = 'HARD'
+}
+
 // 听写练习接口类型定义
 export interface DictationPractice {
   id: number;
@@ -23,7 +30,39 @@ export interface DictationPracticeQuery {
   listenMaterialId?: number;
   pageNum?: number;
   pageSize?: number;
+  title?: string;
+  difficulty?: string;
 }
+
+// 分页获取听写练习列表
+export const getDictationPracticesByPage = async (pageNum: number = 1, pageSize: number = 10): Promise<StandardApiResponse<DictationPractice[]>> => {
+  try {
+    const response = await axios.get(BASE_URL, { 
+      params: { pageNum, pageSize } 
+    });
+    // 检查响应是否已经是标准格式
+    if (typeof response.data === 'object' && 'success' in response.data) {
+      return response.data as StandardApiResponse<DictationPractice[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: true,
+      message: '获取听写练习列表成功',
+      data: response.data || []
+    };
+  } catch (error: any) {
+    // 检查错误是否已经是标准格式
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
+      return error as StandardApiResponse<DictationPractice[]>;
+    }
+    // 否则包装为标准格式
+    return {
+      success: false,
+      message: (error && error.message) || '获取听写练习列表失败',
+      data: []
+    };
+  }
+};
 
 // 获取听写练习列表
 export const getDictationPractices = async (params: DictationPracticeQuery): Promise<StandardApiResponse<DictationPractice[]>> => {
@@ -41,13 +80,13 @@ export const getDictationPractices = async (params: DictationPracticeQuery): Pro
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice[]>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取听写练习列表失败',
+      message: (error && error.message) || '获取听写练习列表失败',
       data: []
     };
   }
@@ -69,13 +108,13 @@ export const getDictationPracticeById = async (id: number): Promise<StandardApiR
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取听写练习详情失败',
+      message: (error && error.message) || '获取听写练习详情失败',
       data: null
     };
   }
@@ -97,13 +136,13 @@ export const createDictationPractice = async (data: Partial<DictationPractice>):
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '创建听写练习失败',
+      message: (error && error.message) || '创建听写练习失败',
       data: null
     };
   }
@@ -125,13 +164,13 @@ export const updateDictationPractice = async (id: number, data: Partial<Dictatio
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '更新听写练习失败',
+      message: (error && error.message) || '更新听写练习失败',
       data: null
     };
   }
@@ -162,13 +201,13 @@ export const submitDictationPractice = async (id: number): Promise<StandardApiRe
   } catch (error: any) {
     console.error('提交听写练习失败:', error);
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '提交听写练习失败',
+      message: (error && error.message) || '提交听写练习失败',
       data: null
     };
   }
@@ -192,13 +231,13 @@ export const scoreDictationPractice = async (id: number, score: number): Promise
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<DictationPractice>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '评分听写练习失败',
+      message: (error && error.message) || '评分听写练习失败',
       data: null
     };
   }
@@ -220,13 +259,13 @@ export const countDictationPractices = async (params: DictationPracticeQuery): P
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<number>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '统计听写练习数量失败',
+      message: (error && error.message) || '统计听写练习数量失败',
       data: 0
     };
   }
@@ -248,13 +287,13 @@ export const deleteDictationPractice = async (id: number): Promise<StandardApiRe
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '删除听写练习失败',
+      message: (error && error.message) || '删除听写练习失败',
       data: undefined
     };
   }
@@ -276,13 +315,13 @@ export const batchDeleteDictationPractices = async (ids: number[]): Promise<Stan
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error && typeof error === 'object' && error !== null && 'success' in error) {
       return error as StandardApiResponse<void>;
     }
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '批量删除听写练习失败',
+      message: (error && error.message) || '批量删除听写练习失败',
       data: undefined
     };
   }

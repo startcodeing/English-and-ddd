@@ -32,14 +32,14 @@ export const getAllListeningMaterials = async (): Promise<StandardApiResponse<Li
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial[]>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取所有听力资料失败',
+      message: error?.message || '获取所有听力资料失败',
       data: []
     };
   }
@@ -70,14 +70,14 @@ export const getListeningMaterialsByPage = async (page: number, size: number): P
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial[]>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '分页获取听力资料失败',
+      message: error?.message || '分页获取听力资料失败',
       data: []
     };
   }
@@ -106,14 +106,14 @@ export const getListeningMaterialById = async (id: string): Promise<StandardApiR
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取听力资料详情失败',
+      message: error?.message || '获取听力资料详情失败',
       data: null
     };
   }
@@ -144,14 +144,14 @@ export const getListeningMaterialsByTitle = async (title: string): Promise<Stand
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial[]>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '根据标题查询听力资料失败',
+      message: error?.message || '根据标题查询听力资料失败',
       data: []
     };
   }
@@ -180,14 +180,14 @@ export const getListeningMaterialsByDifficultyLevel = async (difficulty: Listeni
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial[]>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '根据难度级别查询听力资料失败',
+      message: error?.message || '根据难度级别查询听力资料失败',
       data: []
     };
   }
@@ -226,14 +226,14 @@ export const createListeningMaterial = async (data: CreateListeningMaterialReque
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '创建听力资料失败',
+      message: error?.message || '创建听力资料失败',
       data: null
     };
   }
@@ -275,14 +275,14 @@ export const updateListeningMaterial = async (id: string, data: UpdateListeningM
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<ListeningMaterial>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '更新听力资料失败',
+      message: error?.message || '更新听力资料失败',
       data: null
     };
   }
@@ -306,14 +306,14 @@ export const deleteListeningMaterial = async (id: string): Promise<StandardApiRe
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<void>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '删除听力资料失败',
+      message: error?.message || '删除听力资料失败',
       data: undefined
     };
   }
@@ -337,14 +337,14 @@ export const batchDeleteListeningMaterials = async (ids: string[]): Promise<Stan
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<void>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '批量删除听力资料失败',
+      message: error?.message || '批量删除听力资料失败',
       data: undefined
     };
   }
@@ -368,14 +368,14 @@ export const countListeningMaterials = async (): Promise<StandardApiResponse<num
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
+    if (error !== null && typeof error === 'object' && 'success' in error) {
       return error as StandardApiResponse<number>;
     }
     
     // 否则包装为标准格式
     return {
       success: false,
-      message: error.message || '获取听力资料总数失败',
+      message: error?.message || '获取听力资料总数失败',
       data: 0
     };
   }

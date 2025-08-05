@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Input, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Button, Card, Col, Form, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { getDictationPractices, countDictationPractices, deleteDictationPractice, batchDeleteDictationPractices, DictationPractice, DictationPracticeQuery } from '../../../api/dictationPractice';
+import { getDictationPractices, getDictationPracticesByPage, countDictationPractices, deleteDictationPractice, batchDeleteDictationPractices, DictationPractice, DictationPracticeQuery, DictationDifficultyLevel } from '../../../api/dictationPractice';
 import { getListeningMaterialById } from '../../../api/listeningMaterial';
 import './style.css';
 
@@ -23,6 +23,9 @@ const DictationPracticeListPage: React.FC = () => {
   const [filters, setFilters] = useState<Partial<DictationPracticeQuery>>({});
   const [materialsMap, setMaterialsMap] = useState<Record<number, any>>({});
   const [searchParams, setSearchParams] = useState<DictationPracticeQuery>({});
+  const [searchTitle, setSearchTitle] = useState<string>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+  const [batchDeleteLoading, setBatchDeleteLoading] = useState<boolean>(false);
 
   // 获取听写练习列表
   const fetchPractices = async (page = 1, pageSize = 10) => {
@@ -104,11 +107,73 @@ const DictationPracticeListPage: React.FC = () => {
     fetchPractices(current, pageSize);
   }, [current, pageSize, filters]);
 
-  // 处理搜索
-  const handleSearch = (values: any) => {
-    setCurrent(1); // 重置到第一页
-    setFilters(values);
+  // 综合搜索函数
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const queryParams: DictationPracticeQuery = {
+        pageNum: 1,
+        pageSize
+      };
+      
+      // 添加标题搜索条件
+      if (searchTitle.trim()) {
+        queryParams.title = searchTitle.trim();
+      }
+      
+      // 添加难度筛选条件
+      if (selectedDifficulty) {
+        queryParams.difficulty = selectedDifficulty;
+      }
+      
+      const [practicesResponse, countResponse] = await Promise.all([
+        getDictationPractices(queryParams),
+        countDictationPractices(queryParams)
+      ]);
+      
+      if (practicesResponse.success) {
+        setPractices(practicesResponse.data || []);
+        fetchMaterialsInfo(practicesResponse.data || []);
+      } else {
+        message.error(practicesResponse.message || '搜索失败');
+        setPractices([]);
+      }
+      
+      if (countResponse.success) {
+        setTotal(countResponse.data || 0);
+      } else {
+        setTotal(0);
+      }
+      
+      setCurrent(1);
+    } catch (error: any) {
+      console.error('搜索听写练习失败:', error);
+      message.error(error.message || '搜索失败');
+      setPractices([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // 按标题搜索（保持兼容性）
+  const searchByTitle = handleSearch;
+
+  // 按难度筛选（保持兼容性）
+  const filterByDifficulty = handleSearch;
+
+  // 加载听写练习列表（重置功能）
+  const loadDictationPractices = () => {
+    setSearchTitle('');
+    setSelectedDifficulty(null);
+    setFilters({});
+    setCurrent(1);
+    fetchPractices(1, pageSize);
+  };
+
+
+
+
 
   // 重置搜索
   const handleReset = () => {
@@ -143,7 +208,7 @@ const DictationPracticeListPage: React.FC = () => {
           }
         } catch (error) {
           console.error('删除听写练习出错:', error);
-          message.error('删除失败');
+          message.error(error?.message || '删除失败');
         }
       },
     });
@@ -172,7 +237,7 @@ const DictationPracticeListPage: React.FC = () => {
           }
         } catch (error) {
           console.error('批量删除听写练习出错:', error);
-          message.error('批量删除失败');
+          message.error(error?.message || '批量删除失败');
         }
       },
     });
@@ -310,108 +375,105 @@ const DictationPracticeListPage: React.FC = () => {
     <div className="dictation-practice-page">
       <div className="dictation-page-header">
         <h1>听写练习管理</h1>
-        <div className="dictation-page-actions">
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />} 
-            onClick={() => navigate('/practice/dictation/create')}
-          >
-            添加听写练习
-          </Button>
-        </div>
       </div>
         
-      <div className="dictation-page-actions" style={{ marginBottom: '16px', flexShrink: 0 }}>
-        <Input
-          placeholder="搜索练习名称"
-          value={searchTitle}
-          onChange={(e) => setSearchTitle(e.target.value)}
-          onPressEnter={searchByTitle}
-          style={{ width: 250, marginRight: 16 }}
-          prefix={<SearchOutlined />}
-        />
-        <Select
-          placeholder="选择难度级别"
-          style={{ width: '150px', marginRight: 16 }}
-          value={selectedDifficulty || undefined}
-          onChange={(value) => {
-            setSelectedDifficulty(value);
-            setTimeout(filterByDifficulty, 0);
-          }}
-          allowClear
-          dropdownMatchSelectWidth={false}
-        >
-          <Option value={DictationDifficultyLevel.EASY}>初级</Option>
-          <Option value={DictationDifficultyLevel.MEDIUM}>中级</Option>
-          <Option value={DictationDifficultyLevel.HARD}>高级</Option>
-        </Select>
-        <Button onClick={loadDictationPractices}>重置</Button>
-        {selectedRowKeys.length > 0 && (
-          <div className="batch-actions-area">
-            <span className="selected-count">
-              已选择 <span className="count-number">{selectedRowKeys.length}</span> 个听写练习
-            </span>
-            <Space>
-              <Button size="small" onClick={() => setSelectedRowKeys([])}>清除选择</Button>
-              <Popconfirm
-                title="确定要删除选中的听写练习吗？"
-                description="删除后将无法恢复，请谨慎操作！"
-                onConfirm={handleBatchDelete}
-                okText="确定"
-                cancelText="取消"
+      {/* 搜索和操作按钮区域 */}
+      <Row style={{ marginBottom: 16 }} justify="space-between" align="middle">
+        <Col>
+          <Space wrap>
+            <Input
+              placeholder="搜索标题"
+              value={searchTitle}
+              onChange={(e) => {
+                 const value = e.target.value;
+                 setSearchTitle(value);
+               }}
+              onPressEnter={handleSearch}
+              allowClear
+              onClear={() => {
+                 setSearchTitle('');
+                 setTimeout(() => {
+                   handleSearch();
+                 }, 0);
+               }}
+              style={{ width: 200 }}
+              prefix={<SearchOutlined />}
+            />
+            <Select
+              placeholder="选择难度级别"
+              style={{ width: 150 }}
+              value={selectedDifficulty || undefined}
+              onChange={(value) => {
+                setSelectedDifficulty(value);
+              }}
+              allowClear
+              onClear={() => {
+                setSelectedDifficulty(null);
+              }}
+            >
+              <Option value={DictationDifficultyLevel.EASY}>简单</Option>
+              <Option value={DictationDifficultyLevel.MEDIUM}>中等</Option>
+              <Option value={DictationDifficultyLevel.HARD}>困难</Option>
+            </Select>
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+            >
+              搜索
+            </Button>
+            <Button onClick={loadDictationPractices}>重置</Button>
+          </Space>
+        </Col>
+        <Col>
+          <Space>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/practice/dictation/create')}
+            >
+              添加听写练习
+            </Button>
+            {selectedRowKeys.length > 0 && (
+              <Button
+                danger
+                onClick={() => handleBatchDelete(selectedRowKeys as number[])}
               >
-                <Button 
-                  danger 
-                  size="small"
-                  loading={batchDeleteLoading}
-                  icon={<DeleteOutlined />}
-                >
-                  批量删除
-                </Button>
-              </Popconfirm>
+                批量删除 ({selectedRowKeys.length})
+              </Button>
+            )}
+          </Space>
+        </Col>
+      </Row>
+
+      {/* 批量删除区域 */}
+      {selectedRowKeys.length > 0 && (
+        <Row style={{ marginBottom: 16 }}>
+          <Col span={24}>
+            <Space>
+              <span>已选择 {selectedRowKeys.length} 项</span>
+              <Button onClick={() => setSelectedRowKeys([])}>清除选择</Button>
             </Space>
-          </div>
-        )}
-      </div>
+          </Col>
+        </Row>
+      )}
       
       <Table
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={items}
+        dataSource={practices}
         rowKey="id"
         loading={loading}
         pagination={{
-          pageSize: 10,
+          current,
+          pageSize,
+          total,
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total) => `共 ${total} 个听写练习`,
           position: ['bottomRight'],
-          onChange: async (page, pageSize) => {
-            try {
-              dispatch(fetchDictationPracticesStart());
-              const response = await getDictationPracticesByPage(page, pageSize);
-              dispatch(fetchDictationPracticesSuccess(response.data));
-            } catch (error: any) {
-              const errorMsg = error.message || '未知错误';
-              const statusCode = error.response?.status || 'N/A';
-              dispatch(fetchDictationPracticesFailure(errorMsg));
-              message.error(`加载听写练习失败: ${errorMsg}，状态码: ${statusCode}`);
-              console.error('Pagination error:', error);
-            }
-          },
-          onShowSizeChange: async (current, size) => {
-            try {
-              dispatch(fetchDictationPracticesStart());
-              const response = await getDictationPracticesByPage(current, size);
-              dispatch(fetchDictationPracticesSuccess(response.data));
-            } catch (error: any) {
-              const errorMsg = error.message || '未知错误';
-              const statusCode = error.response?.status || 'N/A';
-              dispatch(fetchDictationPracticesFailure(errorMsg));
-              message.error(`加载听写练习失败: ${errorMsg}，状态码: ${statusCode}`);
-              console.error('Page size change error:', error);
-            }
-          },
+          onChange: handlePageChange,
+          onShowSizeChange: handlePageChange,
           style: { marginBottom: 0 }
         }}
         scroll={{ x: true }}

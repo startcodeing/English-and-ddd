@@ -252,44 +252,43 @@ const WritingTopicListPage: React.FC = () => {
 
   return (
     <Card title="写作主题管理">
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleSearch}
-        style={{ marginBottom: 16 }}
-      >
-        <Form.Item name="description" label="主题描述">
-          <Input placeholder="请输入主题描述" allowClear />
-        </Form.Item>
-        <Form.Item name="source" label="来源">
-          <Input placeholder="请输入来源" allowClear />
-        </Form.Item>
-        <Form.Item name="difficulty" label="难度级别">
-          <Select
-            placeholder="请选择难度级别"
-            allowClear
-            style={{ width: 120 }}
-            options={[
-              { value: 'easy', label: '简单' },
-              { value: 'medium', label: '中等' },
-              { value: 'hard', label: '困难' },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              搜索
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
-
-      {/* 操作按钮 */}
-      <Row style={{ marginBottom: 16 }}>
-        <Col span={24}>
+      {/* 搜索表单和操作按钮 */}
+      <Row style={{ marginBottom: 16 }} justify="space-between" align="middle">
+        <Col>
+          <Form
+            form={form}
+            layout="inline"
+            onFinish={handleSearch}
+          >
+            <Form.Item name="description" label="主题描述">
+              <Input placeholder="请输入主题描述" allowClear />
+            </Form.Item>
+            <Form.Item name="source" label="来源">
+              <Input placeholder="请输入来源" allowClear />
+            </Form.Item>
+            <Form.Item name="difficulty" label="难度级别">
+              <Select
+                placeholder="请选择难度级别"
+                allowClear
+                style={{ width: 120 }}
+                options={[
+                  { value: 'easy', label: '简单' },
+                  { value: 'medium', label: '中等' },
+                  { value: 'hard', label: '困难' },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                  搜索
+                </Button>
+                <Button onClick={handleReset}>重置</Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Col>
+        <Col>
           <Space>
             <Button
               type="primary"

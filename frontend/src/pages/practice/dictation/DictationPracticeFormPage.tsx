@@ -276,17 +276,9 @@ const DictationPracticeFormPage: React.FC = () => {
     <div style={{ padding: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Card style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
         <div style={{ marginBottom: '24px' }}>
-          <Space>
-            <Button 
-              icon={<ArrowLeftOutlined />} 
-              onClick={() => navigate('/practice/dictation')}
-            >
-              返回列表
-            </Button>
-            <Title level={4} style={{ margin: 0 }}>
-              {isEdit ? '编辑听写练习' : '新建听写练习'}
-            </Title>
-          </Space>
+          <Title level={4} style={{ margin: 0 }}>
+            {isEdit ? '编辑听写练习' : '新建听写练习'}
+          </Title>
         </div>
 
         <Spin spinning={loading}>
@@ -378,8 +370,11 @@ const DictationPracticeFormPage: React.FC = () => {
               </Form.Item>
             </div>
 
-            <Form.Item style={{ marginTop: '16px', marginBottom: '0' }}>
+            <Form.Item style={{ marginTop: '16px', marginBottom: '0', display: 'flex', justifyContent: 'flex-end' }}>
               <Space>
+                <Button onClick={() => navigate('/practice/dictation')}>
+                  取消
+                </Button>
                 <Button 
                   type="default" 
                   icon={<SaveOutlined />}
@@ -423,9 +418,6 @@ const DictationPracticeFormPage: React.FC = () => {
                   }}
                 >
                   提交练习
-                </Button>
-                <Button onClick={() => navigate('..')}>
-                  取消
                 </Button>
               </Space>
             </Form.Item>
