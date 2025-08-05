@@ -127,7 +127,7 @@ const Dashboard: React.FC = () => {
         
         // 获取句子总数
         const sentencesResponse = await getAllSentences();
-        const sentencesCount = sentencesResponse.data.length;
+        const sentencesCount = sentencesResponse.data?.length || 0;
         
         // 获取文章总数
         const articlesResponse = await getAllArticles();

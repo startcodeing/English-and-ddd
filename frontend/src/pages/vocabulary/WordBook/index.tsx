@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip } from 'antd';
+import { Modal, message, Tag, Tooltip, Space } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, BookOutlined, EyeOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { UnifiedListPage, TableColumn, FilterOption, BatchAction } from '../../../components/unified/UnifiedListPage';
 import { getAllWordBooks, createWordBook, updateWordBook, deleteWordBook, addWordToWordBook, removeWordFromWordBook, batchDeleteWordBooks } from '../../../api/wordBook';
 import { getAllWords } from '../../../api';
 import { WordBook, Word } from '../../../types';
@@ -18,11 +19,8 @@ const WordBookPage: React.FC = () => {
   const [addWordDrawerVisible, setAddWordDrawerVisible] = useState<boolean>(false);
   const [editingWordBook, setEditingWordBook] = useState<WordBook | null>(null);
   const [selectedWordBook, setSelectedWordBook] = useState<WordBook | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
   const [allWords, setAllWords] = useState<Word[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [form] = Form.useForm();
 
   // 获取单词本列表
   const fetchWordBooks = async () => {
@@ -92,12 +90,7 @@ const WordBookPage: React.FC = () => {
   };
   
   // 批量删除单词本
-  const handleBatchDelete = async () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请至少选择一个单词本');
-      return;
-    }
-
+  const handleBatchDelete = async (selectedRowKeys: React.Key[]) => {
     Modal.confirm({
       title: '确认批量删除',
       content: `确定要删除选中的 ${selectedRowKeys.length} 个单词本吗？删除后无法恢复。`,
@@ -106,7 +99,6 @@ const WordBookPage: React.FC = () => {
           setDeleteLoading(true);
           await batchDeleteWordBooks(selectedRowKeys as string[]);
           message.success('批量删除成功');
-          setSelectedRowKeys([]);
           fetchWordBooks();
         } catch (error: any) {
           // 从错误对象中提取错误信息
@@ -120,18 +112,7 @@ const WordBookPage: React.FC = () => {
     });
   };
   
-  // 清除选择
-  const handleClearSelection = () => {
-    setSelectedRowKeys([]);
-  };
-  
-  // 行选择配置
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    }
-  };
+
 
   // 保存单词本（创建或更新）
   const handleSaveWordBook = async (values: { name: string; description?: string }) => {
@@ -213,14 +194,16 @@ const WordBookPage: React.FC = () => {
     }
   };
 
-  // 过滤单词本
-  const filteredWordBooks = wordBooks.filter(wordBook =>
-    wordBook?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-    (wordBook?.description && wordBook.description.toLowerCase().includes(searchText.toLowerCase()))
-  );
+  // 搜索过滤函数
+  const handleSearch = (searchText: string, dataSource: WordBook[]) => {
+    return dataSource.filter(wordBook =>
+      wordBook?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      (wordBook?.description && wordBook.description.toLowerCase().includes(searchText.toLowerCase()))
+    );
+  };
 
   // 表格列定义
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: '单词本名称',
       dataIndex: 'name',
@@ -257,104 +240,85 @@ const WordBookPage: React.FC = () => {
         );
       },
     },
+  ];
+
+  // 搜索过滤选项
+  const filterOptions: FilterOption[] = [
     {
-      title: '操作',
-      key: 'action',
-      render: (_: any, record: WordBook) => (
-        <Space size="middle">
-          <Button
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewWordBook(record)}
-          >
-            查看
-          </Button>
-          <Button
-            type="link"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddWordToBook(record)}
-          >
-            添加单词
-          </Button>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEditWordBook(record)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDeleteWordBook(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
-      ),
+      key: 'search',
+      label: '搜索单词本',
+      type: 'input',
+      placeholder: '搜索单词本名称或描述',
+    },
+  ];
+
+  // 批量操作配置
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      danger: true,
+      onClick: handleBatchDelete,
     },
   ];
 
   return (
     <div className="wordbook-page">
-      <div className="wordbook-page-header">
-        <h1>单词本管理</h1>
-        <div className="wordbook-page-actions">
-          <Input
-            placeholder="搜索单词本名称或描述"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 300, marginRight: 16 }}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddWordBook}
-          >
-            创建单词本
-          </Button>
-        </div>
-      </div>
-
-      <div className="page-content">
-
-        {/* 批量操作区域 */}
-        {selectedRowKeys.length > 0 && (
-          <div className="batch-actions-area">
-            <span className="selected-count">
-              已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
-            </span>
-            <Space>
-              <Button size="small" onClick={handleClearSelection}>清除选择</Button>
-              <Button
-                danger
-                icon={<DeleteColumnOutlined />}
-                onClick={handleBatchDelete}
-                loading={deleteLoading}
-              >
-                批量删除
-              </Button>
-            </Space>
-          </div>
-        )}
-        
-        {/* 单词本表格 */}
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={filteredWordBooks}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 个单词本`,
-          }}
-        />
-      </div>
+      <UnifiedListPage<WordBook>
+        title="单词本管理"
+        description="管理您的单词本，创建、编辑和组织单词集合"
+        dataSource={wordBooks}
+        columns={columns}
+        loading={loading}
+        filterOptions={filterOptions}
+        onSearch={handleSearch}
+        batchActions={batchActions}
+        rowKey="id"
+        headerActions={[
+          {
+            key: 'add',
+            label: '创建单词本',
+            type: 'primary',
+            icon: <PlusOutlined />,
+            onClick: handleAddWordBook,
+          },
+        ]}
+        actionButtons={[
+          {
+            key: 'view',
+            label: '查看',
+            icon: <EyeOutlined />,
+            onClick: (record: WordBook) => handleViewWordBook(record),
+          },
+          {
+            key: 'addWord',
+            label: '添加单词',
+            icon: <PlusOutlined />,
+            onClick: (record: WordBook) => handleAddWordToBook(record),
+          },
+          {
+            key: 'edit',
+            label: '编辑',
+            icon: <EditOutlined />,
+            onClick: (record: WordBook) => handleEditWordBook(record),
+          },
+          {
+            key: 'delete',
+            label: '删除',
+            icon: <DeleteOutlined />,
+            danger: true,
+            onClick: (record: WordBook) => handleDeleteWordBook(record.id),
+          },
+        ]}
+        pagination={{
+          current: 1,
+          pageSize: 10,
+          total: wordBooks.length,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number) => `共 ${total} 个单词本`,
+        }}
+      />
 
       {/* 创建/编辑单词本模态框 */}
       {/* 单词本表单抽屉 */}

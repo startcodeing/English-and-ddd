@@ -37,7 +37,7 @@ export const getDictationExerciseById = async (id: string): Promise<StandardApiR
   try {
     const response = await axios.get<DictationExercise>(`${BASE_URL}/exercise/${id}`);
     // 检查响应是否已经是标准格式
-    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
       return response.data as StandardApiResponse<DictationExercise>;
     }
     // 否则包装为标准格式

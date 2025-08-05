@@ -1,0 +1,196 @@
+/* 搜索过滤区域样式 */
+.search-filter-area {
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+/* 表单项样式优化 */
+.search-filter-area .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-filter-area .ant-form-item-label {
+  padding-bottom: 4px;
+}
+
+.search-filter-area .ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+}
+
+/* 搜索输入框样式 */
+.search-filter-area .ant-input-search {
+  border-radius: 6px;
+}
+
+.search-filter-area .ant-input-search .ant-input {
+  border-radius: 6px 0 0 6px;
+}
+
+.search-filter-area .ant-input-search .ant-input-search-button {
+  border-radius: 0 6px 6px 0;
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.search-filter-area .ant-input-search .ant-input-search-button:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 选择器样式 */
+.search-filter-area .ant-select {
+  border-radius: 6px;
+}
+
+.search-filter-area .ant-select .ant-select-selector {
+  border-radius: 6px;
+}
+
+/* 日期选择器样式 */
+.search-filter-area .ant-picker {
+  border-radius: 6px;
+  width: 100%;
+}
+
+/* 按钮样式 */
+.search-filter-area .ant-btn {
+  border-radius: 6px;
+  height: 32px;
+  font-weight: 500;
+}
+
+.search-filter-area .ant-btn-primary {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.search-filter-area .ant-btn-primary:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 折叠面板样式 */
+.search-filter-area__collapse {
+  margin-top: 16px;
+  background: transparent;
+}
+
+.search-filter-area__collapse .ant-collapse-item {
+  border: none;
+  background: transparent;
+}
+
+.search-filter-area__collapse .ant-collapse-header {
+  padding: 8px 0;
+  font-weight: 500;
+  color: #1890ff;
+  background: transparent;
+}
+
+.search-filter-area__collapse .ant-collapse-content {
+  background: transparent;
+  border: none;
+}
+
+.search-filter-area__collapse .ant-collapse-content-box {
+  padding: 16px 0 0 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .search-filter-area {
+    padding: 16px;
+  }
+  
+  .search-filter-area .ant-col {
+    margin-bottom: 12px;
+  }
+  
+  .search-filter-area .ant-space {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-filter-area {
+    padding: 12px;
+  }
+  
+  .search-filter-area .ant-col {
+    margin-bottom: 8px;
+  }
+  
+  .search-filter-area .ant-btn {
+    width: 100%;
+  }
+  
+  .search-filter-area .ant-space {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .search-filter-area .ant-space-item {
+    width: 100%;
+  }
+}
+
+/* 活跃状态指示 */
+.search-filter-area .ant-btn[type="primary"] {
+  position: relative;
+}
+
+.search-filter-area .ant-btn[type="primary"]::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  background: #ff4d4f;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .search-filter-area {
+    background: #1f1f1f;
+    border-color: #303030;
+  }
+  
+  .search-filter-area .ant-form-item-label > label {
+    color: #a6a6a6;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .search-filter-area {
+    border: 2px solid #000;
+  }
+  
+  .search-filter-area .ant-form-item-label > label {
+    color: #000;
+    font-weight: 600;
+  }
+}
+
+/* 动画效果 */
+.search-filter-area .ant-collapse-content {
+  transition: all 0.3s ease;
+}
+
+.search-filter-area .ant-btn {
+  transition: all 0.2s ease;
+}
+
+.search-filter-area .ant-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, message, Modal, Tooltip } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Space, Button, message, Modal, Tooltip } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { getAllWords, createWord, updateWord, deleteWord, batchDeleteWords } from '../../../api';
 import { getAllPartOfSpeech } from '../../../api';
 import { Word, PartOfSpeech, WordMeaning } from '../../../types';
 import { difficultyLevelConfigs } from '../../../config';
-import {DifficultyLevel} from '../../../types';
+import { DifficultyLevel } from '../../../types';
 import WordDetailDrawer from './WordDetailDrawer';
-import './style.css';
-
-
+import { UnifiedListPage } from '../../../components/unified/UnifiedListPage';
+import type { TableColumn, FilterOption, BatchAction } from '../../../components/unified/UnifiedListPage';
 
 // 简化的单词类型，用于表格展示和表单处理
 interface SimpleWord {
@@ -60,7 +59,6 @@ const WordPage: React.FC = () => {
       const simpleWords = response.data.map(convertToSimpleWord);
       setWords(simpleWords);
     } catch (error: any) {
-      // 从错误对象中提取错误信息
       const errorMessage = error.errorMessage || '获取单词列表失败';
       message.error(`获取单词列表失败: ${errorMessage}`);
       console.error('获取单词列表失败:', error);
@@ -75,7 +73,6 @@ const WordPage: React.FC = () => {
       const response = await getAllPartOfSpeech();
       setPartsOfSpeech(response.data);
     } catch (error: any) {
-      // 从错误对象中提取错误信息
       const errorMessage = error.errorMessage || '获取词性列表失败';
       message.error(`获取词性列表失败: ${errorMessage}`);
       console.error('获取词性列表失败:', error);
@@ -143,7 +140,6 @@ const WordPage: React.FC = () => {
           message.success('删除成功');
           fetchWords();
         } catch (error: any) {
-          // 从错误对象中提取错误信息
           const errorMessage = error.errorMessage || '删除失败';
           message.error(`删除失败: ${errorMessage}`);
           console.error('删除失败:', error);
@@ -167,7 +163,6 @@ const WordPage: React.FC = () => {
           setSelectedRowKeys([]);
           fetchWords();
         } catch (error: any) {
-          // 从错误对象中提取错误信息
           const errorMessage = error.errorMessage || '批量删除失败';
           message.error(`批量删除失败: ${errorMessage}`);
           console.error('批量删除失败:', error);
@@ -177,54 +172,54 @@ const WordPage: React.FC = () => {
       }
     });
   };
-  
-  // 清除选择
-  const handleClearSelection = () => {
-    setSelectedRowKeys([]);
-  };
-
-
 
   // 搜索单词
-  const handleSearch = () => {
-    // 实际项目中可能需要调用API进行搜索
-    // 这里简单实现为前端过滤
+  const handleSearch = (searchText: string, dataSource: SimpleWord[]): SimpleWord[] => {
     if (!searchText) {
-      fetchWords();
-      return;
+      return dataSource;
     }
     
-    const filteredWords = words.filter(word => 
+    return dataSource.filter(word => 
       word.spelling.toLowerCase().includes(searchText.toLowerCase()) ||
       word.meaning.toLowerCase().includes(searchText.toLowerCase())
     );
-    
-    setWords(filteredWords);
+  };
+
+  // 重置搜索
+  const handleReset = () => {
+    setSearchText('');
+    fetchWords();
   };
 
   // 表格列定义
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: '拼写',
       dataIndex: 'spelling',
       key: 'spelling',
+      width: '20%',
       sorter: (a: SimpleWord, b: SimpleWord) => a.spelling.localeCompare(b.spelling),
       render: (text: string, record: SimpleWord) => (
-        <a onClick={() => handleViewWord(record)}>{text}</a>
+        <a className="table-link" onClick={() => handleViewWord(record)}>{text}</a>
       )
     },
     {
       title: '发音',
       dataIndex: 'phonetic',
-      key: 'phonetic'
+      key: 'phonetic',
+      width: '15%',
+      render: (text: string) => (
+        <span className="phonetic-text">{text || '-'}</span>
+      )
     },
     {
       title: '词性',
+      dataIndex: 'meanings',
       key: 'partsOfSpeech',
-      width: 150,
+      width: '15%',
       render: (record: SimpleWord) => {
         if (!record.meanings || record.meanings.length === 0) {
-          return '无';
+          return <span className="text-muted">无</span>;
         }
         
         // 获取所有词性名称
@@ -252,11 +247,9 @@ const WordPage: React.FC = () => {
         );
         
         return (
-          <div>
-            <Tooltip title={tooltipContent} placement="right">
-              <span>{posText}</span>
-            </Tooltip>
-          </div>
+          <Tooltip title={tooltipContent} placement="right">
+            <span className="pos-text">{posText}</span>
+          </Tooltip>
         );
       }
     },
@@ -264,105 +257,111 @@ const WordPage: React.FC = () => {
       title: '难度',
       dataIndex: 'difficultyLevel',
       key: 'difficultyLevel',
+      width: '10%',
       render: (difficultyLevel: DifficultyLevel) => {
         const config = difficultyLevelConfigs.find(config => config.value === difficultyLevel);
-        return config ? (
-          <span style={{ color: config.color }}>{config.label}</span>
-        ) : '未知';
+        if (!config) return <span className="text-muted">未知</span>;
+        
+        const className = `status-tag difficulty-${config.label.toLowerCase()}`;
+        return (
+          <span className={className}>{config.label}</span>
+        );
       },
       sorter: (a: SimpleWord, b: SimpleWord) => a.difficultyLevel - b.difficultyLevel
     },
     {
       title: '操作',
+      dataIndex: 'action',
       key: 'action',
+      width: '20%',
       render: (_: any, record: SimpleWord) => (
-        <Space size="middle">
+        <div className="table-action-buttons">
           <Button 
-            type="primary" 
+            type="text"
+            size="small"
             icon={<EyeOutlined />} 
             onClick={() => handleViewWord(record)}
-          >
-            查看详情
-          </Button>
+            title="查看详情"
+          />
           <Button 
+            type="text"
+            size="small"
             icon={<EditOutlined />} 
             onClick={() => handleEditWord(record)}
-          >
-            编辑
-          </Button>
+            title="编辑"
+          />
           <Button 
-            danger 
+            type="text"
+            size="small"
             icon={<DeleteOutlined />} 
             onClick={() => handleDeleteWord(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
+            className="ant-btn-dangerous"
+            title="删除"
+          />
+        </div>
       )
     }
   ];
 
+  // 筛选选项
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'difficultyLevel',
+      label: '难度等级',
+      type: 'select',
+      options: difficultyLevelConfigs.map(config => ({
+        label: config.label,
+        value: config.value
+      }))
+    },
+    {
+      key: 'partOfSpeech',
+      label: '词性',
+      type: 'select',
+      options: partsOfSpeech.map(pos => ({
+        label: `${pos.englishName} (${pos.chineseMeaning})`,
+        value: pos.id
+      }))
+    }
+  ];
+
+  // 批量操作
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      danger: true,
+      onClick: handleBatchDelete
+    }
+  ];
+
   return (
-    <div className="word-page">
-      <div className="word-page-header">
-        <h1>单词管理</h1>
-        <div className="word-page-actions">
-          <Input
-            placeholder="搜索单词或含义"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onPressEnter={handleSearch}
-            style={{ width: 200, marginRight: 16 }}
-            prefix={<SearchOutlined />}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddWord}
-          >
-            添加单词
-          </Button>
-        </div>
-      </div>
-      
-      {selectedRowKeys.length > 0 && (
-        <div className="batch-actions-area">
-          <span className="selected-count">已选择 {selectedRowKeys.length} 项</span>
-          <Button 
-            icon={<CloseCircleOutlined />} 
-            onClick={handleClearSelection}
-            style={{ marginRight: 8 }}
-          >
-            清除选择
-          </Button>
-          <Button 
-            type="primary" 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={handleBatchDelete}
-            loading={deleteLoading}
-          >
-            批量删除
-          </Button>
-        </div>
-      )}
-      
-      <Table
-        columns={columns}
+    <>
+      <UnifiedListPage
+        title="单词管理"
         dataSource={words}
-        rowKey="id"
+        columns={columns}
         loading={loading}
+        filterOptions={filterOptions}
+        onSearch={handleSearch}
+        batchActions={batchActions}
+        rowKey="id"
+        headerActions={[
+          {
+            key: 'add',
+            label: '添加单词',
+            type: 'primary',
+            icon: <PlusOutlined />,
+            onClick: handleAddWord,
+          },
+        ]}
         pagination={{
+          current: 1,
           pageSize: 10,
+          total: words.length,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 个单词`
-        }}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: (selectedKeys) => {
-            setSelectedRowKeys(selectedKeys);
-          }
+          showTotal: (total: number) => `共 ${total} 个单词`,
         }}
       />
       
@@ -378,7 +377,7 @@ const WordPage: React.FC = () => {
           handleCloseDrawer();
         }}
       />
-    </div>
+    </>
   );
 };
 

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一列表页面设计演示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.0.0/reset.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 主容器 */
+        .page-container {
+            padding: 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 页面头部 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0;
+        }
+
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 搜索和筛选区域 */
+        .search-filter-section {
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* 批量操作区域 */
+        .batch-actions {
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            border: 1px solid #91d5ff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .selected-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1890ff;
+            font-weight: 500;
+        }
+
+        .selected-count {
+            background: #1890ff;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .batch-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 表格容器 */
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table thead {
+            background: #fafafa;
+        }
+
+        .data-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #262626;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .data-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .data-table tbody tr.selected {
+            background-color: #e6f7ff;
+        }
+
+        /* 表格内容样式 */
+        .table-link {
+            color: #1890ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .table-link:hover {
+            color: #40a9ff;
+            text-decoration: underline;
+        }
+
+        .content-preview {
+            color: #666;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .tag.difficulty-easy {
+            background: #f6ffed;
+            border-color: #b7eb8f;
+            color: #52c41a;
+        }
+
+        .tag.difficulty-medium {
+            background: #fff7e6;
+            border-color: #ffd591;
+            color: #fa8c16;
+        }
+
+        .tag.difficulty-hard {
+            background: #fff2f0;
+            border-color: #ffb3b3;
+            color: #ff4d4f;
+        }
+
+        .tag.status-draft {
+            background: #f0f0f0;
+            border-color: #d9d9d9;
+            color: #666;
+        }
+
+        .tag.status-published {
+            background: #f6ffed;
+            border-color: #b7eb8f;
+            color: #52c41a;
+        }
+
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 分页器 */
+        .pagination {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
+        }
+
+        .btn.primary {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+
+        .btn.primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+
+        .btn.danger {
+            background: #ff4d4f;
+            border-color: #ff4d4f;
+            color: #fff;
+        }
+
+        .btn.danger:hover {
+            background: #ff7875;
+            border-color: #ff7875;
+        }
+
+        .btn.small {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .btn.text {
+            border: none;
+            background: transparent;
+            padding: 4px 8px;
+        }
+
+        /* 输入框样式 */
+        .input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* 复选框样式 */
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .page-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .search-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                max-width: none;
+            }
+
+            .batch-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .data-table {
+                min-width: 800px;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none;
+        }
+
+        /* 图标样式 */
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">文章管理</h1>
+            <div class="page-actions">
+                <button class="btn primary">
+                    <span class="icon">+</span>
+                    添加文章
+                </button>
+            </div>
+        </div>
+
+        <!-- 搜索和筛选区域 -->
+        <div class="search-filter-section">
+            <div class="search-row">
+                <input type="text" class="input search-input" placeholder="搜索标题、内容、作者或来源" id="searchInput">
+                <div class="filter-group">
+                    <select class="select" id="difficultyFilter">
+                        <option value="">选择难度</option>
+                        <option value="easy">初级</option>
+                        <option value="medium">中级</option>
+                        <option value="hard">高级</option>
+                    </select>
+                    <select class="select" id="statusFilter">
+                        <option value="">选择状态</option>
+                        <option value="draft">草稿</option>
+                        <option value="published">已发布</option>
+                    </select>
+                    <button class="btn" onclick="handleSearch()">搜索</button>
+                    <button class="btn" onclick="handleReset()">重置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 批量操作区域 -->
+        <div class="batch-actions hidden" id="batchActions">
+            <div class="selected-info">
+                <span>已选择</span>
+                <span class="selected-count" id="selectedCount">0</span>
+                <span>项</span>
+            </div>
+            <div class="batch-buttons">
+                <button class="btn small" onclick="clearSelection()">清除选择</button>
+                <button class="btn small danger" onclick="batchDelete()">批量删除</button>
+            </div>
+        </div>
+
+        <!-- 表格容器 -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>标题</th>
+                        <th>内容</th>
+                        <th>作者/来源</th>
+                        <th>发布日期</th>
+                        <th>难度</th>
+                        <th>状态</th>
+                        <th>关联</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 数据行将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+            
+            <!-- 分页器 -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    共 <span id="totalCount">0</span> 条记录
+                </div>
+                <div class="pagination-controls">
+                    <button class="btn small" onclick="changePage(-1)">上一页</button>
+                    <span>第 <span id="currentPage">1</span> 页，共 <span id="totalPages">1</span> 页</span>
+                    <button class="btn small" onclick="changePage(1)">下一页</button>
+                    <select class="select" id="pageSizeSelect" onchange="changePageSize()">
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            {
+                id: 1,
+                title: "英语学习方法探讨",
+                content: "本文探讨了多种有效的英语学习方法，包括听说读写四个方面的技巧...",
+                author: "张老师",
+                source: "教育周刊",
+                publishDate: "2024-01-15",
+                difficulty: "medium",
+                status: "published",
+                sentences: 15,
+                words: 8
+            },
+            {
+                id: 2,
+                title: "商务英语写作技巧",
+                content: "在商务环境中，良好的英语写作能力是必不可少的。本文将介绍一些实用的写作技巧...",
+                author: "李经理",
+                source: "商务英语网",
+                publishDate: "2024-01-12",
+                difficulty: "hard",
+                status: "published",
+                sentences: 22,
+                words: 12
+            },
+            {
+                id: 3,
+                title: "日常英语口语练习",
+                content: "提高英语口语水平需要大量的练习。本文提供了一些日常口语练习的方法和技巧...",
+                author: "王老师",
+                source: "口语训练营",
+                publishDate: "2024-01-10",
+                difficulty: "easy",
+                status: "draft",
+                sentences: 18,
+                words: 6
+            },
+            {
+                id: 4,
+                title: "英语语法基础知识",
+                content: "语法是英语学习的基础，掌握好语法规则对于提高英语水平至关重要...",
+                author: "陈教授",
+                source: "语法学习网",
+                publishDate: "2024-01-08",
+                difficulty: "medium",
+                status: "published",
+                sentences: 25,
+                words: 15
+            },
+            {
+                id: 5,
+                title: "英语阅读理解技巧",
+                content: "阅读理解是英语考试中的重要部分，本文将分享一些提高阅读理解能力的技巧...",
+                author: "刘老师",
+                source: "阅读训练网",
+                publishDate: "2024-01-05",
+                difficulty: "hard",
+                status: "published",
+                sentences: 20,
+                words: 10
+            }
+        ];
+
+        let currentData = [...mockData];
+        let selectedItems = new Set();
+        let currentPage = 1;
+        let pageSize = 10;
+
+        // 初始化页面
+        function init() {
+            renderTable();
+            updatePagination();
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = currentData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = pageData.map(item => `
+                <tr class="${selectedItems.has(item.id) ? 'selected' : ''}">
+                    <td>
+                        <input type="checkbox" class="checkbox" 
+                               ${selectedItems.has(item.id) ? 'checked' : ''}
+                               onchange="toggleSelect(${item.id})">
+                    </td>
+                    <td>
+                        <a href="#" class="table-link">${item.title}</a>
+                    </td>
+                    <td>
+                        <div class="content-preview">${item.content}</div>
+                    </td>
+                    <td>
+                        <div>${item.author}</div>
+                        <div style="color: #666; font-size: 12px;">${item.source}</div>
+                    </td>
+                    <td>${item.publishDate}</td>
+                    <td>
+                        <span class="tag difficulty-${item.difficulty}">
+                            ${getDifficultyLabel(item.difficulty)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="tag status-${item.status}">
+                            ${getStatusLabel(item.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <span class="tag" style="background: #e6f7ff; border-color: #91d5ff; color: #1890ff;">
+                                ${item.sentences}句
+                            </span>
+                            <span class="tag" style="background: #fff7e6; border-color: #ffd591; color: #fa8c16;">
+                                ${item.words}词
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn text small">阅读</button>
+                            <button class="btn text small">编辑</button>
+                            <button class="btn text small danger">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateSelectAllCheckbox();
+        }
+
+        // 获取难度标签
+        function getDifficultyLabel(difficulty) {
+            const labels = {
+                'easy': '初级',
+                'medium': '中级',
+                'hard': '高级'
+            };
+            return labels[difficulty] || difficulty;
+        }
+
+        // 获取状态标签
+        function getStatusLabel(status) {
+            const labels = {
+                'draft': '草稿',
+                'published': '已发布'
+            };
+            return labels[status] || status;
+        }
+
+        // 切换选择
+        function toggleSelect(id) {
+            if (selectedItems.has(id)) {
+                selectedItems.delete(id);
+            } else {
+                selectedItems.add(id);
+            }
+            updateBatchActions();
+            renderTable();
+        }
+
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = currentData.slice(startIndex, endIndex);
+
+            if (selectAll.checked) {
+                pageData.forEach(item => selectedItems.add(item.id));
+            } else {
+                pageData.forEach(item => selectedItems.delete(item.id));
+            }
+
+            updateBatchActions();
+            renderTable();
+        }
+
+        // 更新全选复选框状态
+        function updateSelectAllCheckbox() {
+            const selectAll = document.getElementById('selectAll');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = currentData.slice(startIndex, endIndex);
+            
+            const selectedInPage = pageData.filter(item => selectedItems.has(item.id)).length;
+            
+            if (selectedInPage === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            } else if (selectedInPage === pageData.length) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            }
+        }
+
+        // 更新批量操作区域
+        function updateBatchActions() {
+            const batchActions = document.getElementById('batchActions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (selectedItems.size > 0) {
+                batchActions.classList.remove('hidden');
+                selectedCount.textContent = selectedItems.size;
+            } else {
+                batchActions.classList.add('hidden');
+            }
+        }
+
+        // 清除选择
+        function clearSelection() {
+            selectedItems.clear();
+            updateBatchActions();
+            renderTable();
+        }
+
+        // 批量删除
+        function batchDelete() {
+            if (selectedItems.size === 0) return;
+            
+            if (confirm(`确定要删除选中的 ${selectedItems.size} 项吗？`)) {
+                currentData = currentData.filter(item => !selectedItems.has(item.id));
+                selectedItems.clear();
+                updateBatchActions();
+                renderTable();
+                updatePagination();
+            }
+        }
+
+        // 搜索
+        function handleSearch() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            currentData = mockData.filter(item => {
+                const matchesSearch = !searchText || 
+                    item.title.toLowerCase().includes(searchText) ||
+                    item.content.toLowerCase().includes(searchText) ||
+                    item.author.toLowerCase().includes(searchText) ||
+                    item.source.toLowerCase().includes(searchText);
+                
+                const matchesDifficulty = !difficultyFilter || item.difficulty === difficultyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+
+                return matchesSearch && matchesDifficulty && matchesStatus;
+            });
+
+            currentPage = 1;
+            selectedItems.clear();
+            updateBatchActions();
+            renderTable();
+            updatePagination();
+        }
+
+        // 重置
+        function handleReset() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            currentData = [...mockData];
+            currentPage = 1;
+            selectedItems.clear();
+            updateBatchActions();
+            renderTable();
+            updatePagination();
+        }
+
+        // 更新分页信息
+        function updatePagination() {
+            const totalCount = document.getElementById('totalCount');
+            const currentPageSpan = document.getElementById('currentPage');
+            const totalPages = document.getElementById('totalPages');
+            
+            const totalPagesCount = Math.ceil(currentData.length / pageSize);
+            
+            totalCount.textContent = currentData.length;
+            currentPageSpan.textContent = currentPage;
+            totalPages.textContent = totalPagesCount || 1;
+        }
+
+        // 翻页
+        function changePage(direction) {
+            const totalPages = Math.ceil(currentData.length / pageSize);
+            
+            if (direction === -1 && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 1 && currentPage < totalPages) {
+                currentPage++;
+            }
+            
+            renderTable();
+            updatePagination();
+        }
+
+        // 改变页面大小
+        function changePageSize() {
+            const pageSizeSelect = document.getElementById('pageSizeSelect');
+            pageSize = parseInt(pageSizeSelect.value);
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

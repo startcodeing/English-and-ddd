@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, message, Tag, Tooltip } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, DeleteColumnOutlined } from '@ant-design/icons';
+import { Modal, message, Tag, Tooltip, Space } from 'antd';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getAllSentences, createSentence, updateSentence, deleteSentence, batchDeleteSentences } from '../../../api/sentence';
 import { Sentence } from '../../../types';
+import { UnifiedListPage } from '../../../components/unified/UnifiedListPage';
+import { TableColumn, FilterOption, BatchAction } from '../../../components/unified/UnifiedListPage';
 import SentenceFormDrawer from './SentenceFormDrawer';
 import SentenceViewDrawer from './SentenceViewDrawer';
 import './style.css';
-
-const { TextArea } = Input;
 
 const SentencePage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +20,6 @@ const SentencePage: React.FC = () => {
   const [editingSentence, setEditingSentence] = useState<Sentence | null>(null);
   const [viewingSentence, setViewingSentence] = useState<Sentence | null>(null);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [searchText, setSearchText] = useState<string>('');
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   // 获取句子列表
@@ -84,12 +82,7 @@ const SentencePage: React.FC = () => {
   };
 
   // 批量删除句子
-  const handleBatchDelete = async () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请至少选择一个句子');
-      return;
-    }
-
+  const handleBatchDelete = async (selectedRowKeys: React.Key[]) => {
     Modal.confirm({
       title: '确认批量删除',
       content: `确定要删除选中的 ${selectedRowKeys.length} 个句子吗？`,
@@ -98,7 +91,6 @@ const SentencePage: React.FC = () => {
           setDeleteLoading(true);
           await batchDeleteSentences(selectedRowKeys as string[]);
           message.success('批量删除成功');
-          setSelectedRowKeys([]);
           fetchSentences();
         } catch (error) {
           message.error('批量删除失败');
@@ -110,18 +102,7 @@ const SentencePage: React.FC = () => {
     });
   };
 
-  // 行选择配置
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    }
-  };
 
-  // 清除选择
-  const handleClearSelection = () => {
-    setSelectedRowKeys([]);
-  };
 
   // 保存句子（创建或更新）
   const handleSaveSentence = async (values: { englishContent: string; chineseMeaning: string; grammarAnalysis?: string }) => {
@@ -152,25 +133,18 @@ const SentencePage: React.FC = () => {
     }
   };
 
-  // 搜索句子
-  const handleSearch = async () => {
-    if (!searchText) {
-      fetchSentences();
-      return;
-    }
+  // 搜索过滤函数
+  const handleSearch = (searchText: string, dataSource: Sentence[]) => {
+    if (!searchText) return dataSource;
     
-    // 在实际应用中，应该调用API进行搜索
-    // 这里简单实现为前端过滤
-    const filteredSentences = sentences.filter(sentence => 
+    return dataSource.filter(sentence => 
       sentence.englishContent.toLowerCase().includes(searchText.toLowerCase()) ||
       sentence.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
     );
-    
-    setSentences(filteredSentences);
   };
 
-  // 表格列定义
-  const columns = [
+  // 表格列配置
+  const columns: TableColumn[] = [
     {
       title: '英文内容',
       dataIndex: 'englishContent',
@@ -225,93 +199,79 @@ const SentencePage: React.FC = () => {
           )}
         </Space>
       )
-    },
+    }
+  ];
+
+  // 筛选选项配置
+  const filterOptions: FilterOption[] = [
     {
-      title: '操作',
-      key: 'action',
-      width: '25%',
-      render: (_: any, record: Sentence) => (
-        <Space size="middle">
-          <Button 
-            type="primary" 
-            ghost
-            icon={<InfoCircleOutlined />} 
-            onClick={() => handleViewSentence(record)}
-          >
-            查看
-          </Button>
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            onClick={() => handleEditSentence(record)}
-          >
-            编辑
-          </Button>
-          <Button 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDeleteSentence(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
-      )
+      key: 'search',
+      label: '搜索',
+      type: 'input',
+      placeholder: '搜索英文内容或中文含义'
+    }
+  ];
+
+  // 批量操作配置
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: handleBatchDelete
     }
   ];
 
   return (
     <div className="sentence-page">
-      <div className="sentence-page-header">
-        <h1>句子管理</h1>
-        <div className="sentence-page-actions">
-          <Input
-            placeholder="搜索英文内容或中文含义"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onPressEnter={handleSearch}
-            style={{ width: 200, marginRight: 16 }}
-            prefix={<SearchOutlined />}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddSentence}
-          >
-            添加句子
-          </Button>
-        </div>
-      </div>
-      
-      {selectedRowKeys.length > 0 && (
-        <div className="batch-actions-area">
-          <span className="selected-count">
-            已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
-          </span>
-          <Space>
-            <Button size="small" onClick={handleClearSelection}>清除选择</Button>
-            <Button
-              danger
-              icon={<DeleteColumnOutlined />}
-              onClick={handleBatchDelete}
-              loading={deleteLoading}
-            >
-              批量删除
-            </Button>
-          </Space>
-        </div>
-      )}
-      
-      <Table
-        rowSelection={rowSelection}
-        columns={columns}
+      <UnifiedListPage<Sentence>
+        title="句子管理"
+        description="管理英语句子信息"
         dataSource={sentences}
-        rowKey="id"
+        columns={columns}
         loading={loading}
+        filterOptions={filterOptions}
+        onSearch={handleSearch}
+        batchActions={batchActions}
+        rowKey="id"
+        headerActions={[
+          {
+            key: 'add',
+            label: '添加句子',
+            type: 'primary',
+            icon: <PlusOutlined />,
+            onClick: handleAddSentence
+          }
+        ]}
+        actionButtons={[
+          {
+            key: 'view',
+            label: '查看',
+            icon: <InfoCircleOutlined />,
+            onClick: (record: Sentence) => handleViewSentence(record)
+          },
+          {
+            key: 'edit',
+            label: '编辑',
+            icon: <EditOutlined />,
+            onClick: (record: Sentence) => handleEditSentence(record)
+          },
+          {
+            key: 'delete',
+            label: '删除',
+            icon: <DeleteOutlined />,
+            danger: true,
+            onClick: (record: Sentence) => handleDeleteSentence(record.id)
+          }
+        ]}
         pagination={{
+          current: 1,
           pageSize: 10,
+          total: sentences.length,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 个句子`
+          showTotal: (total: number) => `共 ${total} 个句子`
         }}
       />
       

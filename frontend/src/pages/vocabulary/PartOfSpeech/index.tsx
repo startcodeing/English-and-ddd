@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, message } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { Modal, message } from 'antd';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { getAllPartOfSpeech, createPartOfSpeech, updatePartOfSpeech, deletePartOfSpeech, batchDeletePartOfSpeech } from '../../../api/partOfSpeech';
 import { PartOfSpeech } from '@/types';
+import { UnifiedListPage } from '../../../components/unified/UnifiedListPage';
+import { TableColumn, FilterOption, BatchAction } from '../../../components/unified/UnifiedListPage';
 import PartOfSpeechFormDrawer from './PartOfSpeechFormDrawer';
 import PartOfSpeechDetailDrawer from './PartOfSpeechDetailDrawer';
 import './style.css';
@@ -10,12 +12,9 @@ import './style.css';
 const PartOfSpeechPage: React.FC = () => {
   // 状态定义
   const [partsOfSpeech, setPartsOfSpeech] = useState<PartOfSpeech[]>([]);
-  const [filteredPartsOfSpeech, setFilteredPartsOfSpeech] = useState<PartOfSpeech[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [editingPartOfSpeech, setEditingPartOfSpeech] = useState<PartOfSpeech | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [detailDrawerVisible, setDetailDrawerVisible] = useState<boolean>(false);
   const [viewingPartOfSpeech, setViewingPartOfSpeech] = useState<PartOfSpeech | null>(null);
@@ -31,7 +30,6 @@ const PartOfSpeechPage: React.FC = () => {
         commonPhrases: Array.isArray(item.commonPhrases) ? item.commonPhrases : []
       }));
       setPartsOfSpeech(processedData);
-      setFilteredPartsOfSpeech(processedData);
     } catch (error: any) {
       console.error('获取词性列表失败:', error);
       // 从错误对象中提取错误信息
@@ -139,12 +137,7 @@ const PartOfSpeechPage: React.FC = () => {
   };
 
   // 批量删除词性
-  const handleBatchDelete = async () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请至少选择一个词性');
-      return;
-    }
-
+  const handleBatchDelete = async (selectedRowKeys: React.Key[]) => {
     Modal.confirm({
       title: '确认批量删除',
       content: `确定要删除选中的 ${selectedRowKeys.length} 个词性吗？`,
@@ -153,7 +146,6 @@ const PartOfSpeechPage: React.FC = () => {
           setDeleteLoading(true);
           await batchDeletePartOfSpeech(selectedRowKeys as string[]);
           message.success('批量删除成功');
-          setSelectedRowKeys([]);
           await fetchPartsOfSpeech();
         } catch (error: any) {
           console.error('批量删除失败:', error);
@@ -167,35 +159,18 @@ const PartOfSpeechPage: React.FC = () => {
     });
   };
 
-  // 清除选择
-  const handleClearSelection = () => {
-    setSelectedRowKeys([]);
-  };
-
-  // 搜索词性
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-    if (!value) {
-      setFilteredPartsOfSpeech(partsOfSpeech);
-      return;
-    }
+  // 搜索过滤函数
+  const handleSearch = (searchText: string, dataSource: PartOfSpeech[]) => {
+    if (!searchText) return dataSource;
     
-    const filtered = partsOfSpeech.filter(pos => 
-      pos.englishName.toLowerCase().includes(value.toLowerCase()) ||
-      pos.chineseMeaning.toLowerCase().includes(value.toLowerCase())
+    return dataSource.filter(pos => 
+      pos.englishName.toLowerCase().includes(searchText.toLowerCase()) ||
+      pos.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
     );
-    
-    // 确保搜索结果中的 commonPhrases 字段也始终是数组类型
-    const processedFiltered = filtered.map(item => ({
-      ...item,
-      commonPhrases: Array.isArray(item.commonPhrases) ? item.commonPhrases : []
-    }));
-    
-    setFilteredPartsOfSpeech(processedFiltered);
   };
 
-  // 表格列定义
-  const columns = [
+  // 表格列配置
+  const columns: TableColumn[] = [
     {
       title: '英文名称',
       dataIndex: 'englishName',
@@ -238,94 +213,78 @@ const PartOfSpeechPage: React.FC = () => {
         const plainText = firstPhrase.replace(/<[^>]+>/g, '');
         return (phrases.length > 1 ? `${plainText.substring(0, 30)}... (共${phrases.length}个)` : plainText);
       }
-    },
+    }
+  ];
+
+  // 筛选选项配置
+  const filterOptions: FilterOption[] = [
     {
-      title: '操作',
-      key: 'action',
-      render: (_: any, record: PartOfSpeech) => (
-        <Space size="middle">
-          <Button 
-            type="default" 
-            icon={<EyeOutlined />} 
-            onClick={() => handleViewPartOfSpeech(record)}
-          >
-            查看
-          </Button>
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            onClick={() => handleEditPartOfSpeech(record)}
-          >
-            编辑
-          </Button>
-          <Button 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDeletePartOfSpeech(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
-      )
+      key: 'search',
+      label: '搜索',
+      type: 'input',
+      placeholder: '搜索英文名称或中文含义'
+    }
+  ];
+
+  // 批量操作配置
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      danger: true,
+      onClick: handleBatchDelete
     }
   ];
 
   return (
     <div className="part-of-speech-page">
-      <div className="part-of-speech-page-header">
-        <h1>词性管理</h1>
-        <div className="part-of-speech-page-actions">
-          <Input
-            placeholder="搜索英文名称或中文含义"
-            value={searchText}
-            onChange={e => handleSearch(e.target.value)}
-            style={{ width: 200, marginRight: 16 }}
-            prefix={<SearchOutlined />}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddPartOfSpeech}
-          >
-            添加词性
-          </Button>
-        </div>
-      </div>
-      
-      {/* 批量操作区域 */}
-      {selectedRowKeys.length > 0 && (
-        <div className="batch-actions-area">
-          <div className="selected-count">
-            已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
-          </div>
-          <Button 
-            onClick={handleClearSelection} 
-            icon={<CloseCircleOutlined />}
-            style={{ marginRight: 8 }}
-          >
-            清除选择
-          </Button>
-          <Button 
-            type="primary" 
-            danger 
-            onClick={handleBatchDelete} 
-            loading={deleteLoading}
-            icon={<DeleteOutlined />}
-          >
-            批量删除
-          </Button>
-        </div>
-      )}
-      
-      <Table
+      <UnifiedListPage
+        title="词性管理"
+        description="管理英语词性信息"
+        dataSource={partsOfSpeech}
         columns={columns}
-        dataSource={filteredPartsOfSpeech}
-        rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: (keys) => setSelectedRowKeys(keys),
+        filterOptions={filterOptions}
+        onSearch={handleSearch}
+        batchActions={batchActions}
+        rowKey="id"
+        headerActions={[
+          {
+            key: 'add',
+            label: '添加词性',
+            type: 'primary',
+            icon: <PlusOutlined />,
+            onClick: handleAddPartOfSpeech,
+          },
+        ]}
+        actionButtons={[
+          {
+            key: 'view',
+            label: '查看',
+            icon: <EyeOutlined />,
+            onClick: (record: PartOfSpeech) => handleViewPartOfSpeech(record)
+          },
+          {
+            key: 'edit',
+            label: '编辑',
+            icon: <EditOutlined />,
+            onClick: (record: PartOfSpeech) => handleEditPartOfSpeech(record)
+          },
+          {
+            key: 'delete',
+            label: '删除',
+            icon: <DeleteOutlined />,
+            danger: true,
+            onClick: (record: PartOfSpeech) => handleDeletePartOfSpeech(record.id)
+          }
+        ]}
+        pagination={{
+          current: 1,
+          pageSize: 10,
+          total: partsOfSpeech.length,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number) => `共 ${total} 个词性`,
         }}
       />
       

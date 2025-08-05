@@ -1,42 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
-import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Button, Modal, Select, Tag, Typography, message } from 'antd';
+import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getWritingPractices, countWritingPractices, deleteWritingPractice, batchDeleteWritingPractices, WritingPractice, WritingPracticeQuery } from '../../../api/writingPractice';
 import { getWritingTopicById, getWritingTopics, WritingTopic } from '../../../api/writingTopic';
+import UnifiedListPage, { TableColumn, FilterOption, BatchAction, HeaderAction, ActionButton } from '../../../components/unified/UnifiedListPage';
 
 const { confirm } = Modal;
 const { Text } = Typography;
 
 const WritingPracticeListPage: React.FC = () => {
   const navigate = useNavigate();
-  const [form] = Form.useForm();
   
   // 状态管理
   const [practices, setPractices] = useState<WritingPractice[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
-  const [current, setCurrent] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [filters, setFilters] = useState<Partial<WritingPracticeQuery>>({});
-  const [searchParams, setSearchParams] = useState<WritingPracticeQuery>({});
-  // 移除详情弹窗相关状态
   const [topicsMap, setTopicsMap] = useState<Record<number, WritingTopic>>({});
   const [allTopics, setAllTopics] = useState<WritingTopic[]>([]);
   const [topicsLoading, setTopicsLoading] = useState<boolean>(false);
 
   // 获取写作练习列表
-  const fetchPractices = async (page = 1, pageSize = 10) => {
+  const fetchPractices = async (queryParams: WritingPracticeQuery) => {
     setLoading(true);
     try {
-      // 构建查询参数
-      const queryParams: WritingPracticeQuery = {
-        pageNum: page,
-        pageSize,
-        ...filters
-      };
-
       // 并行请求写作练习列表和总数
       const [practicesResponse, countResponse] = await Promise.all([
         getWritingPractices(queryParams),
@@ -126,36 +114,16 @@ const WritingPracticeListPage: React.FC = () => {
     }
   };
 
-  // 组件挂载和筛选条件变化时获取数据
-  useEffect(() => {
-    fetchPractices(current, pageSize);
-  }, [current, pageSize, filters]);
-  
-  // 组件加载时获取所有主题
+  // 组件加载时获取所有主题和初始数据
   useEffect(() => {
     fetchAllTopics();
+    fetchPractices({ pageNum: 1, pageSize: 10 });
   }, []);
 
-  // 处理搜索
-  const handleSearch = (values: any) => {
-    setCurrent(1); // 重置到第一页
-    setFilters(values);
-  };
-
-  // 重置搜索
-  const handleReset = () => {
-    form.resetFields();
-    setCurrent(1);
-    setFilters({});
-  };
-
-  // 处理分页变化
-  const handlePageChange = (page: number, pageSize?: number) => {
-    setCurrent(page);
-    if (pageSize) {
-      setPageSize(pageSize);
-    }
-    fetchPractices(page, pageSize || 10);
+  // 处理数据刷新
+  const handleRefresh = () => {
+    fetchAllTopics();
+    fetchPractices({ pageNum: 1, pageSize: 10 });
   };
 
   // 删除写作练习
@@ -169,7 +137,7 @@ const WritingPracticeListPage: React.FC = () => {
           const response = await deleteWritingPractice(id);
           if (response.success) {
             message.success('删除成功');
-            fetchPractices();
+            fetchPractices({ pageNum: 1, pageSize: 10 });
           } else {
             message.error(response.message || '删除失败');
           }
@@ -182,36 +150,25 @@ const WritingPracticeListPage: React.FC = () => {
   };
 
   // 批量删除写作练习
-  const handleBatchDelete = (ids: number[]) => {
-    if (ids.length === 0) {
-      message.warning('请选择要删除的项目');
-      return;
+  const handleBatchDelete = async (ids: number[]) => {
+    try {
+      const response = await batchDeleteWritingPractices(ids);
+      if (response.success) {
+        message.success('批量删除成功');
+        return true;
+      } else {
+        message.error(response.message || '批量删除失败');
+        return false;
+      }
+    } catch (error) {
+      console.error('批量删除写作练习出错:', error);
+      message.error('批量删除失败');
+      return false;
     }
-
-    confirm({
-      title: '确认批量删除',
-      icon: <ExclamationCircleOutlined />,
-      content: `确定要删除选中的 ${ids.length} 个写作练习吗？此操作不可恢复。`,
-      onOk: async () => {
-        try {
-          const response = await batchDeleteWritingPractices(ids);
-          if (response.success) {
-            message.success('批量删除成功');
-            fetchPractices();
-            setSelectedRowKeys([]);
-          } else {
-            message.error(response.message || '批量删除失败');
-          }
-        } catch (error) {
-          console.error('批量删除写作练习出错:', error);
-          message.error('批量删除失败');
-        }
-      },
-    });
   };
 
   // 表格列定义
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -271,138 +228,141 @@ const WritingPracticeListPage: React.FC = () => {
       width: 180,
       render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
     },
+  ];
+
+  // 筛选选项
+  const filterOptions: FilterOption[] = [
     {
-      title: '操作',
-      key: 'action',
-      width: 150,
-      render: (_: any, record: WritingPractice) => (
-        <Space size="middle">
-          <Button 
-            type="text" 
-            icon={<EyeOutlined />} 
-            onClick={() => navigate(`/practice/writing/view/${record.id}`)}
-          />
-          {record.status === 'draft' && (
-            <Button 
-              type="text" 
-              icon={<EditOutlined />} 
-              onClick={() => navigate(`/practice/writing/edit/${record.id}`)}
-            />
-          )}
-          <Button 
-            type="text" 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDelete(record.id)}
-          />
-        </Space>
-      ),
+      key: 'status',
+      label: '状态',
+      type: 'select',
+      options: [
+        { value: 'draft', label: '草稿' },
+        { value: 'published', label: '已提交' },
+      ],
+    },
+    {
+      key: 'topicId',
+      label: '主题描述',
+      type: 'select',
+      options: allTopics.map(topic => ({
+        value: topic.id,
+        label: topic.description,
+      })),
     },
   ];
 
-  // 表格选择配置
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (selectedKeys: React.Key[]) => {
-      setSelectedRowKeys(selectedKeys);
+  // 批量操作
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      danger: true,
+      onClick: (selectedRowKeys: React.Key[]) => {
+        const ids = selectedRowKeys as number[];
+        confirm({
+          title: '确认批量删除',
+          icon: <ExclamationCircleOutlined />,
+          content: `确定要删除选中的 ${ids.length} 个写作练习吗？此操作不可恢复。`,
+          onOk: async () => {
+            const success = await handleBatchDelete(ids);
+            if (success) {
+              fetchPractices({ pageNum: 1, pageSize: 10 });
+            }
+          },
+        });
+      },
     },
-  };
+  ];
+
+  // 头部操作
+  const headerActions: HeaderAction[] = [
+    {
+      key: 'create',
+      label: '新建写作练习',
+      type: 'primary',
+      icon: <PlusOutlined />,
+      onClick: () => navigate('/practice/writing/create'),
+    },
+  ];
+
+  // 操作按钮
+  const actionButtons: ActionButton[] = [
+    {
+      key: 'view',
+      label: '查看',
+      icon: <EyeOutlined />,
+      onClick: (record: WritingPractice) => navigate(`/practice/writing/view/${record.id}`),
+    },
+    {
+      key: 'edit',
+      label: '编辑',
+      icon: <EditOutlined />,
+      onClick: (record: WritingPractice) => {
+        if (record.status === 'draft') {
+          navigate(`/practice/writing/edit/${record.id}`);
+        }
+      },
+    },
+    {
+      key: 'delete',
+      label: '删除',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: (record: WritingPractice) => {
+        confirm({
+          title: '确认删除',
+          icon: <ExclamationCircleOutlined />,
+          content: '确定要删除这个写作练习吗？此操作不可恢复。',
+          onOk: async () => {
+            try {
+              const response = await deleteWritingPractice(record.id);
+              if (response.success) {
+                message.success('删除成功');
+                fetchPractices({ pageNum: 1, pageSize: 10 });
+              } else {
+                message.error(response.message || '删除失败');
+              }
+            } catch (error) {
+              console.error('删除写作练习出错:', error);
+              message.error('删除失败');
+            }
+          },
+        });
+      },
+    },
+  ];
 
   return (
-    <Card title="写作练习管理">
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleSearch}
-        style={{ marginBottom: 16 }}
-      >
-        <Form.Item name="status" label="状态">
-          <Select
-            placeholder="请选择状态"
-            allowClear
-            style={{ width: 120 }}
-            options={[
-              { value: 'draft', label: '草稿' },
-              { value: 'published', label: '已提交' },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item name="topicId" label="主题描述">
-          <Select
-            placeholder="请选择主题"
-            allowClear
-            showSearch
-            loading={topicsLoading}
-            style={{ width: 200 }}
-            optionFilterProp="label"
-            options={allTopics.map(topic => ({
-              value: topic.id,
-              label: topic.description,
-            }))}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              搜索
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
-
-      {/* 操作按钮 */}
-      <Row style={{ marginBottom: 16 }}>
-        <Col span={24}>
-          <Space>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/practice/writing/create')}
-            >
-              新建写作练习
-            </Button>
-            <Button
-              danger
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => handleBatchDelete(selectedRowKeys as number[])}
-            >
-              批量删除
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
-      {/* 数据表格 */}
-      <Table
-        rowKey="id"
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={practices}
-        loading={loading}
-        pagination={false}
-      />
-
-      {/* 分页 */}
-      <Row justify="end" style={{ marginTop: 16 }}>
-        <Col>
-          <Pagination
-            current={current}
-            pageSize={pageSize}
-            total={total}
-            showSizeChanger
-            showQuickJumper
-            showTotal={(total) => `共 ${total} 条记录`}
-            onChange={handlePageChange}
-            onShowSizeChange={handlePageChange}
-          />
-        </Col>
-      </Row>
-
-      {/* 移除详情弹窗 */}
-    </Card>
+    <UnifiedListPage<WritingPractice>
+      title="写作练习管理"
+      description="管理和查看所有写作练习记录"
+      dataSource={practices}
+      columns={columns}
+      loading={loading}
+      filterOptions={filterOptions}
+      batchActions={batchActions}
+      rowKey="id"
+      headerActions={headerActions}
+      actionButtons={actionButtons}
+      pagination={{
+        current: 1,
+        pageSize: 10,
+        total,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number) => `共 ${total} 条记录`,
+        onChange: (page: number, pageSize?: number) => {
+          fetchPractices({ pageNum: page, pageSize: pageSize || 10 });
+        },
+      }}
+      onSearch={(searchText: string, dataSource: WritingPractice[]) => {
+        if (!searchText) return dataSource;
+        return dataSource.filter(practice => 
+          practice.content?.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }}
+    />
   );
 };
 

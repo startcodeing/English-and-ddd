@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Descriptions, Form, Input, InputNumber, Modal, Pagination, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Button, Col, Descriptions, Form, Input, InputNumber, Modal, Row, Select, Space, Tag, Typography, message } from 'antd';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import UnifiedListPage, { TableColumn, FilterOption, BatchAction, HeaderAction, ActionButton } from '../../components/unified/UnifiedListPage';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getWritingTopics, countWritingTopics, deleteWritingTopic, batchDeleteWritingTopics, getWritingTopicById, WritingTopic, WritingTopicQuery } from '../../api/writingTopic';
@@ -17,7 +18,6 @@ const mdParser = new MarkdownIt();
 
 const WritingTopicListPage: React.FC = () => {
   const navigate = useNavigate();
-  const [form] = Form.useForm();
   const [detailForm] = Form.useForm();
   
   // 状态管理
@@ -91,16 +91,12 @@ const WritingTopicListPage: React.FC = () => {
   }, [current, pageSize, searchParams]);
 
   // 处理搜索
-  const handleSearch = (values: any) => {
-    setCurrent(1); // 重置到第一页
-    setSearchParams(values);
-  };
-
-  // 重置搜索
-  const handleReset = () => {
-    form.resetFields();
-    setCurrent(1);
-    setSearchParams({});
+  const handleSearch = (searchText: string, dataSource: WritingTopic[]) => {
+    if (!searchText) return dataSource;
+    return dataSource.filter(topic => 
+      topic.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+      topic.source?.toLowerCase().includes(searchText.toLowerCase())
+    );
   };
 
   // 处理分页变化
@@ -135,12 +131,8 @@ const WritingTopicListPage: React.FC = () => {
   };
 
   // 处理批量删除
-  const handleBatchDelete = (ids: number[]) => {
-    if (ids.length === 0) {
-      message.warning('请选择要删除的项目');
-      return;
-    }
-
+  const handleBatchDelete = (selectedRowKeys: React.Key[]) => {
+    const ids = selectedRowKeys as number[];
     confirm({
       title: '确认批量删除',
       icon: <ExclamationCircleOutlined />,
@@ -151,7 +143,6 @@ const WritingTopicListPage: React.FC = () => {
           if (response.success) {
             message.success('批量删除成功');
             fetchTopics();
-            setSelectedRowKeys([]);
           } else {
             message.error(response.message || '批量删除失败');
           }
@@ -164,7 +155,7 @@ const WritingTopicListPage: React.FC = () => {
   };
 
   // 表格列定义
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -194,7 +185,6 @@ const WritingTopicListPage: React.FC = () => {
       key: 'difficulty',
       width: 100,
       render: (difficulty: string) => {
-        // 直接显示后端返回的难度级别
         return <span>{difficulty}</span>;
       },
     },
@@ -219,121 +209,92 @@ const WritingTopicListPage: React.FC = () => {
       width: 180,
       render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
     },
+  ];
+
+  // 筛选选项配置
+  const filterOptions: FilterOption[] = [
     {
-      title: '操作',
-      key: 'action',
-      width: 120,
-      render: (_: any, record: WritingTopic) => (
-        <Space size="middle">
-          <Button 
-            type="text" 
-            icon={<EditOutlined />} 
-            onClick={() => navigate(`/content/writing-topics/edit/${record.id}`)}
-          />
-          <Button 
-            type="text" 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDelete(record.id)}
-          />
-        </Space>
-      ),
+      key: 'description',
+      label: '主题描述',
+      type: 'input',
+      placeholder: '请输入主题描述',
+    },
+    {
+      key: 'source',
+      label: '来源',
+      type: 'input',
+      placeholder: '请输入来源',
+    },
+    {
+      key: 'difficulty',
+      label: '难度级别',
+      type: 'select',
+      placeholder: '请选择难度级别',
+      options: [
+        { value: 'easy', label: '简单' },
+        { value: 'medium', label: '中等' },
+        { value: 'hard', label: '困难' },
+      ],
     },
   ];
 
-  // 表格选择配置
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (selectedKeys: React.Key[]) => {
-      setSelectedRowKeys(selectedKeys);
+  // 批量操作配置
+  const batchActions: BatchAction[] = [
+    {
+      key: 'delete',
+      label: '批量删除',
+      danger: true,
+      onClick: handleBatchDelete,
     },
-  };
+  ];
 
   return (
-    <Card title="写作主题管理">
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleSearch}
-        style={{ marginBottom: 16 }}
-      >
-        <Form.Item name="description" label="主题描述">
-          <Input placeholder="请输入主题描述" allowClear />
-        </Form.Item>
-        <Form.Item name="source" label="来源">
-          <Input placeholder="请输入来源" allowClear />
-        </Form.Item>
-        <Form.Item name="difficulty" label="难度级别">
-          <Select
-            placeholder="请选择难度级别"
-            allowClear
-            style={{ width: 120 }}
-            options={[
-              { value: 'easy', label: '简单' },
-              { value: 'medium', label: '中等' },
-              { value: 'hard', label: '困难' },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              搜索
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
-
-      {/* 操作按钮 */}
-      <Row style={{ marginBottom: 16 }}>
-        <Col span={24}>
-          <Space>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/content/writing-topics/create')}
-            >
-              新增主题
-            </Button>
-            <Button
-              danger
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => handleBatchDelete(selectedRowKeys as number[])}
-            >
-              批量删除
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
-      {/* 数据表格 */}
-      <Table
-        rowKey="id"
-        rowSelection={rowSelection}
-        columns={columns}
+    <>
+      <UnifiedListPage
+        title="写作主题管理"
+        description="管理和维护写作主题信息"
         dataSource={topics}
+        columns={columns}
         loading={loading}
-        pagination={false}
+        filterOptions={filterOptions}
+        onSearch={handleSearch}
+        batchActions={batchActions}
+        rowKey="id"
+        headerActions={[
+          {
+            key: 'create',
+            label: '新增主题',
+            type: 'primary',
+            icon: <PlusOutlined />,
+            onClick: () => navigate('/content/writing-topics/create'),
+          },
+        ]}
+        actionButtons={[
+          {
+            key: 'edit',
+            label: '编辑',
+            icon: <EditOutlined />,
+            onClick: (record: WritingTopic) => navigate(`/content/writing-topics/edit/${record.id}`),
+          },
+          {
+            key: 'delete',
+            label: '删除',
+            icon: <DeleteOutlined />,
+            danger: true,
+            onClick: (record: WritingTopic) => handleDelete(record.id),
+          },
+        ]}
+        pagination={{
+          current,
+          pageSize,
+          total,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number) => `共 ${total} 条记录`,
+          onChange: handlePageChange,
+          onShowSizeChange: handlePageChange,
+        }}
       />
-
-      {/* 分页 */}
-      <Row justify="end" style={{ marginTop: 16 }}>
-        <Col>
-          <Pagination
-            current={current}
-            pageSize={pageSize}
-            total={total}
-            showSizeChanger
-            showQuickJumper
-            showTotal={(total) => `共 ${total} 条记录`}
-            onChange={handlePageChange}
-            onShowSizeChange={handlePageChange}
-          />
-        </Col>
-      </Row>
 
       {/* 详情弹窗 */}
       <Modal
@@ -422,7 +383,7 @@ const WritingTopicListPage: React.FC = () => {
           <div style={{ textAlign: 'center', padding: '20px 0' }}>暂无数据</div>
         )}
       </Modal>
-    </Card>
+    </>
   );
 };
 
