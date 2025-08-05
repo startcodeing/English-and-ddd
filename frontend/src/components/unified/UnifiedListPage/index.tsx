@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, Table, Button, Space, Input, Form, Row, Col, Pagination, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
@@ -90,18 +90,24 @@ export function UnifiedListPage<T = any>(props: UnifiedListPageProps<T>) {
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [filteredData, setFilteredData] = useState<T[]>(dataSource);
+  const [filteredData, setFilteredData] = useState<T[]>(dataSource || []);
+
+  // 监听dataSource变化，更新filteredData
+  useEffect(() => {
+    setFilteredData(dataSource || []);
+  }, [dataSource]);
 
   // 处理搜索
   const handleSearch = useCallback((values: any) => {
     const searchValue = values.search || '';
     setSearchText(searchValue);
     
+    const safeDataSource = dataSource || [];
     if (onSearch) {
-      const filtered = onSearch(searchValue, dataSource);
+      const filtered = onSearch(searchValue, safeDataSource);
       setFilteredData(filtered);
     } else {
-      setFilteredData(dataSource);
+      setFilteredData(safeDataSource);
     }
   }, [dataSource, onSearch]);
 
@@ -109,7 +115,7 @@ export function UnifiedListPage<T = any>(props: UnifiedListPageProps<T>) {
   const handleReset = useCallback(() => {
     form.resetFields();
     setSearchText('');
-    setFilteredData(dataSource);
+    setFilteredData(dataSource || []);
   }, [form, dataSource]);
 
   // 行选择配置

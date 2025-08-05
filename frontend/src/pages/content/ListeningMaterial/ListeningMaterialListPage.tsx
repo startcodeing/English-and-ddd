@@ -219,7 +219,7 @@ const ListeningMaterialListPage: React.FC = () => {
       <UnifiedListPage<ListeningMaterial>
         title="听力资料管理"
         description="管理您的听力资料，创建、编辑和组织音频学习内容"
-        dataSource={items}
+        dataSource={items || []}
         columns={columns}
         loading={loading}
         filterOptions={filterOptions}
@@ -259,7 +259,7 @@ const ListeningMaterialListPage: React.FC = () => {
         pagination={{
           current: 1,
           pageSize: 10,
-          total: items.length,
+          total: (items || []).length,
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total: number) => `共 ${total} 个听力资料`
