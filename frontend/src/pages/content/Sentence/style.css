@@ -48,6 +48,16 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* 优化表格行高和内容显示 */
+.sentence-page .ant-table-tbody > tr > td {
+  padding: 8px 16px;
+  vertical-align: top;
+}
+
+.sentence-page .ant-table-thead > tr > th {
+  padding: 10px 16px;
+}
+
 /* 句子内容样式 */
 .sentence-content {
   font-weight: 500;
