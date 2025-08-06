@@ -6,8 +6,8 @@ import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined
 import { RootState } from '../../../types/store';
 import type { ListeningMaterial } from '../../../types/listeningMaterial';
 import { ListeningMaterialDifficultyLevel } from '../../../types/listeningMaterial';
-import { fetchListeningMaterialsStart, fetchListeningMaterialsSuccess, fetchListeningMaterialsFailure } from '../../../store/contentSlice';
-import { getAllListeningMaterials, getListeningMaterialsByPage, getListeningMaterialsByTitle, getListeningMaterialsByDifficultyLevel, deleteListeningMaterial, batchDeleteListeningMaterials } from '../../../api/listeningMaterial';
+import { fetchListeningMaterialsStart, fetchListeningMaterialsSuccess, fetchListeningMaterialsFailure, setListeningMaterialsTotal } from '../../../store/contentSlice';
+import { getAllListeningMaterials, getListeningMaterialsByPage, getListeningMaterialsByTitle, getListeningMaterialsByDifficultyLevel, deleteListeningMaterial, batchDeleteListeningMaterials, countListeningMaterials } from '../../../api/listeningMaterial';
 import dayjs from 'dayjs';
 import './style.css';
 
@@ -17,20 +17,29 @@ const { Option } = Select;
 const ListeningMaterialListPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { items, loading, error } = useSelector((state: RootState) => state.content.listeningMaterials);
+  const { items, loading, total } = useSelector((state: RootState) => state.content.listeningMaterials);
   
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<ListeningMaterialDifficultyLevel | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [batchDeleteLoading, setBatchDeleteLoading] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [form] = Form.useForm();
 
   // 加载听力资料列表
   const loadListeningMaterials = async () => {
     try {
       dispatch(fetchListeningMaterialsStart());
-      const response = await getListeningMaterialsByPage(1, 10);
-      dispatch(fetchListeningMaterialsSuccess(response.data));
+      // 同时获取分页数据和总记录数
+      const [pageResponse, countResponse] = await Promise.all([
+         getListeningMaterialsByPage(currentPage, pageSize),
+         countListeningMaterials()
+       ]);
+      dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+      if (countResponse.success && typeof countResponse.data === 'number') {
+        dispatch(setListeningMaterialsTotal(countResponse.data));
+      }
     } catch (error: any) {
       const errorMsg = error.message || '未知错误';
       const statusCode = error.response?.status || 'N/A';
@@ -41,8 +50,8 @@ const ListeningMaterialListPage: React.FC = () => {
         message: errorMsg,
         statusCode,
         endpoint: 'getListeningMaterialsByPage',
-        params: { page: 1, size: 10 },
-        stack: error?.stack
+        params: { page: 1, pageSize: 10 },
+        stack: error.stack
       });
     }
   };
@@ -362,16 +371,26 @@ const ListeningMaterialListPage: React.FC = () => {
         rowKey="id"
         loading={loading}
         pagination={{
-          pageSize: 10,
+          current: currentPage,
+          pageSize: pageSize,
+          total: total,
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total) => `共 ${total} 个听力资料`,
           position: ['bottomRight'],
-          onChange: async (page, pageSize) => {
+          onChange: async (page, size) => {
             try {
+              setCurrentPage(page);
+              setPageSize(size);
               dispatch(fetchListeningMaterialsStart());
-              const response = await getListeningMaterialsByPage(page, pageSize);
-              dispatch(fetchListeningMaterialsSuccess(response.data));
+              const [pageResponse, countResponse] = await Promise.all([
+                getListeningMaterialsByPage(page, size),
+                countListeningMaterials()
+              ]);
+              dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+              if (countResponse.success && typeof countResponse.data === 'number') {
+                dispatch(setListeningMaterialsTotal(countResponse.data));
+              }
             } catch (error: any) {
               const errorMsg = error.message || '未知错误';
               const statusCode = error.response?.status || 'N/A';
@@ -382,16 +401,24 @@ const ListeningMaterialListPage: React.FC = () => {
                 message: errorMsg,
                 statusCode,
                 endpoint: 'getListeningMaterialsByPage',
-                params: { page, pageSize },
+                params: { page, pageSize: size },
                 stack: error.stack
               });
             }
           },
           onShowSizeChange: async (current, size) => {
             try {
+              setCurrentPage(current);
+              setPageSize(size);
               dispatch(fetchListeningMaterialsStart());
-              const response = await getListeningMaterialsByPage(current, size);
-              dispatch(fetchListeningMaterialsSuccess(response.data));
+              const [pageResponse, countResponse] = await Promise.all([
+                getListeningMaterialsByPage(current, size),
+                countListeningMaterials()
+              ]);
+              dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+              if (countResponse.success && typeof countResponse.data === 'number') {
+                dispatch(setListeningMaterialsTotal(countResponse.data));
+              }
             } catch (error: any) {
               const errorMsg = error.message || '未知错误';
               const statusCode = error.response?.status || 'N/A';

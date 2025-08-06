@@ -19,7 +19,8 @@ const initialState: ContentState = {
     items: [],
     loading: false,
     error: null,
-    selectedListeningMaterial: null
+    selectedListeningMaterial: null,
+    total: 0
   }
 };
 
@@ -80,6 +81,9 @@ const contentSlice = createSlice({
     },
     setSelectedListeningMaterial: (state, action) => {
       state.listeningMaterials.selectedListeningMaterial = action.payload;
+    },
+    setListeningMaterialsTotal: (state, action: PayloadAction<number>) => {
+      state.listeningMaterials.total = action.payload;
     }
   }
 });
@@ -97,7 +101,8 @@ export const {
   fetchListeningMaterialsStart,
   fetchListeningMaterialsSuccess,
   fetchListeningMaterialsFailure,
-  setSelectedListeningMaterial
+  setSelectedListeningMaterial,
+  setListeningMaterialsTotal
 } = contentSlice.actions;
 
 // 导出 reducer

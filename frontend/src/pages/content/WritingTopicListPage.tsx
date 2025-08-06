@@ -251,7 +251,7 @@ const WritingTopicListPage: React.FC = () => {
   };
 
   return (
-    <Card title="写作主题管理">
+    <Card title="写作主题管理" style={{ height: 'calc(100vh - 64px)', overflow: 'auto' }}>
       {/* 搜索表单和操作按钮 */}
       <Row style={{ marginBottom: 16 }} justify="space-between" align="middle">
         <Col>
@@ -316,6 +316,8 @@ const WritingTopicListPage: React.FC = () => {
         dataSource={topics}
         loading={loading}
         pagination={false}
+        size="small"
+        scroll={{ y: 'calc(100vh - 350px)' }}
       />
 
       {/* 分页 */}

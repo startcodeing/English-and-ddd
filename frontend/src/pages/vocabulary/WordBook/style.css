@@ -65,6 +65,32 @@
   background-color: #fff;
 }
 
+/* 表格容器高度控制 */
+.page-content .ant-table-wrapper {
+  max-height: calc(100vh - 280px);
+  overflow: auto;
+}
+
+.page-content .ant-table-container {
+  max-height: calc(100vh - 350px);
+}
+
+/* 确保表格水平滚动正常工作 */
+.page-content .ant-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* 表格滚动条样式优化 */
+.page-content .ant-table-body {
+  overflow-x: auto !important;
+}
+
+/* 确保固定列阴影效果 */
+.ant-table-cell-fix-right-first::after {
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15) !important;
+}
+
 .ant-table-thead > tr > th {
   background-color: #fafafa;
   font-weight: 600;
@@ -77,7 +103,7 @@
 }
 
 .ant-table-tbody > tr > td {
-  padding: 16px;
+  padding: 8px 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -122,6 +148,32 @@
 .action-buttons .ant-btn-link {
   padding: 4px 8px;
   height: auto;
+  font-size: 12px;
+}
+
+/* 固定列样式 */
+.ant-table-cell-fix-right {
+  background-color: #fff;
+  z-index: 2;
+}
+
+/* 操作列样式 */
+.ant-table-tbody > tr > td:last-child {
+  min-width: 280px;
+  white-space: nowrap;
+}
+
+/* 确保操作按钮完全显示 */
+.ant-table-tbody > tr > td:last-child .ant-space {
+  flex-wrap: nowrap;
+  display: flex;
+}
+
+.ant-table-tbody > tr > td:last-child .ant-btn-link {
+  padding: 0 4px;
+  height: 24px;
+  line-height: 24px;
+  margin: 0;
   font-size: 12px;
 }
 

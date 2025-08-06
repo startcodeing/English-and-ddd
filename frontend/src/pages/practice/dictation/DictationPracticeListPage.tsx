@@ -464,20 +464,25 @@ const DictationPracticeListPage: React.FC = () => {
         dataSource={practices}
         rowKey="id"
         loading={loading}
-        pagination={{
-          current,
-          pageSize,
-          total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 个听写练习`,
-          position: ['bottomRight'],
-          onChange: handlePageChange,
-          onShowSizeChange: handlePageChange,
-          style: { marginBottom: 0 }
-        }}
+        pagination={false}
         scroll={{ x: true }}
       />
+      
+      {/* 分页 */}
+      <Row justify="end" style={{ marginTop: 16 }}>
+        <Col>
+          <Pagination
+            current={current}
+            pageSize={pageSize}
+            total={total}
+            showSizeChanger
+            showQuickJumper
+            showTotal={(total) => `共 ${total} 条记录`}
+            onChange={handlePageChange}
+            onShowSizeChange={handlePageChange}
+          />
+        </Col>
+      </Row>
     </div>
   );
 };

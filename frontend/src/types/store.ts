@@ -55,6 +55,7 @@ export interface ContentState {
     loading: boolean;
     error: string | null;
     selectedListeningMaterial: ListeningMaterial | null;
+    total: number;
   };
 }
 

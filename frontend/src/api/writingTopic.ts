@@ -28,7 +28,7 @@ export interface WritingTopicQuery {
 // 获取写作主题列表
 export const getWritingTopics = async (params: WritingTopicQuery): Promise<StandardApiResponse<WritingTopic[]>> => {
   try {
-    const response = await axios.get(BASE_URL, { params });
+    const response = await axios.get(`${BASE_URL}/search`, { params });
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {
       return response.data as StandardApiResponse<WritingTopic[]>;
@@ -56,7 +56,7 @@ export const getWritingTopics = async (params: WritingTopicQuery): Promise<Stand
 // 获取写作主题总数
 export const countWritingTopics = async (params: WritingTopicQuery): Promise<StandardApiResponse<number>> => {
   try {
-    const response = await axios.get(`${BASE_URL}/count`, { params });
+    const response = await axios.get(`${BASE_URL}/count/search`, { params });
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {
       return response.data as StandardApiResponse<number>;

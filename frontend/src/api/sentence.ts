@@ -128,7 +128,7 @@ export const getSentencesByChineseMeaning = async (meaning: string): Promise<Sta
  */
 export const createSentence = async (sentence: Omit<Sentence, 'id' | 'createdAt' | 'updatedAt'>): Promise<StandardApiResponse<Sentence>> => {
   try {
-    const response = await axios.post<Sentence>('/api/sentences', sentence);
+    const response = await axios.post<Sentence>(`${BASE_URL}`, sentence);
     // 检查响应是否已经是标准格式
     if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
       return response.data as StandardApiResponse<Sentence>;
@@ -163,7 +163,7 @@ export const createSentence = async (sentence: Omit<Sentence, 'id' | 'createdAt'
  */
 export const updateSentence = async (id: string, sentence: Partial<Sentence>): Promise<StandardApiResponse<Sentence>> => {
   try {
-    const response = await axios.put<Sentence>(`/api/sentences/${id}`, sentence);
+    const response = await axios.put<Sentence>(`${BASE_URL}/${id}`, sentence);
     // 检查响应是否已经是标准格式
     if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data && 'message' in response.data && 'data' in response.data) {
       return response.data as StandardApiResponse<Sentence>;

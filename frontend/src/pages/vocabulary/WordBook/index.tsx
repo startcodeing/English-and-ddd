@@ -260,10 +260,13 @@ const WordBookPage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
+      width: 280,
+      fixed: 'right',
       render: (_: any, record: WordBook) => (
-        <Space size="middle">
+        <Space size="small">
           <Button
             type="link"
+            size="small"
             icon={<EyeOutlined />}
             onClick={() => handleViewWordBook(record)}
           >
@@ -271,6 +274,7 @@ const WordBookPage: React.FC = () => {
           </Button>
           <Button
             type="link"
+            size="small"
             icon={<PlusOutlined />}
             onClick={() => handleAddWordToBook(record)}
           >
@@ -278,6 +282,7 @@ const WordBookPage: React.FC = () => {
           </Button>
           <Button
             type="link"
+            size="small"
             icon={<EditOutlined />}
             onClick={() => handleEditWordBook(record)}
           >
@@ -285,6 +290,7 @@ const WordBookPage: React.FC = () => {
           </Button>
           <Button
             type="link"
+            size="small"
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDeleteWordBook(record.id)}
@@ -342,11 +348,13 @@ const WordBookPage: React.FC = () => {
         
         {/* 单词本表格 */}
         <Table
+          size="small"
           rowSelection={rowSelection}
           columns={columns}
           dataSource={filteredWordBooks}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 'max-content', y: 'calc(100vh - 350px)' }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,

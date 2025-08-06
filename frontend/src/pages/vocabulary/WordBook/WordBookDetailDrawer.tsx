@@ -40,7 +40,7 @@ const WordBookDetailDrawer: React.FC<WordBookDetailDrawerProps> = ({
       3: { text: '困难', color: 'red' }
     };
     
-    const difficulty = difficultyMap[level || 2];
+    const difficulty = difficultyMap[level || 2] || { text: '中等', color: 'orange' };
     return <Tag color={difficulty.color}>{difficulty.text}</Tag>;
   };
 
