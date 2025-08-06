@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Card, Col, Form, InputNumber, Row, Space, Tag, Typography, message, Spin, Divider, Slider } from 'antd';
+import { Button, Card, Col, Form, InputNumber, Row, Space, Tag, Typography, message, Spin, Divider, Slider, Tabs } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, StarOutlined, PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -201,225 +201,277 @@ const DictationPracticeViewPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Card style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
-        <div style={{ marginBottom: '24px' }}>
-          <Space>
-            <Button 
-              icon={<ArrowLeftOutlined />} 
-              onClick={() => navigate('/practice/dictation')}
+    <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* 返回按钮 */}
+      <div style={{ marginBottom: '16px' }}>
+        <Button 
+          icon={<ArrowLeftOutlined />} 
+          onClick={() => navigate('/practice/dictation')}
+          style={{ marginBottom: '8px' }}
+        >
+          返回列表
+        </Button>
+      </div>
+
+      {/* 练习信息和听力资料 Tab */}
+       <Card 
+         style={{ marginBottom: '16px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+         bodyStyle={{ padding: '0' }}
+       >
+         <Tabs
+           defaultActiveKey="practice"
+           items={[
+             {
+               key: 'practice',
+               label: '练习信息',
+               children: (
+                 <div style={{ padding: '16px' }}>
+                   <Row gutter={[16, 8]}>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>练习ID:</Text>
+                         <div style={{ fontSize: '14px', fontWeight: 500 }}>{practice.id}</div>
+                       </div>
+                     </Col>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>状态:</Text>
+                         <div style={{ marginTop: '2px' }}>{renderStatusTag(practice.status)}</div>
+                       </div>
+                     </Col>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>用户:</Text>
+                         <div style={{ fontSize: '14px', fontWeight: 500 }}>{practice.username}</div>
+                       </div>
+                     </Col>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>分数:</Text>
+                         <div style={{ fontSize: '14px', fontWeight: 500, color: practice.score ? '#52c41a' : '#999' }}>
+                           {practice.score ? `${practice.score} 分` : '未评分'}
+                         </div>
+                       </div>
+                     </Col>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>创建时间:</Text>
+                         <div style={{ fontSize: '12px' }}>{dayjs(practice.createTime).format('MM-DD HH:mm')}</div>
+                       </div>
+                     </Col>
+                     <Col span={4}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>更新时间:</Text>
+                         <div style={{ fontSize: '12px' }}>{dayjs(practice.updateTime).format('MM-DD HH:mm')}</div>
+                       </div>
+                     </Col>
+                   </Row>
+                 </div>
+               )
+             },
+             material ? {
+               key: 'material',
+               label: '听力资料',
+               children: (
+                 <div style={{ padding: '16px' }}>
+                   <Row gutter={[16, 8]} style={{ marginBottom: '12px' }}>
+                     <Col span={12}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>标题:</Text>
+                         <div style={{ fontSize: '14px', fontWeight: 500 }}>{material.title}</div>
+                       </div>
+                     </Col>
+                     <Col span={12}>
+                       <div>
+                         <Text type="secondary" style={{ fontSize: '12px' }}>难度:</Text>
+                         <div style={{ marginTop: '2px' }}>{renderDifficultyTag(material.difficulty)}</div>
+                       </div>
+                     </Col>
+                   </Row>
+                   
+                   {material.audioUrl && (
+                     <div>
+                       {/* 隐藏的音频元素，用于控制播放 */}
+                       <audio 
+                         ref={audioRef} 
+                         src={material.audioUrl} 
+                         onTimeUpdate={updateProgress}
+                         onLoadedMetadata={updateProgress}
+                         onEnded={() => setIsPlaying(false)}
+                         style={{ display: 'none' }}
+                       />
+                       
+                       {/* 自定义播放控件 */}
+                       <div style={{ 
+                         padding: '12px', 
+                         backgroundColor: '#fafafa', 
+                         borderRadius: '6px',
+                         border: '1px solid #f0f0f0'
+                       }}>
+                         <div style={{ display: 'flex', alignItems: 'center' }}>
+                           <Button 
+                             type="link" 
+                             icon={isPlaying ? <PauseCircleOutlined style={{ fontSize: '24px', color: '#1890ff' }} /> : <PlayCircleOutlined style={{ fontSize: '24px', color: '#1890ff' }} />} 
+                             onClick={togglePlay}
+                             style={{ padding: 0, height: 'auto' }}
+                           />
+                           <div style={{ marginLeft: '8px', flexGrow: 1 }}>
+                             <Slider 
+                               value={duration ? (currentTime / duration) * 100 : 0} 
+                               tooltip={{ formatter: null }}
+                               onChange={handleProgressChange}
+                               style={{ marginBottom: '4px' }}
+                             />
+                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#666' }}>
+                               <span>{formatTime(currentTime)}</span>
+                               <span>{formatTime(duration)}</span>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               )
+             } : null
+           ].filter(Boolean)}
+         />
+       </Card>
+
+      {/* 原文 */}
+       {material && (
+         <Card 
+           title={
+             <div style={{ borderLeft: '4px solid #52c41a', paddingLeft: '12px' }}>
+               原文
+             </div>
+           }
+           style={{ marginBottom: '16px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flex: '0 0 auto' }}
+           bodyStyle={{ padding: '16px' }}
+         >
+           <div style={{ 
+             padding: '12px', 
+             backgroundColor: '#f9f9f9', 
+             border: '1px solid #e8e8e8', 
+             borderRadius: '6px',
+             lineHeight: '1.5',
+             maxHeight: '200px',
+             overflowY: 'auto'
+           }}>
+             <Paragraph style={{ margin: 0, fontSize: '14px' }}>
+               {material.transcript}
+             </Paragraph>
+           </div>
+         </Card>
+       )}
+
+      {/* 听写内容 */}
+       <Card 
+         title={
+           <div style={{ borderLeft: '4px solid #fa8c16', paddingLeft: '12px' }}>
+             听写内容
+           </div>
+         }
+         style={{ marginBottom: '16px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flex: 1 }}
+         bodyStyle={{ padding: '16px', height: 'calc(100% - 57px)' }}
+         extra={
+           <Space>
+             {practice.status === 'draft' && (
+               <Button 
+                 type="primary" 
+                 icon={<EditOutlined />}
+                 size="small"
+                 onClick={() => navigate(`/practice/dictation/edit/${practice.id}`)}
+               >
+                 编辑练习
+               </Button>
+             )}
+             
+             {practice.status === 'submitted' && !practice.score && (
+               <Button 
+                 type="primary" 
+                 icon={<StarOutlined />}
+                 size="small"
+                 onClick={() => setShowScoreForm(true)}
+               >
+                 评分
+               </Button>
+             )}
+             
+             {practice.score && (
+               <Button 
+                 type="default" 
+                 icon={<StarOutlined />}
+                 size="small"
+                 onClick={() => setShowScoreForm(true)}
+               >
+                 重新评分
+               </Button>
+             )}
+           </Space>
+         }
+       >
+         <div style={{ 
+            padding: '12px', 
+            backgroundColor: '#fff', 
+            border: '1px solid #e8e8e8', 
+            borderRadius: '6px',
+            height: '100%',
+            lineHeight: '1.5',
+            overflowY: 'auto',
+            minHeight: '300px'
+          }}>
+           <Paragraph style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+             {practice.content}
+           </Paragraph>
+         </div>
+       </Card>
+
+      {/* 评分表单 */}
+      {showScoreForm && (
+        <Card 
+          title="评分" 
+          style={{ marginBottom: '24px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+        >
+          <Form
+            form={form}
+            layout="inline"
+            onFinish={handleScore}
+            initialValues={{ score: practice.score || 0 }}
+          >
+            <Form.Item
+              name="score"
+              label="分数"
+              rules={[
+                { required: true, message: '请输入分数' },
+                { type: 'number', min: 0, max: 100, message: '分数范围为0-100' }
+              ]}
             >
-              返回列表
-            </Button>
-            <Title level={4} style={{ margin: 0 }}>
-              听写练习详情
-            </Title>
-          </Space>
-        </div>
-
-        <Row gutter={24}>
-          <Col span={16}>
-            {/* 练习信息 */}
-            <Card title="练习信息" style={{ marginBottom: '24px' }}>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Text strong>练习ID：</Text>
-                  <Text>{practice.id}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>状态：</Text>
-                  {renderStatusTag(practice.status)}
-                </Col>
-              </Row>
-              <Row gutter={16} style={{ marginTop: '12px' }}>
-                <Col span={12}>
-                  <Text strong>创建时间：</Text>
-                  <Text>{dayjs(practice.createTime).format('YYYY-MM-DD HH:mm:ss')}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>更新时间：</Text>
-                  <Text>{dayjs(practice.updateTime).format('YYYY-MM-DD HH:mm:ss')}</Text>
-                </Col>
-              </Row>
-              <Row gutter={16} style={{ marginTop: '12px' }}>
-                <Col span={12}>
-                  <Text strong>用户：</Text>
-                  <Text>{practice.username}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>分数：</Text>
-                  <Text>{practice.score ? `${practice.score} 分` : '未评分'}</Text>
-                </Col>
-              </Row>
-            </Card>
-
-            {/* 听力资料信息 */}
-            {material && (
-              <Card title="听力资料" style={{ marginBottom: '24px' }}>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Text strong>标题：</Text>
-                    <Text>{material.title}</Text>
-                  </Col>
-                  <Col span={12}>
-                    <Text strong>难度：</Text>
-                    {renderDifficultyTag(material.difficulty)}
-                  </Col>
-                </Row>
-                
-                {material.audioUrl && (
-                  <>
-                    <Divider orientation="left">音频播放</Divider>
-                    {/* 隐藏的音频元素，用于控制播放 */}
-                    <audio 
-                      ref={audioRef} 
-                      src={material.audioUrl} 
-                      onTimeUpdate={updateProgress}
-                      onLoadedMetadata={updateProgress}
-                      onEnded={() => setIsPlaying(false)}
-                      style={{ display: 'none' }}
-                    />
-                    
-                    {/* 自定义播放控件 */}
-                    <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                      <Button 
-                        type="link" 
-                        icon={isPlaying ? <PauseCircleOutlined style={{ fontSize: '32px' }} /> : <PlayCircleOutlined style={{ fontSize: '32px' }} />} 
-                        onClick={togglePlay}
-                        style={{ padding: 0, height: 'auto' }}
-                      />
-                      <div style={{ marginLeft: '8px', flexGrow: 1 }}>
-                        <Slider 
-                          value={duration ? (currentTime / duration) * 100 : 0} 
-                          tooltip={{ formatter: null }}
-                          onChange={handleProgressChange}
-                          style={{ marginBottom: '4px' }}
-                        />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#666' }}>
-                          <span>{formatTime(currentTime)}</span>
-                          <span>{formatTime(duration)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-                
-                <Divider orientation="left">原文</Divider>
-                <div style={{ 
-                  marginTop: '8px',
-                  padding: '12px', 
-                  backgroundColor: '#f9f9f9', 
-                  border: '1px solid #d9d9d9', 
-                  borderRadius: '6px',
-                  maxHeight: '200px',
-                  overflowY: 'auto'
-                }}>
-                  <Paragraph>{material.transcript}</Paragraph>
-                </div>
-              </Card>
-            )}
-
-            {/* 听写内容 */}
-            <Card title="听写内容" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ 
-                padding: '12px', 
-                backgroundColor: '#fff', 
-                border: '1px solid #d9d9d9', 
-                borderRadius: '6px',
-                minHeight: '200px',
-                flex: 1
-              }}>
-                <Paragraph style={{ whiteSpace: 'pre-wrap' }}>
-                  {practice.content}
-                </Paragraph>
-              </div>
-            </Card>
-          </Col>
-
-          <Col span={8}>
-            {/* 操作面板 */}
-            <Card title="操作">
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {practice.status === 'draft' && (
-                  <Button 
-                    type="primary" 
-                    icon={<EditOutlined />}
-                    block
-                    onClick={() => navigate(`/practice/dictation/edit/${practice.id}`)}
-                  >
-                    编辑练习
-                  </Button>
-                )}
-                
-                {practice.status === 'submitted' && !practice.score && (
-                  <Button 
-                    type="primary" 
-                    icon={<StarOutlined />}
-                    block
-                    onClick={() => setShowScoreForm(true)}
-                  >
-                    评分
-                  </Button>
-                )}
-                
-                {practice.score && (
-                  <Button 
-                    type="default" 
-                    icon={<StarOutlined />}
-                    block
-                    onClick={() => setShowScoreForm(true)}
-                  >
-                    重新评分
-                  </Button>
-                )}
-              </Space>
-            </Card>
-
-            {/* 评分表单 */}
-            {showScoreForm && (
-              <Card title="评分" style={{ marginTop: '16px' }}>
-                <Form
-                  form={form}
-                  layout="vertical"
-                  onFinish={handleScore}
-                  initialValues={{ score: practice.score || 0 }}
+              <InputNumber
+                min={0}
+                max={100}
+                style={{ width: '120px' }}
+                placeholder="0-100"
+              />
+            </Form.Item>
+            
+            <Form.Item>
+              <Space>
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  loading={scoring}
                 >
-                  <Form.Item
-                    name="score"
-                    label="分数"
-                    rules={[
-                      { required: true, message: '请输入分数' },
-                      { type: 'number', min: 0, max: 100, message: '分数范围为0-100' }
-                    ]}
-                  >
-                    <InputNumber
-                      min={0}
-                      max={100}
-                      style={{ width: '100%' }}
-                      placeholder="请输入分数（0-100）"
-                    />
-                  </Form.Item>
-                  
-                  <Form.Item>
-                    <Space>
-                      <Button 
-                        type="primary" 
-                        htmlType="submit"
-                        loading={scoring}
-                      >
-                        确认评分
-                      </Button>
-                      <Button onClick={() => setShowScoreForm(false)}>
-                        取消
-                      </Button>
-                    </Space>
-                  </Form.Item>
-                </Form>
-              </Card>
-            )}
-          </Col>
-        </Row>
-      </Card>
+                  确认评分
+                </Button>
+                <Button onClick={() => setShowScoreForm(false)}>
+                  取消
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Card>
+      )}
     </div>
   );
 };

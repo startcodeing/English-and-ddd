@@ -248,16 +248,16 @@ const Dashboard: React.FC = () => {
               欢迎回来！今天也要继续努力学习英语哦 🎯
             </Paragraph>
           </div>
-          <div className="header-actions">
-            <Space>
-              <Button type="primary" icon={<TrophyOutlined />}>
-                今日目标
-              </Button>
-              <Button icon={<ClockCircleOutlined />}>
-                学习计划
-              </Button>
-            </Space>
-          </div>
+          {/*<div className="header-actions">*/}
+          {/*  <Space>*/}
+          {/*    <Button type="primary" icon={<TrophyOutlined />}>*/}
+          {/*      今日目标*/}
+          {/*    </Button>*/}
+          {/*    <Button icon={<ClockCircleOutlined />}>*/}
+          {/*      学习计划*/}
+          {/*    </Button>*/}
+          {/*  </Space>*/}
+          {/*</div>*/}
         </div>
       </div>
 

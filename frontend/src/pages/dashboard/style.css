@@ -7,7 +7,7 @@
 
 /* 仪表盘头部 */
 .dashboard-header {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .welcome-section {
@@ -15,7 +15,7 @@
   justify-content: space-between;
   align-items: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 32px;
+  padding: 20px 32px;
   border-radius: 16px;
   color: white;
   box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
@@ -27,15 +27,15 @@
 
 .dashboard-title {
   color: white !important;
-  margin-bottom: 8px !important;
-  font-size: 32px;
+  margin-bottom: 4px !important;
+  font-size: 28px;
   font-weight: 600;
 }
 
 .dashboard-subtitle {
   color: rgba(255, 255, 255, 0.9) !important;
   margin-bottom: 0 !important;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .header-actions .ant-btn {
@@ -58,7 +58,7 @@
 
 /* 统计卡片区域 */
 .stats-section {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .stats-row {
