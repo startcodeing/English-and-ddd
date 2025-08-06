@@ -120,11 +120,6 @@ const WritingTopicFormPage: React.FC = () => {
     >
       <Card
         title={isEdit ? '编辑写作主题' : '新增写作主题'}
-        extra={
-          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-            返回列表
-          </Button>
-        }
       >
         <Spin spinning={loading}>
           <Form
@@ -190,8 +185,9 @@ const WritingTopicFormPage: React.FC = () => {
             />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item style={{ textAlign: 'right', marginTop: 24 }}>
             <Space>
+              <Button onClick={handleBack}>取消</Button>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -200,7 +196,6 @@ const WritingTopicFormPage: React.FC = () => {
               >
                 保存
               </Button>
-              <Button onClick={handleBack}>取消</Button>
             </Space>
           </Form.Item>
         </Form>

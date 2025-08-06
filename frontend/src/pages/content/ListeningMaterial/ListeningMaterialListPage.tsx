@@ -251,24 +251,14 @@ const ListeningMaterialListPage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
+      width: 120,
       render: (_: any, record: ListeningMaterial) => (
         <Space size="middle">
           <Button 
-            type="primary" 
-            size="small"
-            icon={<EyeOutlined />} 
-            onClick={() => navigate(`/content/listening-materials/detail/${record.id}`)}
-          >
-            查看
-          </Button>
-          <Button 
-            type="primary" 
-            size="small"
+            type="text" 
             icon={<EditOutlined />} 
             onClick={() => navigate(`/content/listening-materials/edit/${record.id}`)}
-          >
-            编辑
-          </Button>
+          />
           <Popconfirm
             title="确定要删除这个听力资料吗？"
             onConfirm={() => handleDelete(record.id)}
@@ -276,12 +266,10 @@ const ListeningMaterialListPage: React.FC = () => {
             cancelText="取消"
           >
             <Button 
+              type="text" 
               danger 
-              size="small"
               icon={<DeleteOutlined />}
-            >
-              删除
-            </Button>
+            />
           </Popconfirm>
         </Space>
       ),

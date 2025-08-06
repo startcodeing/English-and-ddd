@@ -324,45 +324,42 @@ const WordBookPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="page-content">
-
-        {/* 批量操作区域 */}
-        {selectedRowKeys.length > 0 && (
-          <div className="batch-actions-area">
-            <span className="selected-count">
-              已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
-            </span>
-            <Space>
-              <Button size="small" onClick={handleClearSelection}>清除选择</Button>
-              <Button
-                danger
-                icon={<DeleteColumnOutlined />}
-                onClick={handleBatchDelete}
-                loading={deleteLoading}
-              >
-                批量删除
-              </Button>
-            </Space>
-          </div>
-        )}
-        
-        {/* 单词本表格 */}
-        <Table
-          size="small"
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={filteredWordBooks}
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 350px)' }}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 个单词本`,
-          }}
-        />
-      </div>
+      {/* 批量操作区域 */}
+      {selectedRowKeys.length > 0 && (
+        <div className="batch-actions-area">
+          <span className="selected-count">
+            已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
+          </span>
+          <Space>
+            <Button size="small" onClick={handleClearSelection}>清除选择</Button>
+            <Button
+              danger
+              icon={<DeleteColumnOutlined />}
+              onClick={handleBatchDelete}
+              loading={deleteLoading}
+            >
+              批量删除
+            </Button>
+          </Space>
+        </div>
+      )}
+      
+      {/* 单词本表格 */}
+      <Table
+        size="small"
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={filteredWordBooks}
+        rowKey="id"
+        loading={loading}
+        scroll={{ x: 'max-content', y: 'calc(100vh - 350px)' }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 个单词本`,
+        }}
+      />
 
       {/* 创建/编辑单词本模态框 */}
       {/* 单词本表单抽屉 */}

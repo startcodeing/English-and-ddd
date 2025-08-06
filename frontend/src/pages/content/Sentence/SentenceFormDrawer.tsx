@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Drawer, Form, Input, Button, Space, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Sentence } from '../../../types';
@@ -126,9 +126,10 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
           name="englishContent"
           label="英文内容"
           rules={[{ required: true, message: '请输入英文内容' }]}
+          style={{ marginBottom: 16 }}
         >
           <MdEditor
-            style={{ height: '250px', width: '100%' }}
+            style={{ height: '200px', width: '100%' }}
             renderHTML={text => mdParser.render(text)}
             placeholder="请输入英文内容"
             onChange={handleEnglishContentChange}
@@ -140,9 +141,10 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
           name="chineseMeaning"
           label="中文含义"
           rules={[{ required: true, message: '请输入中文含义' }]}
+          style={{ marginBottom: 16 }}
         >
           <MdEditor
-            style={{ height: '250px', width: '100%' }}
+            style={{ height: '200px', width: '100%' }}
             renderHTML={text => mdParser.render(text)}
             placeholder="请输入中文含义"
             onChange={handleChineseMeaningChange}
@@ -154,9 +156,10 @@ const SentenceFormDrawer: React.FC<SentenceFormDrawerProps> = ({
           name="grammarAnalysis"
           label="语法分析"
           tooltip={{ title: '分析句子的语法结构，如时态、语态、从句类型等', icon: <InfoCircleOutlined /> }}
+          style={{ marginBottom: 0 }}
         >
           <MdEditor
-            style={{ height: '300px', width: '100%' }}
+            style={{ height: '220px', width: '100%' }}
             renderHTML={text => mdParser.render(text)}
             placeholder="请输入语法分析"
             onChange={handleGrammarAnalysisChange}

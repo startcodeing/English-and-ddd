@@ -292,21 +292,26 @@ const WordPage: React.FC = () => {
       title: '操作',
       key: 'action',
       render: (_: any, record: SimpleWord) => (
-        <Space size="middle">
+        <Space size="small">
           <Button 
-            type="primary" 
+            type="link" 
+            size="small"
             icon={<EyeOutlined />} 
             onClick={() => handleViewWord(record)}
           >
             查看详情
           </Button>
           <Button 
+            type="link" 
+            size="small"
             icon={<EditOutlined />} 
             onClick={() => handleEditWord(record)}
           >
             编辑
           </Button>
           <Button 
+            type="link" 
+            size="small"
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDeleteWord(record.id)}
@@ -366,6 +371,7 @@ const WordPage: React.FC = () => {
         <div className="batch-actions-area">
           <span className="selected-count">已选择 {selectedRowKeys.length} 项</span>
           <Button 
+            size="small"
             icon={<CloseCircleOutlined />} 
             onClick={handleClearSelection}
             style={{ marginRight: 8 }}
@@ -373,6 +379,7 @@ const WordPage: React.FC = () => {
             清除选择
           </Button>
           <Button 
+            size="small"
             type="primary" 
             danger 
             icon={<DeleteOutlined />} 

@@ -287,33 +287,20 @@ const ArticlePage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: '15%',
+      width: 120,
       render: (_: any, record: Article) => (
         <Space size="middle">
           <Button 
-            type="primary" 
-            size="small"
-            icon={<ReadOutlined />} 
-            onClick={() => handleReadArticle(record.id)}
-          >
-            阅读
-          </Button>
-          <Button 
-            type="primary" 
-            size="small"
+            type="text" 
             icon={<EditOutlined />} 
             onClick={() => handleEditArticle(record)}
-          >
-            编辑
-          </Button>
+          />
           <Button 
+            type="text" 
             danger 
-            size="small"
             icon={<DeleteOutlined />} 
             onClick={() => handleDeleteArticle(record.id)}
-          >
-            删除
-          </Button>
+          />
         </Space>
       )
     }

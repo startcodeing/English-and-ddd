@@ -247,31 +247,20 @@ const SentencePage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      width: '25%',
+      width: 120,
       render: (_: any, record: Sentence) => (
         <Space size="middle">
           <Button 
-            type="primary" 
-            ghost
-            icon={<InfoCircleOutlined />} 
-            onClick={() => handleViewSentence(record)}
-          >
-            查看
-          </Button>
-          <Button 
-            type="primary" 
+            type="text" 
             icon={<EditOutlined />} 
             onClick={() => handleEditSentence(record)}
-          >
-            编辑
-          </Button>
+          />
           <Button 
+            type="text" 
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDeleteSentence(record.id)}
-          >
-            删除
-          </Button>
+          />
         </Space>
       )
     }

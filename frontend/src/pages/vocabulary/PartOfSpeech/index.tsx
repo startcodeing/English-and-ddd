@@ -243,22 +243,26 @@ const PartOfSpeechPage: React.FC = () => {
       title: '操作',
       key: 'action',
       render: (_: any, record: PartOfSpeech) => (
-        <Space size="middle">
+        <Space size="small">
           <Button 
-            type="default" 
+            type="link" 
+            size="small"
             icon={<EyeOutlined />} 
             onClick={() => handleViewPartOfSpeech(record)}
           >
             查看
           </Button>
           <Button 
-            type="primary" 
+            type="link" 
+            size="small"
             icon={<EditOutlined />} 
             onClick={() => handleEditPartOfSpeech(record)}
           >
             编辑
           </Button>
           <Button 
+            type="link" 
+            size="small"
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDeletePartOfSpeech(record.id)}
@@ -299,6 +303,7 @@ const PartOfSpeechPage: React.FC = () => {
             已选择 <span className="count-number">{selectedRowKeys.length}</span> 项
           </div>
           <Button 
+            size="small"
             onClick={handleClearSelection} 
             icon={<CloseCircleOutlined />}
             style={{ marginRight: 8 }}
@@ -306,6 +311,7 @@ const PartOfSpeechPage: React.FC = () => {
             清除选择
           </Button>
           <Button 
+            size="small"
             type="primary" 
             danger 
             onClick={handleBatchDelete} 

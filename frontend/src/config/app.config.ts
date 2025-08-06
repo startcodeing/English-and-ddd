@@ -5,7 +5,8 @@ import { AppConfig, ThemeConfig, DifficultyLevel, DifficultyLevelConfig, Sentenc
  */
 export const appConfig: AppConfig = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
-  appName: import.meta.env.VITE_APP_NAME || '英语学习平台',
+  //appName: import.meta.env.VITE_APP_NAME || '英语学习平台',
+  appName: import.meta.env.VITE_APP_NAME || 'LETS English Platform',
   defaultLanguage: import.meta.env.VITE_DEFAULT_LOCALE || 'zh-CN',
   supportedLanguages: [
     { code: 'zh-CN', name: '简体中文' },
