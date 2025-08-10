@@ -1,0 +1,9 @@
+2025-08-08 22:12:25 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "TITLE CHARACTER VARYING(255)": "U&'\\521b\\5efa\\5199\\4f5c\\4e3b\\9898\\ff1acsdcsddddddddddddddddddddddddddddddddddddc... (670)"; SQL statement:
+insert into user_activity (activity_time, activity_type, description, resource_id, resource_type, title, user_id, username, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-214]
+2025-08-08 22:12:32 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "TITLE CHARACTER VARYING(255)": "U&'\\521b\\5efa\\5199\\4f5c\\4e3b\\9898\\ff1acsdcsddddddddddddddddddddddddddddddddddddc... (670)"; SQL statement:
+insert into user_activity (activity_time, activity_type, description, resource_id, resource_type, title, user_id, username, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-214]
+2025-08-08 22:12:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "TITLE CHARACTER VARYING(255)": "U&'\\521b\\5efa\\5199\\4f5c\\4e3b\\9898\\ff1acsdcsddddddddddddddddddddddddddddddddddddc... (316)"; SQL statement:
+insert into user_activity (activity_time, activity_type, description, resource_id, resource_type, title, user_id, username, id) values (?, ?, ?, ?, ?, ?, ?, ?, ?) [22001-214]

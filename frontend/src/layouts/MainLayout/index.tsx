@@ -82,6 +82,11 @@ const MainLayout: React.FC = () => {
           label: '听力资料管理',
           onClick: () => navigate('/content/listening-materials/page'),
         },
+        {
+          key: 'grammar-analysis',
+          label: '语法分析',
+          onClick: () => navigate('/content/grammar-analysis'),
+        },
       ],
     },
     {

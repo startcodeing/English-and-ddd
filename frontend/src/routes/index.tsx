@@ -23,6 +23,8 @@ const ListeningMaterialList = React.lazy(() => import('../pages/content/Listenin
 const ListeningMaterialForm = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialFormPage'));
 const ListeningMaterialDetail = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialDetailPage'));
 const ListeningMaterialPlayer = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialPlayerPage'));
+const GrammarAnalysisListPage = React.lazy(() => import('../pages/Content/GrammarAnalysis/GrammarAnalysisListPage'));
+const GrammarAnalysisFormPage = React.lazy(() => import('../pages/Content/GrammarAnalysis/GrammarAnalysisFormPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -185,6 +187,30 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <WritingTopicDetail />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/grammar-analysis',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <GrammarAnalysisListPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/grammar-analysis/new',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <GrammarAnalysisFormPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/grammar-analysis/edit/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <GrammarAnalysisFormPage />
           </React.Suspense>
         ),
       },

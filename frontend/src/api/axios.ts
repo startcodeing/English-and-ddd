@@ -124,4 +124,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance;
+export const axiosInstance = instance;

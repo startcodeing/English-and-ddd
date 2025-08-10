@@ -1,5 +1,6 @@
 // 导出所有API接口
 export * from './axios';
+export * from '../types/response';
 export * from './partOfSpeech';
 export * from './word';
 export * from './wordBook';
