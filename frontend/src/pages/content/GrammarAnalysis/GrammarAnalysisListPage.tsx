@@ -29,7 +29,7 @@ const GrammarAnalysisListPage: React.FC = () => {
                 size: pageSize 
             });
             if (res.data.success) {
-                const grammarAnalysesData = res.data.data || res.data || [];
+                const grammarAnalysesData = res.data.data || [];
                 setGrammarAnalyses(Array.isArray(grammarAnalysesData) ? grammarAnalysesData : []);
                 const countRes = await countGrammarAnalyses({ 
                     title: searchParams.title, 

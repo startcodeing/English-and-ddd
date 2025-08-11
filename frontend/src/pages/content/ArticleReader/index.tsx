@@ -50,7 +50,7 @@ const ArticleReader: React.FC = () => {
         if (id) {
           setLoading(true);
           const response = await getArticleById(id);
-          setArticle(response.data);
+          setArticle(response.data.data || response.data);
         }
       } catch (error) {
         console.error('获取文章详情失败:', error);
@@ -102,7 +102,7 @@ const ArticleReader: React.FC = () => {
         console.log('单词详情结果:', detailResponse);
         
         if (detailResponse.data) {
-          setWordDetail(detailResponse.data);
+          setWordDetail(detailResponse.data.data);
           setShowAddWordDrawer(false);
         } else {
           console.error('获取单词详情失败: 返回数据为空');

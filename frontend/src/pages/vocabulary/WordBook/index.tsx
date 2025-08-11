@@ -30,8 +30,8 @@ const WordBookPage: React.FC = () => {
     try {
       const response = await getAllWordBooks();
       // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
-      const wordBooksData = Array.isArray(response.data.data) ? response.data.data : 
-                           Array.isArray(response.data) ? response.data : [];
+      const wordBooksData = Array.isArray(response.data.data) ? response.data.data :
+                          Array.isArray(response.data) ? response.data : [];
       setWordBooks(wordBooksData);
     } catch (error: any) {
       // 从错误对象中提取错误信息
@@ -48,8 +48,8 @@ const WordBookPage: React.FC = () => {
     try {
       const response = await getAllWords();
       // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
-      const wordsData = Array.isArray(response.data.data) ? response.data.data : 
-                       Array.isArray(response.data) ? response.data : [];
+      const wordsData = Array.isArray(response.data.data) ? response.data.data :
+                        Array.isArray(response.data) ? response.data : [];
       setAllWords(wordsData);
     } catch (error: any) {
       // 从错误对象中提取错误信息
@@ -267,7 +267,7 @@ const WordBookPage: React.FC = () => {
       title: '操作',
       key: 'action',
       width: 280,
-      fixed: 'right',
+      fixed: 'right' as const,
       render: (_: any, record: WordBook) => (
         <Space size="small">
           <Button

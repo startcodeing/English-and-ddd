@@ -70,7 +70,7 @@ const SentenceViewDrawer: React.FC<SentenceViewDrawerProps> = ({
         console.log('单词详情结果:', detailResponse);
         
         if (detailResponse.data) {
-          setWordDetail(detailResponse.data);
+          setWordDetail(detailResponse.data.data);
           setShowAddWordDrawer(false);
         } else {
           console.error('获取单词详情失败: 返回数据为空');

@@ -73,6 +73,11 @@ const MainLayout: React.FC = () => {
           onClick: () => navigate('/content/article'),
         },
         {
+          key: 'grammar-analysis',
+          label: '语法分析',
+          onClick: () => navigate('/content/grammar-analysis'),
+        },
+        {
           key: 'writing-topics',
           label: '写作主题管理',
           onClick: () => navigate('/content/writing-topics'),
@@ -81,11 +86,6 @@ const MainLayout: React.FC = () => {
           key: 'listening-materials',
           label: '听力资料管理',
           onClick: () => navigate('/content/listening-materials/page'),
-        },
-        {
-          key: 'grammar-analysis',
-          label: '语法分析',
-          onClick: () => navigate('/content/grammar-analysis'),
         },
       ],
     },

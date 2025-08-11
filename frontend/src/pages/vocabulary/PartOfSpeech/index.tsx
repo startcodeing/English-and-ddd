@@ -26,7 +26,11 @@ const PartOfSpeechPage: React.FC = () => {
     try {
       const response = await getAllPartOfSpeech();
       // 从后端响应中提取实际数据
-      const responseData = response.data.data || response.data;
+      const responseData = response.data.data;
+      if (!responseData) {
+        message.error('获取词性列表失败：数据为空');
+        return;
+      }
       // 确保每个词性的 commonPhrases 字段都是数组类型
       const processedData = responseData.map((item: PartOfSpeech) => ({
         ...item,

@@ -1,7 +1,7 @@
 export interface GrammarAnalysis {
     id: number;
     title: string;
-    originContent: string;
+    originContent: string | null;
     difficulty: 'easy' | 'medium' | 'hard' | null;
     createTime: string | null;
     updateTime: string | null;

@@ -85,7 +85,7 @@ const WordDetailView: React.FC<WordDetailViewProps> = ({ wordDetail }) => {
           getPartOfSpeechById(id)
             .then(response => {
               if (response.data) {
-                return { id, data: response.data };
+                return { id, data: response.data.data };
               }
               return null;
             })
@@ -102,7 +102,7 @@ const WordDetailView: React.FC<WordDetailViewProps> = ({ wordDetail }) => {
         let hasValidData = false;
         
         results.forEach(result => {
-          if (result) {
+          if (result && result.data) {
             partOfSpeechData[result.id] = result.data;
             hasValidData = true;
           }

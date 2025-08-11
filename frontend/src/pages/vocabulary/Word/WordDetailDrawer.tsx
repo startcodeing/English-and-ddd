@@ -246,7 +246,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
   const fetchPartsOfSpeech = async () => {
     try {
       const response = await getAllPartOfSpeech();
-      setPartsOfSpeech(response.data);
+      if (response.data.data) {
+        setPartsOfSpeech(response.data.data);
+      }
     } catch (error) {
       message.error('获取词性列表失败');
       console.error('获取词性列表失败:', error);
@@ -257,7 +259,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
   const fetchAllWords = async () => {
     try {
       const response = await getAllWords();
-      setAllWords(response.data);
+      if (response.data.data) {
+        setAllWords(response.data.data);
+      }
     } catch (error) {
       message.error('获取单词列表失败');
       console.error('获取单词列表失败:', error);
@@ -277,16 +281,21 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       const response = await getWordDetail(wordId);
       console.log("API Response:", JSON.stringify(response.data, null, 2));
       
+      if (!response.data.data) {
+        message.error('获取单词详情失败：数据为空');
+        return;
+      }
+      
       // 使用通用的转换函数将WordDetail转换为Word
-      const wordData = convertWordDetailToWord(response.data);
+      const wordData = convertWordDetailToWord(response.data.data);
       
       setWord(wordData);
       
       // 设置基本信息表单
       form.setFieldsValue({
-        spelling: response.data.spelling,
-        phonetic: response.data.phonetic,
-        difficultyLevel: response.data.difficultyLevel
+        spelling: response.data.data.spelling,
+        phonetic: response.data.data.phonetic,
+        difficultyLevel: response.data.data.difficultyLevel
       });
     } catch (error) {
       message.error('获取单词详情失败');
@@ -347,7 +356,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
 
       if (mode === 'create') {
         const response = await createWord(wordData);
-        setWord(response.data);
+        if (response.data) {
+          setWord(response.data);
+        }
         message.success('单词创建成功');
         // 调用onSuccess回调刷新单词列表，但不关闭抽屉
         // 使用自定义事件通知父组件刷新列表
@@ -356,7 +367,9 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
         window.dispatchEvent(event);
       } else if (word) {
         const response = await updateWord(word.id, wordData);
-        setWord(response.data);
+        if (response.data) {
+          setWord(response.data);
+        }
         message.success('基本信息保存成功');
         // 调用onSuccess回调刷新单词列表，但不关闭抽屉
         // 使用自定义事件通知父组件刷新列表
@@ -546,13 +559,16 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (word.id) {
         const detailResponse = await getWordDetail(word.id);
         // 将WordDetail转换为Word
-        const convertedWord = convertWordDetailToWord(detailResponse.data);
-        setWord(convertedWord);
+        let convertedWord: any = null;
+        if (detailResponse.data?.data) {
+          convertedWord = convertWordDetailToWord(detailResponse.data.data);
+          setWord(convertedWord);
+        }
         
         // 找到新添加的词义，以便后续设置activeTabKey
-        const newMeaningIndex = convertedWord.meanings.findIndex(
-          m => m.partOfSpeechId === values.partOfSpeechId && m.chineseMeaning === values.chineseMeaning
-        );
+        const newMeaningIndex = convertedWord ? convertedWord.meanings.findIndex(
+          (m: any) => m.partOfSpeechId === values.partOfSpeechId && m.chineseMeaning === values.chineseMeaning
+        ) : -1;
         
         // 移除已保存的新tab，因为新词义会自动添加到正常的词义列表中
         setNewTabs(prev => prev.filter(tab => tab.key !== tabKey));
@@ -758,20 +774,22 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       if (word.id) {
         const detailResponse = await getWordDetail(word.id);
         // 将WordDetail转换为Word
-        const convertedWord = convertWordDetailToWord(detailResponse.data);
-        setWord(convertedWord);
-        
-        // 找到刚才编辑的词义对应的索引
-        const editedMeaningIndex = convertedWord.meanings.findIndex(m => m.id === currentEditingMeaningId);
-        
-        // 切换到编辑的词义对应的tab
-        if (editedMeaningIndex !== -1) {
-          setActiveTabKey(editedMeaningIndex.toString());
-        }
-        
-        // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
-        const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
-        window.dispatchEvent(event);
+        if (detailResponse.data?.data) {
+           const convertedWord = convertWordDetailToWord(detailResponse.data.data);
+           setWord(convertedWord);
+           
+           // 找到刚才编辑的词义对应的索引
+           const editedMeaningIndex = convertedWord.meanings.findIndex((m: any) => m.id === currentEditingMeaningId);
+           
+           // 切换到编辑的词义对应的tab
+           if (editedMeaningIndex !== -1) {
+             setActiveTabKey(editedMeaningIndex.toString());
+           }
+           
+           // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
+           const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });
+           window.dispatchEvent(event);
+         }
       }
       
       setEditingMeaningId(null);
@@ -799,13 +817,18 @@ const WordDetailDrawer: React.FC<WordDetailDrawerProps> = ({
       // 然后调用获取单词详情接口，获取完整的单词信息（包括同义词、反义词和例句）
       const detailResponse = await getWordDetail(word.id);
       // 将WordDetail转换为Word
-      const convertedWord = convertWordDetailToWord(detailResponse.data);
-      setWord(convertedWord);
-      
-      // 如果当前没有词义了，或者当前激活的Tab对应的词义被删除了，切换到第一个Tab
-      if (convertedWord.meanings.length === 0 || !convertedWord.meanings[parseInt(activeTabKey)]) {
-        setActiveTabKey('0');
-      }
+      if (detailResponse.data?.data) {
+         const convertedWord = convertWordDetailToWord(detailResponse.data.data);
+         setWord(convertedWord);
+         
+         // 如果当前没有词义了，或者当前激活的Tab对应的词义被删除了，切换到第一个Tab
+          if (convertedWord.meanings.length === 0 || !convertedWord.meanings[parseInt(activeTabKey)]) {
+            setActiveTabKey('0');
+          }
+        } else {
+          // 如果没有数据，也切换到第一个Tab
+          setActiveTabKey('0');
+        }
       
       // 使用自定义事件通知父组件刷新列表，但不关闭抽屉
       const event = new CustomEvent('refreshWordList', { detail: { closeDrawer: false } });

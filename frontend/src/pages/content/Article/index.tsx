@@ -34,8 +34,7 @@ const ArticlePage: React.FC = () => {
     try {
       const response = await getAllArticles();
       // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
-      const articleData = Array.isArray(response.data.data) ? response.data.data : 
-                         Array.isArray(response.data) ? response.data : [];
+      const articleData = Array.isArray(response.data) ? response.data : [];
       setOriginalArticles(articleData);
       setArticles(articleData);
       setPagination({
@@ -59,8 +58,7 @@ const ArticlePage: React.FC = () => {
         getArticlesCount()
       ]);
       // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
-      const articleData = Array.isArray(articlesResponse.data.data) ? articlesResponse.data.data : 
-                         Array.isArray(articlesResponse.data) ? articlesResponse.data : [];
+      const articleData = Array.isArray(articlesResponse.data.data) ? articlesResponse.data.data : (Array.isArray(articlesResponse.data) ? articlesResponse.data : []);
       const totalCount = countResponse.data.data || countResponse.data || 0;
       setOriginalArticles(articleData);
       setArticles(articleData);

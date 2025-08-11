@@ -1,6 +1,7 @@
 import axios from './axios';
 import { DictationExercise, DictationResult } from '@/types';
 import { StandardApiResponse } from '../types/response';
+import { AxiosResponse } from 'axios';
 
 const BASE_URL = '/api/dictation';
 
@@ -33,31 +34,8 @@ export const createDictationExercise = async (exercise: Omit<DictationExercise, 
 };
 
 // 获取听写练习
-export const getDictationExerciseById = async (id: string): Promise<StandardApiResponse<DictationExercise>> => {
-  try {
-    const response = await axios.get<DictationExercise>(`${BASE_URL}/exercise/${id}`);
-    // 检查响应是否已经是标准格式
-    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && 'success' in response.data) {
-      return response.data as StandardApiResponse<DictationExercise>;
-    }
-    // 否则包装为标准格式
-    return {
-      success: true,
-      message: '获取听写练习成功',
-      data: response.data || null
-    };
-  } catch (error: any) {
-    // 检查错误是否已经是标准格式
-    if (error && typeof error === 'object' && 'success' in error) {
-      return error as StandardApiResponse<DictationExercise>;
-    }
-    // 否则包装为标准格式
-    return {
-      success: false,
-      message: error.message || '获取听写练习失败',
-      data: null
-    };
-  }
+export const getDictationExerciseById = (id: string): Promise<AxiosResponse<StandardApiResponse<DictationExercise>>> => {
+  return axios.get(`${BASE_URL}/exercise/${id}`);
 };
 
 // 获取用户的所有听写练习

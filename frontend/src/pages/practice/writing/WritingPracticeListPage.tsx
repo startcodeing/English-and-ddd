@@ -173,7 +173,7 @@ const WritingPracticeListPage: React.FC = () => {
           } else {
             message.error(response.message || '删除失败');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('删除写作练习出错:', error);
           message.error(error?.message || '删除失败');
         }
@@ -202,7 +202,7 @@ const WritingPracticeListPage: React.FC = () => {
           } else {
             message.error(response.message || '批量删除失败');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('批量删除写作练习出错:', error);
           message.error(error?.message || '批量删除失败');
         }

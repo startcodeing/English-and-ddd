@@ -59,13 +59,17 @@ const WordPage: React.FC = () => {
     try {
       const response = await getAllWords();
       // 从后端响应中提取实际数据
-      const responseData = response.data.data || response.data;
-      const simpleWords = responseData.map(convertToSimpleWord);
+      const responseData = response.data.data;
+      if (!responseData) {
+        message.error('获取单词列表失败：数据为空');
+        return;
+      }
+      const simpleWords = responseData.map((word: Word) => convertToSimpleWord(word));
       setOriginalWords(simpleWords);
       setWords(simpleWords);
       // 如果有搜索文本，应用过滤
       if (searchText) {
-        const filteredWords = simpleWords.filter(word => 
+        const filteredWords = simpleWords.filter((word: any) => 
           word.spelling.toLowerCase().includes(searchText.toLowerCase()) ||
           word.meaning.toLowerCase().includes(searchText.toLowerCase())
         );
@@ -86,8 +90,10 @@ const WordPage: React.FC = () => {
     try {
       const response = await getAllPartOfSpeech();
       // 从后端响应中提取实际数据
-      const responseData = response.data.data || response.data;
-      setPartsOfSpeech(responseData);
+      const responseData = response.data.data;
+      if (responseData) {
+        setPartsOfSpeech(responseData);
+      }
     } catch (error: any) {
       // 从错误对象中提取错误信息
       const errorMessage = error.message || error.errorMessage || '获取词性列表失败';

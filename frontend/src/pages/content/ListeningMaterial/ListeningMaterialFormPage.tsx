@@ -40,7 +40,7 @@ const ListeningMaterialFormPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await getListeningMaterialById(id);
-      const data = response.data;
+      const data = response.data.data || response.data;
       
       if (data) {
         const transcriptContent = data.originContent || '';

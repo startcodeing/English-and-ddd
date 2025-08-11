@@ -28,13 +28,13 @@ const GrammarAnalysisFormPage: React.FC = () => {
         if (isEdit) {
             setLoading(true);
             getGrammarAnalysis(Number(id)).then(res => {
-                if (res.data.success) {
-                    const data = res.data.data;
-                    form.setFieldsValue({
-                        title: data.title,
-                        difficulty: data.difficulty
-                    });
-                    setEditorContent(data.originContent || '');
+                if (res.data.success && res.data.data) {
+                        const data = res.data.data;
+                        form.setFieldsValue({
+                            title: data.title,
+                            difficulty: data.difficulty,
+                        });
+                        setEditorContent(data.originContent || '');
                 }
             }).finally(() => {
                 setLoading(false);

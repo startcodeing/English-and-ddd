@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { appConfig } from '../config';
+import {StandardApiResponse} from "@/types";
 
 // 创建axios实例
 const instance = axios.create({
@@ -32,12 +33,12 @@ instance.interceptors.response.use(
     // 检查响应数据格式
     const data = response.data;
     
-    // 如果响应已经是标准格式（包含success字段），直接返回完整的response对象
+    // 如果响应已经是标准格式（包含success字段），直接返回response对象
     if (data && typeof data === 'object' && 'success' in data) {
       return response;
     }
     
-    // 否则，将响应包装为标准格式并返回完整的response对象
+    // 否则，将响应包装为标准格式并保持AxiosResponse结构
     response.data = {
       success: true,
       message: response.statusText || '请求成功',
@@ -88,39 +89,57 @@ instance.interceptors.response.use(
           console.error(`未处理的错误状态码: ${error.response.status}`, errorMessage);
       }
       
-      // 返回标准格式的错误响应
-      return Promise.reject({
-        success: false,
-        message: errorMessage,
-        data: null,
-        errorCode: error.response.status.toString()
-      });
+      // 创建标准格式的错误响应并保持AxiosResponse结构
+      const errorResponse = {
+        ...error.response,
+        data: {
+          success: false,
+          message: errorMessage,
+          data: null,
+          errorCode: error.response.status.toString()
+        }
+      };
+      return Promise.reject(errorResponse);
     } else if (error.request) {
       // 请求已发送但没有收到响应
       const errorMessage = '网络错误，无法连接到服务器';
       console.error(errorMessage);
       (error as any).errorMessage = errorMessage;
       
-      // 返回标准格式的错误响应
-      return Promise.reject({
-        success: false,
-        message: errorMessage,
-        data: null,
-        errorCode: 'NETWORK_ERROR'
-      });
+      // 创建标准格式的错误响应
+      const errorResponse = {
+        data: {
+          success: false,
+          message: errorMessage,
+          data: null,
+          errorCode: 'NETWORK_ERROR'
+        },
+        status: 0,
+        statusText: 'Network Error',
+        headers: {},
+        config: error.config || {}
+      };
+      return Promise.reject(errorResponse);
     } else {
       // 请求配置有误
       const errorMessage = `请求配置错误: ${error.message}`;
       console.error(errorMessage);
       (error as any).errorMessage = errorMessage;
       
-      // 返回标准格式的错误响应
-      return Promise.reject({
-        success: false,
-        message: errorMessage,
-        data: null,
-        errorCode: 'REQUEST_ERROR'
-      });
+      // 创建标准格式的错误响应
+      const errorResponse = {
+        data: {
+          success: false,
+          message: errorMessage,
+          data: null,
+          errorCode: 'REQUEST_ERROR'
+        },
+        status: 0,
+        statusText: 'Request Error',
+        headers: {},
+        config: error.config || {}
+      };
+      return Promise.reject(errorResponse);
     }
   }
 );

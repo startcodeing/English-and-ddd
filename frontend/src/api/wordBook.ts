@@ -1,26 +1,27 @@
 import axios from './axios';
 import { WordBook } from '@/types';
+import { StandardApiResponse } from './index';
 
 const BASE_URL = '/api/v1/vocabulary/wordbook';
 
 // 获取所有单词本
 export const getAllWordBooks = () => {
-  return axios.get<WordBook[]>(`${BASE_URL}`);
+  return axios.get<StandardApiResponse<WordBook[]>>(`${BASE_URL}`);
 };
 
 // 根据ID获取单词本
 export const getWordBookById = (id: string) => {
-  return axios.get<WordBook>(`${BASE_URL}/${id}`);
+  return axios.get<StandardApiResponse<WordBook>>(`${BASE_URL}/${id}`);
 };
 
 // 创建单词本
 export const createWordBook = (wordBook: Omit<WordBook, 'id'>) => {
-  return axios.post<WordBook>(`${BASE_URL}`, wordBook);
+  return axios.post<StandardApiResponse<WordBook>>(`${BASE_URL}`, wordBook);
 };
 
 // 更新单词本
 export const updateWordBook = (id: string, wordBook: Partial<WordBook>) => {
-  return axios.put<WordBook>(`${BASE_URL}/${id}`, wordBook);
+  return axios.put<StandardApiResponse<WordBook>>(`${BASE_URL}/${id}`, wordBook);
 };
 
 // 删除单词本

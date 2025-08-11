@@ -23,7 +23,7 @@ const GrammarAnalysisDetailPage: React.FC = () => {
             setLoading(true);
             getGrammarAnalysis(Number(id))
                 .then(res => {
-                    if (res.data.success) {
+                    if (res.data.success && res.data.data) {
                         setGrammarAnalysis(res.data.data);
                     }
                 })
@@ -39,7 +39,8 @@ const GrammarAnalysisDetailPage: React.FC = () => {
     };
 
     // 渲染难度标签
-    const renderDifficultyTag = (difficulty: string) => {
+    const renderDifficultyTag = (difficulty: string | null) => {
+        if (!difficulty) return <Tag color="default">未设置</Tag>;
         const difficultyMap: { [key: string]: { text: string; color: string } } = {
             'easy': { text: '简单', color: 'green' },
             'medium': { text: '中等', color: 'orange' },
@@ -50,7 +51,8 @@ const GrammarAnalysisDetailPage: React.FC = () => {
     };
 
     // 渲染Markdown内容
-    const renderMarkdownContent = (content: string) => {
+    const renderMarkdownContent = (content: string | null) => {
+        if (!content) return <div style={{ color: '#999', fontStyle: 'italic' }}>暂无内容</div>;
         const htmlContent = mdParser.render(content);
         return (
             <div 
@@ -109,10 +111,7 @@ const GrammarAnalysisDetailPage: React.FC = () => {
                             {/* 内容 */}
                             <div style={{ marginBottom: 24 }}>
                                 <Title level={4} style={{ marginBottom: 8 }}>内容</Title>
-                                {grammarAnalysis.originContent ? 
-                                    renderMarkdownContent(grammarAnalysis.originContent) : 
-                                    <div style={{ color: '#999', fontStyle: 'italic' }}>暂无内容</div>
-                                }
+                                {renderMarkdownContent(grammarAnalysis.originContent)}
                             </div>
 
                             {/* 时间信息 */}

@@ -27,7 +27,7 @@ const ListeningMaterialDetailPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await getListeningMaterialById(id);
-      setMaterial(response.data);
+      setMaterial(response.data.data || response.data);
     } catch (error) {
       message.error('获取听力资料失败');
     } finally {

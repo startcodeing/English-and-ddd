@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Form, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Table, Tag, Typography, message } from 'antd';
+const { Option } = Select;
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -206,7 +207,7 @@ const DictationPracticeListPage: React.FC = () => {
           } else {
             message.error(response.message || '删除失败');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('删除听写练习出错:', error);
           message.error(error?.message || '删除失败');
         }
@@ -235,7 +236,7 @@ const DictationPracticeListPage: React.FC = () => {
           } else {
             message.error(response.message || '批量删除失败');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('批量删除听写练习出错:', error);
           message.error(error?.message || '批量删除失败');
         }

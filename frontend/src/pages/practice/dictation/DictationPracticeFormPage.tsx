@@ -41,13 +41,17 @@ const DictationPracticeFormPage: React.FC = () => {
     try {
       const response = await getAllListeningMaterials();
       if (response.success && response.data) {
-        setMaterials(response.data);
+        // 确保response.data是数组
+        const materialsData = Array.isArray(response.data) ? response.data : [];
+        setMaterials(materialsData);
       } else {
         message.error('获取听力资料列表失败');
+        setMaterials([]); // 设置为空数组
       }
     } catch (error) {
       console.error('获取听力资料列表出错:', error);
       message.error('获取听力资料列表失败');
+      setMaterials([]); // 设置为空数组
     } finally {
       setMaterialsLoading(false);
     }
@@ -301,7 +305,7 @@ const DictationPracticeFormPage: React.FC = () => {
                   showSearch
                   optionFilterProp="label"
                   onChange={handleMaterialChange}
-                  options={materials.map(material => ({
+                  options={(materials || []).map(material => ({
                     value: material.id,
                     label: `${material.title} (${material.difficulty})`,
                   }))}

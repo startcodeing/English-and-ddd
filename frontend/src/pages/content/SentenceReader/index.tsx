@@ -41,7 +41,7 @@ const SentenceReader: React.FC = () => {
         if (id) {
           setLoading(true);
           const response = await getSentenceById(id);
-          setSentence(response.data);
+          setSentence(response.data.data || response.data);
         }
       } catch (error) {
         console.error('获取句子详情失败:', error);
@@ -85,7 +85,7 @@ const SentenceReader: React.FC = () => {
         console.log('单词详情结果:', detailResponse);
         
         if (detailResponse.data) {
-          setWordDetail(detailResponse.data);
+          setWordDetail(detailResponse.data.data);
           setShowAddWordDrawer(false);
         } else {
           console.error('获取单词详情失败: 返回数据为空');

@@ -15,9 +15,7 @@ export const getAllListeningMaterials = async (): Promise<StandardApiResponse<Li
     });
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {
-      const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
-      standardResponse.data = response.data;
-      return standardResponse;
+      return response.data as StandardApiResponse<ListeningMaterial[]>;
     }
     
     // 否则包装为标准格式
@@ -85,7 +83,7 @@ export const getListeningMaterialById = async (id: string): Promise<StandardApiR
     const response = await axios.get(`${BASE_URL}/listening-materials/${id}`);
     
     // 适配数据
-    const adaptedData = ListeningMaterialAdapter.adapt(response.data);
+    const adaptedData = ListeningMaterialAdapter.adapt(response.data.data);
     
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {

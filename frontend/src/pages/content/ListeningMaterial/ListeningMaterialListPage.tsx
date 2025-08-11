@@ -37,7 +37,7 @@ const ListeningMaterialListPage: React.FC = () => {
          countListeningMaterials()
        ]);
       // 确保正确提取数据
-      const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+      const listeningMaterialsData = pageResponse.data || pageResponse.data || [];
       dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
       if (countResponse.success && typeof countResponse.data === 'number') {
         dispatch(setListeningMaterialsTotal(countResponse.data));
@@ -66,7 +66,7 @@ const ListeningMaterialListPage: React.FC = () => {
       try {
         dispatch(fetchListeningMaterialsStart());
         const response = await getListeningMaterialsByTitle(title);
-        const listeningMaterialsData = response.data?.data || response.data || [];
+        const listeningMaterialsData = response.data || [];
         dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
       } catch (error: any) {
         const errorMsg = error?.message || '未知错误';
@@ -85,7 +85,7 @@ const ListeningMaterialListPage: React.FC = () => {
         
         if (difficultyLevel) {
           const response = await getListeningMaterialsByDifficultyLevel(difficultyLevel);
-          const listeningMaterialsData = response.data?.data || response.data || [];
+          const listeningMaterialsData = response.data || [];
           dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
         }
       } catch (error: any) {
@@ -110,7 +110,7 @@ const ListeningMaterialListPage: React.FC = () => {
     try {
       dispatch(fetchListeningMaterialsStart());
       const response = await getListeningMaterialsByDifficultyLevel(selectedDifficulty as ListeningMaterialDifficultyLevel);
-      const listeningMaterialsData = response.data?.data || response.data || [];
+      const listeningMaterialsData = response.data || [];
       dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
     } catch (error: any) {
       const errorMsg = error?.message || '未知错误';
@@ -381,7 +381,7 @@ const ListeningMaterialListPage: React.FC = () => {
                 getListeningMaterialsByPage(page, size),
                 countListeningMaterials()
               ]);
-              const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+              const listeningMaterialsData = pageResponse.data || [];
               dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
               if (countResponse.success && typeof countResponse.data === 'number') {
                 dispatch(setListeningMaterialsTotal(countResponse.data));
@@ -410,7 +410,7 @@ const ListeningMaterialListPage: React.FC = () => {
                 getListeningMaterialsByPage(current, size),
                 countListeningMaterials()
               ]);
-              const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+              const listeningMaterialsData = pageResponse.data || [];
               dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
               if (countResponse.success && typeof countResponse.data === 'number') {
                 dispatch(setListeningMaterialsTotal(countResponse.data));

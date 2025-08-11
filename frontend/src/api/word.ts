@@ -1,21 +1,23 @@
 import axios from './axios';
 import { Word, WordMeaning, WordDetail } from '@/types';
+import { StandardApiResponse } from './index';
+import { AxiosResponse } from 'axios';
 
 const BASE_URL = '/api/v1/vocabulary/word';
 
 // 获取所有单词
-export const getAllWords = () => {
-  return axios.get<Word[]>(`${BASE_URL}`);
+export const getAllWords = (): Promise<AxiosResponse<StandardApiResponse<Word[]>>> => {
+  return axios.get(`${BASE_URL}`);
 };
 
 // 根据ID获取单词
-export const getWordById = (id: string) => {
-  return axios.get<Word>(`${BASE_URL}/${id}`);
+export const getWordById = (id: string): Promise<AxiosResponse<StandardApiResponse<Word>>> => {
+  return axios.get(`${BASE_URL}/${id}`);
 };
 
 // 根据ID获取单词详情
-export const getWordDetail = (id: string) => {
-  return axios.get<WordDetail>(`${BASE_URL}/detail/${id}`);
+export const getWordDetail = (id: string): Promise<AxiosResponse<StandardApiResponse<WordDetail>>> => {
+  return axios.get(`${BASE_URL}/detail/${id}`);
 };
 
 // 根据拼写查询单词

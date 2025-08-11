@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, Progress, Typography, Button, Space } from 'antd';
-import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined, TrophyOutlined, ClockCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined, TrophyOutlined, ClockCircleOutlined, RightOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -13,6 +13,7 @@ import { getDictationStatistics } from '../../api/dictation';
 import { getWritingStatistics } from '../../api/writing';
 import { countWritingTopics } from '../../api/writingTopic';
 import { getListeningMaterialsCount, countListeningMaterials } from '../../api/listeningMaterial';
+import { countGrammarAnalyses } from '../../api/grammarAnalysis';
 import RecentActivities from '../../components/RecentActivities';
 import './style.css';
 
@@ -95,6 +96,13 @@ const Dashboard: React.FC = () => {
       icon: <EditOutlined />,
       color: '#fa8c16',
       route: '/practice/writing'
+    },
+    {
+      title: '语法分析数',
+      value: 0,
+      icon: <CheckCircleOutlined />,
+      color: '#f759ab',
+      route: '/grammar-analysis'
     }
   ]);
 
@@ -115,23 +123,23 @@ const Dashboard: React.FC = () => {
       try {
         // 获取词性总数
         const partsOfSpeechResponse = await getAllPartOfSpeech();
-        const partsOfSpeechCount = partsOfSpeechResponse.data.length;
+        const partsOfSpeechCount = partsOfSpeechResponse.data.data?.length || 0;
         
         // 获取单词总数
         const wordsResponse = await getAllWords();
-        const wordsCount = wordsResponse.data.length;
+        const wordsCount = wordsResponse.data.data?.length || 0;
         
         // 获取单词本总数
         const wordBooksResponse = await getAllWordBooks();
-        const wordBooksCount = wordBooksResponse.data.length;
+        const wordBooksCount = wordBooksResponse.data.data?.length || 0;
         
         // 获取句子总数
         const sentencesResponse = await getAllSentences();
-        const sentencesCount = sentencesResponse.data.length;
+        const sentencesCount = sentencesResponse.data?.length || 0;
         
         // 获取文章总数
         const articlesResponse = await getAllArticles();
-        const articlesCount = articlesResponse.data.length;
+        const articlesCount = articlesResponse.data?.length || 0;
         
         // 获取写作主题总数
         let writingTopicsCount = 0;
@@ -165,9 +173,40 @@ const Dashboard: React.FC = () => {
           }
         }
         
-        // 听写练习和写作练习使用模拟数据
-        const dictationCount = 32;
-        const writingCount = 16;
+        // 获取听写练习统计数据
+        let dictationCount = 0;
+        try {
+          const dictationStatsResponse = await getDictationStatistics();
+          if (dictationStatsResponse.success && dictationStatsResponse.data) {
+            dictationCount = dictationStatsResponse.data.totalCount || 0;
+          }
+        } catch (error) {
+          console.error('获取听写统计数据失败:', error);
+          dictationCount = 32; // 使用默认值
+        }
+        
+        // 获取写作练习统计数据
+        let writingCount = 0;
+        try {
+          const writingStatsResponse = await getWritingStatistics();
+          if (writingStatsResponse.success && writingStatsResponse.data) {
+            writingCount = writingStatsResponse.data.totalCount || 0;
+          }
+        } catch (error) {
+          console.error('获取写作统计数据失败:', error);
+          writingCount = 16; // 使用默认值
+        }
+        
+        // 获取语法分析统计数据
+        let grammarAnalysisCount = 0;
+        try {
+          const grammarAnalysisResponse = await countGrammarAnalyses({});
+          if (grammarAnalysisResponse.data.success) {
+            grammarAnalysisCount = grammarAnalysisResponse.data.data || 0;
+          }
+        } catch (error) {
+          console.error('获取语法分析统计数据失败:', error);
+        }
         
         // 更新统计数据
         setStats(prevStats => {
@@ -212,10 +251,15 @@ const Dashboard: React.FC = () => {
             ...newStats[7],
             value: dictationCount
           };
-          // 更新写作练习数量（模拟数据）
+          // 更新写作练习数量
           newStats[8] = {
             ...newStats[8],
             value: writingCount
+          };
+          // 更新语法分析数量
+          newStats[9] = {
+            ...newStats[9],
+            value: grammarAnalysisCount
           };
           return newStats;
         });
@@ -291,7 +335,7 @@ const Dashboard: React.FC = () => {
           ))}
         </Row>
         
-        {/* 第二行 - 4个统计卡片 */}
+        {/* 第二行 - 5个统计卡片 */}
         <Row gutter={[16, 16]} className="stats-row">
           {stats.slice(5).map((stat, index) => (
             <Col xs={24} sm={12} md={4.8} lg={4.8} xl={4.8} key={index + 5}>

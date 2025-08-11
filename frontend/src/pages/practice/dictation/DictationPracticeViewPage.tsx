@@ -77,7 +77,7 @@ const DictationPracticeViewPage: React.FC = () => {
     try {
       const response = await getListeningMaterialById(materialId.toString());
       if (response.success && response.data) {
-        setMaterial(response.data);
+        setMaterial(response.data.data || response.data);
       }
     } catch (error) {
       console.error('获取听力资料详情出错:', error);
@@ -269,7 +269,7 @@ const DictationPracticeViewPage: React.FC = () => {
                  </div>
                )
              },
-             material ? {
+             ...(material ? [{
                key: 'material',
                label: '听力资料',
                children: (
@@ -333,8 +333,8 @@ const DictationPracticeViewPage: React.FC = () => {
                    )}
                  </div>
                )
-             } : null
-           ].filter(Boolean)}
+             }] : [])
+           ]}
          />
        </Card>
 
