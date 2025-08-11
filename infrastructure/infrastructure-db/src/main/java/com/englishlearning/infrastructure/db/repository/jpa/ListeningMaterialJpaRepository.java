@@ -1,8 +1,7 @@
-package com.englishlearning.infrastructure.db.repository;
+package com.englishlearning.infrastructure.db.repository.jpa;
 
 import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import com.englishlearning.infrastructure.db.po.ListeningMaterialPO;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

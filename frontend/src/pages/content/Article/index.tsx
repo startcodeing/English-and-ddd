@@ -33,7 +33,9 @@ const ArticlePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllArticles();
-      const articleData = response.data;
+      // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
+      const articleData = Array.isArray(response.data.data) ? response.data.data : 
+                         Array.isArray(response.data) ? response.data : [];
       setOriginalArticles(articleData);
       setArticles(articleData);
       setPagination({
@@ -56,14 +58,17 @@ const ArticlePage: React.FC = () => {
         getArticlesByPage(page, pageSize),
         getArticlesCount()
       ]);
-      const articleData = articlesResponse.data;
+      // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
+      const articleData = Array.isArray(articlesResponse.data.data) ? articlesResponse.data.data : 
+                         Array.isArray(articlesResponse.data) ? articlesResponse.data : [];
+      const totalCount = countResponse.data.data || countResponse.data || 0;
       setOriginalArticles(articleData);
       setArticles(articleData);
       setPagination({
         ...pagination,
         current: page,
         pageSize: pageSize,
-        total: countResponse.data
+        total: totalCount
       });
     } catch (error) {
       message.error('获取文章列表失败');

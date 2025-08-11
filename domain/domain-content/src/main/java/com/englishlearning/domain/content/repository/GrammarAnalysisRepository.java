@@ -10,6 +10,8 @@ public interface GrammarAnalysisRepository {
 
     void deleteById(Long id);
 
+    void deleteAllById(Iterable<Long> ids);
+
     Optional<GrammarAnalysis> findById(Long id);
 
     List<GrammarAnalysis> findAll();

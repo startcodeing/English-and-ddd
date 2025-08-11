@@ -25,8 +25,10 @@ const PartOfSpeechPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllPartOfSpeech();
+      // 从后端响应中提取实际数据
+      const responseData = response.data.data || response.data;
       // 确保每个词性的 commonPhrases 字段都是数组类型
-      const processedData = response.data.map((item: PartOfSpeech) => ({
+      const processedData = responseData.map((item: PartOfSpeech) => ({
         ...item,
         commonPhrases: Array.isArray(item.commonPhrases) ? item.commonPhrases : []
       }));
@@ -35,7 +37,7 @@ const PartOfSpeechPage: React.FC = () => {
     } catch (error: any) {
       console.error('获取词性列表失败:', error);
       // 从错误对象中提取错误信息
-      const errorMessage = error.response?.data?.message || '操作失败';
+      const errorMessage = error.message || error.response?.data?.message || '操作失败';
       message.error('获取词性列表失败: ' + errorMessage);
     } finally {
       setLoading(false);

@@ -4,7 +4,7 @@ import com.englishlearning.domain.content.model.entity.ListeningMaterial;
 import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import com.englishlearning.domain.content.repository.ListeningMaterialRepository;
 import com.englishlearning.infrastructure.db.mapper.ListeningMaterialPoMapper;
-import com.englishlearning.infrastructure.db.repository.ListeningMaterialJpaRepository;
+import com.englishlearning.infrastructure.db.repository.jpa.ListeningMaterialJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;

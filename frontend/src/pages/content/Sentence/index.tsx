@@ -30,18 +30,19 @@ const SentencePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllSentences();
-      const sentenceData = response.data || [];
-      setOriginalSentences(sentenceData);
+      const sentenceData = response.data.data || response.data || [];
+      const validSentenceData = Array.isArray(sentenceData) ? sentenceData : [];
+      setOriginalSentences(validSentenceData);
       
       // 如果有搜索文本，应用过滤
       if (searchText.trim()) {
-        const filteredSentences = sentenceData.filter(sentence => 
+        const filteredSentences = validSentenceData.filter(sentence => 
           sentence.englishContent.toLowerCase().includes(searchText.toLowerCase()) ||
           sentence.chineseMeaning.toLowerCase().includes(searchText.toLowerCase())
         );
         setSentences(filteredSentences);
       } else {
-        setSentences(sentenceData);
+        setSentences(validSentenceData);
       }
     } catch (error) {
       message.error('获取句子列表失败');

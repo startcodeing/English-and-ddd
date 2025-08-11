@@ -1,6 +1,6 @@
-package com.englishlearning.infrastructure.db.jpa.content;
+package com.englishlearning.infrastructure.db.repository.jpa;
 
-import com.englishlearning.infrastructure.db.entity.content.GrammarAnalysisPo;
+import com.englishlearning.infrastructure.db.po.GrammarAnalysisPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

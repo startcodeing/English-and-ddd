@@ -54,4 +54,21 @@ public class GrammarAnalysisController {
             @RequestParam(required = false) String difficulty) {
         return Result.success(grammarAnalysisService.countGrammarAnalysisByCondition(title, difficulty));
     }
+
+    /**
+     * 批量删除语法分析
+     */
+    @DeleteMapping("/batch")
+    public Result<Void> batchDeleteGrammarAnalyses(@RequestBody BatchDeleteRequest request) {
+        grammarAnalysisService.batchDeleteGrammarAnalyses(request.getIds());
+        return Result.success();
+    }
+
+    /**
+     * 批量删除请求对象
+     */
+    @lombok.Data
+    public static class BatchDeleteRequest {
+        private List<Long> ids;
+    }
 }

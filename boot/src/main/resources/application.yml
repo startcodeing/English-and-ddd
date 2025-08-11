@@ -48,8 +48,10 @@ management:
 
 logging:
   level:
-    com.englishlearning: info
+    com.englishlearning: debug
     org.springframework: warn
+    com.englishlearning.infrastructure.db.repository.impl: debug
+    com.englishlearning.application.content.service: debug
 
 # 文件存储配置
 file:

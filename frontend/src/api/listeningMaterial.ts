@@ -13,14 +13,10 @@ export const getAllListeningMaterials = async (): Promise<StandardApiResponse<Li
     const response = await axios.get(`${BASE_URL}/listening-materials/page`, {
       params: { pageNum: 1, pageSize: 100 }
     });
-    
-    // 适配数据
-    const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
-    
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {
       const standardResponse = response.data as StandardApiResponse<ListeningMaterial[]>;
-      standardResponse.data = adaptedData;
+      standardResponse.data = response.data;
       return standardResponse;
     }
     
@@ -28,7 +24,7 @@ export const getAllListeningMaterials = async (): Promise<StandardApiResponse<Li
     return {
       success: true,
       message: '获取所有听力资料成功',
-      data: adaptedData || []
+      data: response.data || []
     };
   } catch (error: any) {
     // 检查错误是否已经是标准格式
@@ -53,7 +49,7 @@ export const getListeningMaterialsByPage = async (page: number, size: number): P
     });
     
     // 适配数据
-    const adaptedData = ListeningMaterialAdapter.adaptList(response.data);
+    const adaptedData = ListeningMaterialAdapter.adaptList(response.data.data);
     
     // 检查响应是否已经是标准格式
     if (typeof response.data === 'object' && 'success' in response.data) {

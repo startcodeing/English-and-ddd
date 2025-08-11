@@ -58,7 +58,9 @@ const WordPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllWords();
-      const simpleWords = response.data.map(convertToSimpleWord);
+      // 从后端响应中提取实际数据
+      const responseData = response.data.data || response.data;
+      const simpleWords = responseData.map(convertToSimpleWord);
       setOriginalWords(simpleWords);
       setWords(simpleWords);
       // 如果有搜索文本，应用过滤
@@ -71,7 +73,7 @@ const WordPage: React.FC = () => {
       }
     } catch (error: any) {
       // 从错误对象中提取错误信息
-      const errorMessage = error.errorMessage || '获取单词列表失败';
+      const errorMessage = error.message || error.errorMessage || '获取单词列表失败';
       message.error(`获取单词列表失败: ${errorMessage}`);
       console.error('获取单词列表失败:', error);
     } finally {
@@ -83,10 +85,12 @@ const WordPage: React.FC = () => {
   const fetchPartsOfSpeech = async () => {
     try {
       const response = await getAllPartOfSpeech();
-      setPartsOfSpeech(response.data);
+      // 从后端响应中提取实际数据
+      const responseData = response.data.data || response.data;
+      setPartsOfSpeech(responseData);
     } catch (error: any) {
       // 从错误对象中提取错误信息
-      const errorMessage = error.errorMessage || '获取词性列表失败';
+      const errorMessage = error.message || error.errorMessage || '获取词性列表失败';
       message.error(`获取词性列表失败: ${errorMessage}`);
       console.error('获取词性列表失败:', error);
     }

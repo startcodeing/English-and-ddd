@@ -1,4 +1,4 @@
-package com.englishlearning.infrastructure.db.entity.content;
+package com.englishlearning.infrastructure.db.po;
 
 import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import lombok.Data;

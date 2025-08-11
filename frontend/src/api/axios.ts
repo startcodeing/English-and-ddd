@@ -32,17 +32,18 @@ instance.interceptors.response.use(
     // 检查响应数据格式
     const data = response.data;
     
-    // 如果响应已经是标准格式（包含success字段），直接返回
+    // 如果响应已经是标准格式（包含success字段），直接返回完整的response对象
     if (data && typeof data === 'object' && 'success' in data) {
-      return data;
+      return response;
     }
     
-    // 否则，将响应包装为标准格式
-    return {
+    // 否则，将响应包装为标准格式并返回完整的response对象
+    response.data = {
       success: true,
       message: response.statusText || '请求成功',
       data: data
     };
+    return response;
   },
   (error: AxiosError) => {
     if (error.response) {
@@ -125,3 +126,4 @@ instance.interceptors.response.use(
 );
 
 export const axiosInstance = instance;
+export default instance;

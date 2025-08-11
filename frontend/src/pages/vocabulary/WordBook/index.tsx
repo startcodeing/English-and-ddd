@@ -29,7 +29,10 @@ const WordBookPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await getAllWordBooks();
-      setWordBooks(response.data);
+      // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
+      const wordBooksData = Array.isArray(response.data.data) ? response.data.data : 
+                           Array.isArray(response.data) ? response.data : [];
+      setWordBooks(wordBooksData);
     } catch (error: any) {
       // 从错误对象中提取错误信息
       const errorMessage = error.errorMessage || '获取单词本列表失败';
@@ -44,7 +47,10 @@ const WordBookPage: React.FC = () => {
   const fetchAllWords = async () => {
     try {
       const response = await getAllWords();
-      setAllWords(response.data);
+      // 确保正确提取数据，处理后端响应格式 {success: true, message: 'Success', data: [], errorCode: null}
+      const wordsData = Array.isArray(response.data.data) ? response.data.data : 
+                       Array.isArray(response.data) ? response.data : [];
+      setAllWords(wordsData);
     } catch (error: any) {
       // 从错误对象中提取错误信息
       const errorMessage = error.errorMessage || '获取单词列表失败';

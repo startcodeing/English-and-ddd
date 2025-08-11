@@ -23,8 +23,8 @@ const ListeningMaterialList = React.lazy(() => import('../pages/content/Listenin
 const ListeningMaterialForm = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialFormPage'));
 const ListeningMaterialDetail = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialDetailPage'));
 const ListeningMaterialPlayer = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialPlayerPage'));
-const GrammarAnalysisListPage = React.lazy(() => import('../pages/Content/GrammarAnalysis/GrammarAnalysisListPage'));
-const GrammarAnalysisFormPage = React.lazy(() => import('../pages/Content/GrammarAnalysis/GrammarAnalysisFormPage'));
+const GrammarAnalysisListPage = React.lazy(() => import('../pages/content/GrammarAnalysis/GrammarAnalysisListPage'));
+const GrammarAnalysisFormPage = React.lazy(() => import('../pages/content/GrammarAnalysis/GrammarAnalysisFormPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));

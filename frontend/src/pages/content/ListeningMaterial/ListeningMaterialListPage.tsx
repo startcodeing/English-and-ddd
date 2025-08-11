@@ -36,7 +36,9 @@ const ListeningMaterialListPage: React.FC = () => {
          getListeningMaterialsByPage(currentPage, pageSize),
          countListeningMaterials()
        ]);
-      dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+      // 确保正确提取数据
+      const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+      dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
       if (countResponse.success && typeof countResponse.data === 'number') {
         dispatch(setListeningMaterialsTotal(countResponse.data));
       }
@@ -64,7 +66,8 @@ const ListeningMaterialListPage: React.FC = () => {
       try {
         dispatch(fetchListeningMaterialsStart());
         const response = await getListeningMaterialsByTitle(title);
-        dispatch(fetchListeningMaterialsSuccess(response.data));
+        const listeningMaterialsData = response.data?.data || response.data || [];
+        dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
       } catch (error: any) {
         const errorMsg = error?.message || '未知错误';
         const statusCode = error?.response?.status || 'N/A';
@@ -82,7 +85,8 @@ const ListeningMaterialListPage: React.FC = () => {
         
         if (difficultyLevel) {
           const response = await getListeningMaterialsByDifficultyLevel(difficultyLevel);
-          dispatch(fetchListeningMaterialsSuccess(response.data));
+          const listeningMaterialsData = response.data?.data || response.data || [];
+          dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
         }
       } catch (error: any) {
         const errorMsg = error?.message || '未知错误';
@@ -106,7 +110,8 @@ const ListeningMaterialListPage: React.FC = () => {
     try {
       dispatch(fetchListeningMaterialsStart());
       const response = await getListeningMaterialsByDifficultyLevel(selectedDifficulty as ListeningMaterialDifficultyLevel);
-      dispatch(fetchListeningMaterialsSuccess(response.data));
+      const listeningMaterialsData = response.data?.data || response.data || [];
+      dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
     } catch (error: any) {
       const errorMsg = error?.message || '未知错误';
       const statusCode = error?.response?.status || 'N/A';
@@ -221,9 +226,10 @@ const ListeningMaterialListPage: React.FC = () => {
     },
     {
       title: '音频时长',
-      dataIndex: 'duration',
-      key: 'duration',
+      dataIndex: 'durationInSeconds',
+      key: 'durationInSeconds',
       render: (duration: number) => {
+        if (!duration) return '未知';
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -244,9 +250,9 @@ const ListeningMaterialListPage: React.FC = () => {
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (time: number) => dayjs(time).format('YYYY-MM-DD HH:mm:ss'),
+      dataIndex: 'createTime',
+      key: 'createTime',
+      render: (time: string) => time ? dayjs(time).format('YYYY-MM-DD HH:mm:ss') : '未知',
     },
     {
       title: '操作',
@@ -375,7 +381,8 @@ const ListeningMaterialListPage: React.FC = () => {
                 getListeningMaterialsByPage(page, size),
                 countListeningMaterials()
               ]);
-              dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+              const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+              dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
               if (countResponse.success && typeof countResponse.data === 'number') {
                 dispatch(setListeningMaterialsTotal(countResponse.data));
               }
@@ -403,7 +410,8 @@ const ListeningMaterialListPage: React.FC = () => {
                 getListeningMaterialsByPage(current, size),
                 countListeningMaterials()
               ]);
-              dispatch(fetchListeningMaterialsSuccess(pageResponse.data));
+              const listeningMaterialsData = pageResponse.data?.data || pageResponse.data || [];
+              dispatch(fetchListeningMaterialsSuccess(Array.isArray(listeningMaterialsData) ? listeningMaterialsData : []));
               if (countResponse.success && typeof countResponse.data === 'number') {
                 dispatch(setListeningMaterialsTotal(countResponse.data));
               }

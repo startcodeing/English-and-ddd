@@ -10,7 +10,7 @@ public class GrammarAnalysisDTO {
     private Long id;
     private String title;
     private String originContent;
-    private DifficultyLevel difficulty;
+    private String difficulty;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
