@@ -25,6 +25,7 @@ const ListeningMaterialDetail = React.lazy(() => import('../pages/content/Listen
 const ListeningMaterialPlayer = React.lazy(() => import('../pages/content/ListeningMaterial/ListeningMaterialPlayerPage'));
 const GrammarAnalysisListPage = React.lazy(() => import('../pages/content/GrammarAnalysis/GrammarAnalysisListPage'));
 const GrammarAnalysisFormPage = React.lazy(() => import('../pages/content/GrammarAnalysis/GrammarAnalysisFormPage'));
+const GrammarAnalysisDetailPage = React.lazy(() => import('../pages/content/GrammarAnalysis/GrammarAnalysisDetailPage'));
 
 // 练习模块页面
 const Dictation = React.lazy(() => import('../pages/practice/dictation'));
@@ -211,6 +212,14 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingComponent />}>
             <GrammarAnalysisFormPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: '/content/grammar-analysis/detail/:id',
+        element: (
+          <React.Suspense fallback={<LoadingComponent />}>
+            <GrammarAnalysisDetailPage />
           </React.Suspense>
         ),
       },

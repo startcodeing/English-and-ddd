@@ -133,7 +133,12 @@ const GrammarAnalysisListPage: React.FC = () => {
             title: '标题', 
             dataIndex: 'title', 
             key: 'title',
-            ellipsis: true
+            ellipsis: true,
+            render: (text: string, record: GrammarAnalysis) => (
+                <a onClick={() => navigate(`/content/grammar-analysis/detail/${record.id}`)}>
+                    {text}
+                </a>
+            )
         },
         { 
             title: '难度', 
