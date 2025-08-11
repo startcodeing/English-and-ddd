@@ -1,6 +1,7 @@
 package com.englishlearning.infrastructure.db.repository.impl;
 
 import com.englishlearning.domain.content.model.GrammarAnalysis;
+import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import com.englishlearning.domain.content.repository.GrammarAnalysisRepository;
 import com.englishlearning.infrastructure.db.po.GrammarAnalysisPo;
 import com.englishlearning.infrastructure.db.repository.jpa.GrammarAnalysisJpaRepository;
@@ -60,16 +61,7 @@ public class GrammarAnalysisRepositoryImpl implements GrammarAnalysisRepository 
 
     @Override
     public List<GrammarAnalysis> findByCondition(String title, String difficulty, int page, int size) {
-        Specification<GrammarAnalysisPo> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (title != null && !title.isEmpty()) {
-                predicates.add(cb.like(root.get("title"), "%" + title + "%"));
-            }
-            if (difficulty != null && !difficulty.isEmpty()) {
-                predicates.add(cb.equal(root.get("difficulty"), difficulty));
-            }
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<GrammarAnalysisPo> spec = buildSearchSpecification(title, difficulty);
         return jpaRepository.findAll(spec, PageRequest.of(page, size)).getContent().stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toList());
@@ -77,17 +69,35 @@ public class GrammarAnalysisRepositoryImpl implements GrammarAnalysisRepository 
 
     @Override
     public long countByCondition(String title, String difficulty) {
-        Specification<GrammarAnalysisPo> spec = (root, query, cb) -> {
+        Specification<GrammarAnalysisPo> spec = buildSearchSpecification(title, difficulty);
+        return jpaRepository.count(spec);
+    }
+
+    /**
+     * 构建搜索条件规范
+     *
+     * @param title 标题搜索条件
+     * @param difficulty 难度级别搜索条件
+     * @return 搜索规范
+     */
+    private Specification<GrammarAnalysisPo> buildSearchSpecification(String title, String difficulty) {
+        return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (title != null && !title.isEmpty()) {
                 predicates.add(cb.like(root.get("title"), "%" + title + "%"));
             }
             if (difficulty != null && !difficulty.isEmpty()) {
-                predicates.add(cb.equal(root.get("difficulty"), difficulty));
+                try {
+                    DifficultyLevel difficultyLevel = DifficultyLevel.fromCode(difficulty);
+                    predicates.add(cb.equal(root.get("difficulty"), difficultyLevel));
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid difficulty level code: {}", difficulty);
+                    // 如果难度级别无效，添加一个永远不会匹配的条件
+                    predicates.add(cb.equal(root.get("id"), -1L));
+                }
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        return jpaRepository.count(spec);
     }
 
     /**
