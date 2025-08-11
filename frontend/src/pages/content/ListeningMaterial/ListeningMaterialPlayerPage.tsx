@@ -76,21 +76,24 @@ const ListeningMaterialPlayerPage: React.FC = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card>
+      <Card
+        title="听力资料播放"
+        extra={
+          <Button 
+            type="primary" 
+            icon={<ArrowLeftOutlined />} 
+            onClick={() => navigate(`/content/listening-materials/detail/${id}`)}
+          >
+            返回
+          </Button>
+        }
+      >
         {loading ? (
           <Skeleton active paragraph={{ rows: 10 }} />
         ) : material ? (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <Space>
-                <Button 
-                  icon={<ArrowLeftOutlined />} 
-                  onClick={() => navigate(`/content/listening-materials/detail/${id}`)}
-                >
-                  返回
-                </Button>
-                <Title level={4}>{material.title}</Title>
-              </Space>
+            <div style={{ marginBottom: '16px' }}>
+              <Title level={4}>{material.title}</Title>
             </div>
             
             <Divider orientation="left">音频播放</Divider>

@@ -83,22 +83,25 @@ const ListeningMaterialDetailPage: React.FC = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card>
+      <Card
+        title="听力资料详情"
+        extra={
+          <Button 
+            type="primary" 
+            icon={<ArrowLeftOutlined />} 
+            onClick={() => navigate('/content/listening-materials/page')}
+          >
+            返回
+          </Button>
+        }
+      >
         {loading ? (
           <Skeleton active paragraph={{ rows: 10 }} />
         ) : material ? (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Title level={4} style={{ marginBottom: 0, marginRight: '8px' }}>{material.title}</Title>
-                {material.difficulty && getDifficultyTag(material.difficulty)}
-              </div>
-              <Button 
-                icon={<ArrowLeftOutlined />} 
-                onClick={() => navigate('/content/listening-materials/page')}
-              >
-                返回
-              </Button>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <Title level={4} style={{ marginBottom: 0, marginRight: '8px' }}>{material.title}</Title>
+              {material.difficulty && getDifficultyTag(material.difficulty)}
             </div>
             
             <Divider orientation="left">基本信息</Divider>

@@ -1,6 +1,6 @@
 package com.englishlearning.infrastructure.db.repository.impl;
 
-import com.englishlearning.domain.content.model.GrammarAnalysis;
+import com.englishlearning.domain.content.model.entity.GrammarAnalysis;
 import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import com.englishlearning.domain.content.repository.GrammarAnalysisRepository;
 import com.englishlearning.infrastructure.db.po.GrammarAnalysisPo;
@@ -8,9 +8,7 @@ import com.englishlearning.infrastructure.db.repository.jpa.GrammarAnalysisJpaRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
@@ -25,8 +23,11 @@ public class GrammarAnalysisRepositoryImpl implements GrammarAnalysisRepository 
 
     private static final Logger logger = LoggerFactory.getLogger(GrammarAnalysisRepositoryImpl.class);
 
-    @Autowired
-    private GrammarAnalysisJpaRepository jpaRepository;
+    private final GrammarAnalysisJpaRepository jpaRepository;
+
+    public GrammarAnalysisRepositoryImpl(GrammarAnalysisJpaRepository jpaRepository) {
+        this.jpaRepository = jpaRepository;
+    }
 
     @Override
     public GrammarAnalysis save(GrammarAnalysis grammarAnalysis) {

@@ -369,4 +369,69 @@ public class AxonUserActivityEventHandler {
             "sentence"
         );
     }
+    
+    /**
+     * 处理语法分析创建事件
+     */
+    @EventHandler
+    public void handle(GrammarAnalysisCreatedEvent event) {
+        log.info("Axon handling GrammarAnalysisCreatedEvent: {}", event);
+        userActivityService.recordActivity(
+            event.getUserId(),
+            event.getUsername(),
+            ActivityType.GRAMMAR_ANALYSIS_CREATED,
+            "创建语法分析：" + event.getGrammarAnalysis().getTitle(),
+            event.getGrammarAnalysis().getId().toString(),
+            "grammar_analysis"
+        );
+    }
+    
+    /**
+     * 处理语法分析更新事件
+     */
+    @EventHandler
+    public void handle(GrammarAnalysisUpdatedEvent event) {
+        log.info("Axon handling GrammarAnalysisUpdatedEvent: {}", event);
+        userActivityService.recordActivity(
+            event.getUserId(),
+            event.getUsername(),
+            ActivityType.GRAMMAR_ANALYSIS_UPDATED,
+            "更新语法分析：" + event.getGrammarAnalysis().getTitle(),
+            event.getGrammarAnalysis().getId().toString(),
+            "grammar_analysis"
+        );
+    }
+    
+    /**
+     * 处理语法分析删除事件
+     */
+    @EventHandler
+    public void handle(GrammarAnalysisDeletedEvent event) {
+        log.info("Axon handling GrammarAnalysisDeletedEvent: {}", event);
+        userActivityService.recordActivity(
+            event.getUserId(),
+            event.getUsername(),
+            ActivityType.GRAMMAR_ANALYSIS_DELETED,
+            "删除语法分析：" + event.getGrammarAnalysis().getTitle(),
+            event.getGrammarAnalysis().getId().toString(),
+            "grammar_analysis"
+        );
+    }
+    
+    /**
+     * 处理语法分析批量删除事件
+     */
+    @EventHandler
+    public void handle(GrammarAnalysisBatchDeletedEvent event) {
+        log.info("Axon handling GrammarAnalysisBatchDeletedEvent: {}", event);
+        userActivityService.recordActivity(
+            event.getUserId(),
+            event.getUsername(),
+            ActivityType.GRAMMAR_ANALYSIS_BATCH_DELETED,
+            "批量删除语法分析",
+            "批量删除了 " + event.getGrammarAnalysisIds().size() + " 个语法分析",
+            String.join(",", event.getGrammarAnalysisIds().stream().map(String::valueOf).toArray(String[]::new)),
+            "grammar_analysis"
+        );
+    }
 }

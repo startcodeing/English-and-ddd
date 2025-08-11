@@ -38,6 +38,10 @@ public enum ActivityType {
     LISTENING_MATERIAL_UPDATED("更新听力资料", "content"),
     LISTENING_MATERIAL_DELETED("删除听力资料", "content"),
     LISTENING_MATERIAL_BATCH_DELETED("批量删除听力资料", "content"),
+    GRAMMAR_ANALYSIS_CREATED("创建语法分析", "content"),
+    GRAMMAR_ANALYSIS_UPDATED("更新语法分析", "content"),
+    GRAMMAR_ANALYSIS_DELETED("删除语法分析", "content"),
+    GRAMMAR_ANALYSIS_BATCH_DELETED("批量删除语法分析", "content"),
     
     // 学习活动
     DICTATION_COMPLETED("完成听写练习", "practice"),

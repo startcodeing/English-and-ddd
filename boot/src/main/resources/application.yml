@@ -50,6 +50,8 @@ logging:
   level:
     com.englishlearning: debug
     org.springframework: warn
+    org.springframework.data.jpa.repository.config: debug
+    org.springframework.context.annotation: debug
     com.englishlearning.infrastructure.db.repository.impl: debug
     com.englishlearning.application.content.service: debug
 

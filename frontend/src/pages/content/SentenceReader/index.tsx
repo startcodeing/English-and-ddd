@@ -261,25 +261,40 @@ const SentenceReader: React.FC = () => {
 
   return (
     <div className="sentence-reader-container">
-      <div className="sentence-reader-header">
-        <Button 
-          type="primary" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleBack}
-          className="sentence-reader-back-button"
-        >
-          返回列表
-        </Button>
-      </div>
-
       <div className="sentence-reader-main-content">
         {loading ? (
-          <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+          <Card 
+            className="sentence-reader-card" 
+            bodyStyle={{ padding: '12px 16px' }}
+            title="句子详情"
+            extra={
+              <Button 
+                type="primary" 
+                icon={<ArrowLeftOutlined />} 
+                onClick={handleBack}
+              >
+                返回
+              </Button>
+            }
+          >
             <Skeleton active paragraph={{ rows: 10 }} />
           </Card>
         ) : sentence ? (
           <div>
-            <Card className="sentence-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+            <Card 
+              className="sentence-reader-card" 
+              bodyStyle={{ padding: '12px 16px' }}
+              title="句子详情"
+              extra={
+                <Button 
+                  type="primary" 
+                  icon={<ArrowLeftOutlined />} 
+                  onClick={handleBack}
+                >
+                  返回
+                </Button>
+              }
+            >
               <div className="sentence-reader-title-section">
                 <Typography.Title level={4} style={{ lineHeight: '1.3' }}>英文内容</Typography.Title>
               </div>

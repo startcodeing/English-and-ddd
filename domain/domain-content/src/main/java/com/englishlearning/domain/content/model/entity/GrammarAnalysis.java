@@ -1,4 +1,4 @@
-package com.englishlearning.domain.content.model;
+package com.englishlearning.domain.content.model.entity;
 
 import com.englishlearning.domain.content.model.enums.DifficultyLevel;
 import lombok.AllArgsConstructor;

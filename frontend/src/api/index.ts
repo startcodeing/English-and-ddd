@@ -11,3 +11,4 @@ export * from './writing';
 export * from './userApi';
 export * from './userActivityApi';
 export * from './listeningMaterial';
+export * from './grammarAnalysis';

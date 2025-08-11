@@ -1,11 +1,11 @@
 import { axiosInstance, StandardApiResponse } from '@/api/index';
 import { GrammarAnalysis } from '@/types/grammar-analysis';
 
-export const getGrammarAnalyses = async (params: { title?: string; difficulty?: string; page?: number; size?: number; }) => {
+export const getGrammarAnalyses = async (params: { title?: string; difficulty?: number; page?: number; size?: number; }) => {
     return await axiosInstance.get<StandardApiResponse<GrammarAnalysis[]>>('/api/v1/grammar-analysis/search', { params });
 };
 
-export const countGrammarAnalyses = async (params: { title?: string; difficulty?: string; }) => {
+export const countGrammarAnalyses = async (params: { title?: string; difficulty?: number; }) => {
     return await axiosInstance.get<StandardApiResponse<number>>('/api/v1/grammar-analysis/count', { params });
 };
 

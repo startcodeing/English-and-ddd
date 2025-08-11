@@ -59,11 +59,15 @@ const WritingTopicDetailPage: React.FC = () => {
   <div ref={pageContainerRef} style={{ padding: '12px', overflow: 'auto' }}>
     <Card
       size="small"
-      title={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>写作主题详情</span>
-          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>返回</Button>
-        </div>
+      title="写作主题详情"
+      extra={
+        <Button 
+          type="primary" 
+          icon={<ArrowLeftOutlined />} 
+          onClick={handleBack}
+        >
+          返回
+        </Button>
       }
       bodyStyle={{ padding: '12px' }}
     >

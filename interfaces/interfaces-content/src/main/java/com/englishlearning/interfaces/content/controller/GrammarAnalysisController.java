@@ -22,8 +22,7 @@ public class GrammarAnalysisController {
 
     @PutMapping("/{id}")
     public Result<GrammarAnalysisDTO> updateGrammarAnalysis(@PathVariable Long id, @RequestBody GrammarAnalysisDTO grammarAnalysisDTO) {
-        grammarAnalysisDTO.setId(id);
-        return Result.success(grammarAnalysisService.updateGrammarAnalysis(grammarAnalysisDTO));
+        return Result.success(grammarAnalysisService.updateGrammarAnalysis(id, grammarAnalysisDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -42,16 +41,17 @@ public class GrammarAnalysisController {
     @GetMapping("/search")
     public Result<List<GrammarAnalysisDTO>> searchGrammarAnalysis(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) Integer difficulty,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return Result.success(grammarAnalysisService.findGrammarAnalysisByCondition(title, difficulty, page, size));
+        String difficultyStr = difficulty != null ? difficulty.toString() : null;
+        return Result.success(grammarAnalysisService.findGrammarAnalysesByCondition(title, difficultyStr, page, size));
     }
 
     @GetMapping("/count")
     public Result<Long> countGrammarAnalysis(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String difficulty) {
+            @RequestParam(required = false) Integer difficulty) {
         return Result.success(grammarAnalysisService.countGrammarAnalysisByCondition(title, difficulty));
     }
 

@@ -354,23 +354,38 @@ const ArticleReader: React.FC = () => {
 
   return (
     <div className="article-reader-container">
-      <div className="article-reader-header">
-        <Button 
-          type="primary" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleBack}
-          className="article-reader-back-button"
-        >
-          返回列表
-        </Button>
-      </div>
-
       {loading ? (
-        <Card className="article-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+        <Card 
+          className="article-reader-card" 
+          bodyStyle={{ padding: '12px 16px' }}
+          title="文章详情"
+          extra={
+            <Button 
+              type="primary" 
+              icon={<ArrowLeftOutlined />} 
+              onClick={handleBack}
+            >
+              返回
+            </Button>
+          }
+        >
           <Skeleton active paragraph={{ rows: 10 }} />
         </Card>
       ) : article ? (
-        <Card className="article-reader-card" bodyStyle={{ padding: '12px 16px' }}>
+        <Card 
+          className="article-reader-card" 
+          bodyStyle={{ padding: '12px 16px' }}
+          title="文章详情"
+          extra={
+            <Button 
+              type="primary" 
+              icon={<ArrowLeftOutlined />} 
+              onClick={handleBack}
+            >
+              返回
+            </Button>
+          }
+        >
           <div className="article-reader-title-section">
             <Title level={2} style={{ lineHeight: '1.3' }}>{article.title}</Title>
             <div className="article-reader-meta">

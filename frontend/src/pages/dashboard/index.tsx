@@ -102,7 +102,7 @@ const Dashboard: React.FC = () => {
       value: 0,
       icon: <CheckCircleOutlined />,
       color: '#f759ab',
-      route: '/grammar-analysis'
+      route: '/content/grammar-analysis'
     }
   ]);
 
@@ -442,7 +442,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 快速入口 */}
-      <div className="quick-actions-section">
+      {/*<div className="quick-actions-section">
         <Card 
           title="快速入口" 
           variant="borderless" 
@@ -496,7 +496,7 @@ const Dashboard: React.FC = () => {
             </Col>
           </Row>
         </Card>
-      </div>
+      </div>*/}
     </div>
   );
 };

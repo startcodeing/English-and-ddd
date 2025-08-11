@@ -1,6 +1,6 @@
 package com.englishlearning.domain.content.repository;
 
-import com.englishlearning.domain.content.model.GrammarAnalysis;
+import com.englishlearning.domain.content.model.entity.GrammarAnalysis;
 
 import java.util.List;
 import java.util.Optional;
