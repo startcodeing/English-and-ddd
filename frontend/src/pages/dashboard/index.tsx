@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, Progress, Typography, Button, Space } from 'antd';
-import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined, TrophyOutlined, ClockCircleOutlined, RightOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { BookOutlined, ReadOutlined, SoundOutlined, EditOutlined, FileTextOutlined, BookFilled, TagsOutlined, FileOutlined, AudioOutlined, TrophyOutlined, ClockCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -13,7 +13,6 @@ import { getDictationStatistics } from '../../api/dictation';
 import { getWritingStatistics } from '../../api/writing';
 import { countWritingTopics } from '../../api/writingTopic';
 import { getListeningMaterialsCount, countListeningMaterials } from '../../api/listeningMaterial';
-import { countGrammarAnalyses } from '../../api/grammarAnalysis';
 import RecentActivities from '../../components/RecentActivities';
 import './style.css';
 
@@ -96,13 +95,6 @@ const Dashboard: React.FC = () => {
       icon: <EditOutlined />,
       color: '#fa8c16',
       route: '/practice/writing'
-    },
-    {
-      title: '语法分析数',
-      value: 0,
-      icon: <CheckCircleOutlined />,
-      color: '#f759ab',
-      route: '/content/grammar-analysis'
     }
   ]);
 
@@ -123,23 +115,23 @@ const Dashboard: React.FC = () => {
       try {
         // 获取词性总数
         const partsOfSpeechResponse = await getAllPartOfSpeech();
-        const partsOfSpeechCount = partsOfSpeechResponse.data.data?.length || 0;
+        const partsOfSpeechCount = partsOfSpeechResponse.data.length;
         
         // 获取单词总数
         const wordsResponse = await getAllWords();
-        const wordsCount = wordsResponse.data.data?.length || 0;
+        const wordsCount = wordsResponse.data.length;
         
         // 获取单词本总数
         const wordBooksResponse = await getAllWordBooks();
-        const wordBooksCount = wordBooksResponse.data.data?.length || 0;
+        const wordBooksCount = wordBooksResponse.data.length;
         
         // 获取句子总数
         const sentencesResponse = await getAllSentences();
-        const sentencesCount = sentencesResponse.data?.length || 0;
+        const sentencesCount = sentencesResponse.data.length;
         
         // 获取文章总数
         const articlesResponse = await getAllArticles();
-        const articlesCount = articlesResponse.data?.length || 0;
+        const articlesCount = articlesResponse.data.length;
         
         // 获取写作主题总数
         let writingTopicsCount = 0;
@@ -173,40 +165,9 @@ const Dashboard: React.FC = () => {
           }
         }
         
-        // 获取听写练习统计数据
-        let dictationCount = 0;
-        try {
-          const dictationStatsResponse = await getDictationStatistics();
-          if (dictationStatsResponse.success && dictationStatsResponse.data) {
-            dictationCount = dictationStatsResponse.data.totalCount || 0;
-          }
-        } catch (error) {
-          console.error('获取听写统计数据失败:', error);
-          dictationCount = 32; // 使用默认值
-        }
-        
-        // 获取写作练习统计数据
-        let writingCount = 0;
-        try {
-          const writingStatsResponse = await getWritingStatistics();
-          if (writingStatsResponse.success && writingStatsResponse.data) {
-            writingCount = writingStatsResponse.data.totalCount || 0;
-          }
-        } catch (error) {
-          console.error('获取写作统计数据失败:', error);
-          writingCount = 16; // 使用默认值
-        }
-        
-        // 获取语法分析统计数据
-        let grammarAnalysisCount = 0;
-        try {
-          const grammarAnalysisResponse = await countGrammarAnalyses({});
-          if (grammarAnalysisResponse.data.success) {
-            grammarAnalysisCount = grammarAnalysisResponse.data.data || 0;
-          }
-        } catch (error) {
-          console.error('获取语法分析统计数据失败:', error);
-        }
+        // 听写练习和写作练习使用模拟数据
+        const dictationCount = 32;
+        const writingCount = 16;
         
         // 更新统计数据
         setStats(prevStats => {
@@ -251,15 +212,10 @@ const Dashboard: React.FC = () => {
             ...newStats[7],
             value: dictationCount
           };
-          // 更新写作练习数量
+          // 更新写作练习数量（模拟数据）
           newStats[8] = {
             ...newStats[8],
             value: writingCount
-          };
-          // 更新语法分析数量
-          newStats[9] = {
-            ...newStats[9],
-            value: grammarAnalysisCount
           };
           return newStats;
         });
@@ -292,42 +248,43 @@ const Dashboard: React.FC = () => {
               欢迎回来！今天也要继续努力学习英语哦 🎯
             </Paragraph>
           </div>
-          {/*<div className="header-actions">*/}
-          {/*  <Space>*/}
-          {/*    <Button type="primary" icon={<TrophyOutlined />}>*/}
-          {/*      今日目标*/}
-          {/*    </Button>*/}
-          {/*    <Button icon={<ClockCircleOutlined />}>*/}
-          {/*      学习计划*/}
-          {/*    </Button>*/}
-          {/*  </Space>*/}
-          {/*</div>*/}
+          <div className="header-actions">
+            <Space>
+              <Button type="primary" icon={<TrophyOutlined />}>
+                今日目标
+              </Button>
+              <Button icon={<ClockCircleOutlined />}>
+                学习计划
+              </Button>
+            </Space>
+          </div>
         </div>
       </div>
 
       {/* 统计卡片网格 */}
-      <div className="stats-section">
-        {/* 第一行 - 5个统计卡片 */}
-        <Row gutter={[16, 16]} className="stats-row">
-          {stats.slice(0, 5).map((stat, index) => (
-            <Col xs={24} sm={12} md={4.8} lg={4.8} xl={4.8} key={index}>
+      <div className="stats-grid">
+        {/* 特色统计卡片 - 前3个 */}
+        <Row gutter={[24, 24]} className="featured-stats">
+          {stats.slice(0, 3).map((stat, index) => (
+            <Col xs={24} sm={8} key={index}>
               <Card 
-                className="stat-card uniform" 
-                variant="borderless" 
+                className="enhanced-stat-card featured" 
+                bordered={false} 
                 hoverable 
                 onClick={() => navigate(stat.route)}
               >
-                <div className="stat-content">
-                  <div className="stat-icon-wrapper">
-                    <div className="stat-icon" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
-                      {stat.icon}
-                    </div>
+                <div className="stat-card-content">
+                  <div className="stat-icon" style={{ color: stat.color }}>
+                    {stat.icon}
                   </div>
-                  <div className="stat-details">
-                    <div className="stat-number" style={{ color: stat.color }}>
+                  <div className="stat-info">
+                    <div className="stat-value" style={{ color: stat.color }}>
                       {stat.value}
                     </div>
-                    <div className="stat-label">{stat.title}</div>
+                    <div className="stat-title">{stat.title}</div>
+                  </div>
+                  <div className="stat-arrow">
+                    <RightOutlined />
                   </div>
                 </div>
               </Card>
@@ -335,27 +292,25 @@ const Dashboard: React.FC = () => {
           ))}
         </Row>
         
-        {/* 第二行 - 5个统计卡片 */}
-        <Row gutter={[16, 16]} className="stats-row">
-          {stats.slice(5).map((stat, index) => (
-            <Col xs={24} sm={12} md={4.8} lg={4.8} xl={4.8} key={index + 5}>
+        {/* 普通统计卡片 - 剩余的 */}
+        <Row gutter={[16, 16]} className="normal-stats">
+          {stats.slice(3).map((stat, index) => (
+            <Col xs={12} sm={8} md={6} lg={4} xl={4} key={index + 3}>
               <Card 
-                className="stat-card uniform" 
-                variant="borderless" 
+                className="enhanced-stat-card" 
+                bordered={false} 
                 hoverable 
                 onClick={() => navigate(stat.route)}
               >
-                <div className="stat-content">
-                  <div className="stat-icon-wrapper">
-                    <div className="stat-icon" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
-                      {stat.icon}
-                    </div>
+                <div className="stat-card-content">
+                  <div className="stat-icon" style={{ color: stat.color }}>
+                    {stat.icon}
                   </div>
-                  <div className="stat-details">
-                    <div className="stat-number" style={{ color: stat.color }}>
+                  <div className="stat-info">
+                    <div className="stat-value" style={{ color: stat.color }}>
                       {stat.value}
                     </div>
-                    <div className="stat-label">{stat.title}</div>
+                    <div className="stat-title">{stat.title}</div>
                   </div>
                 </div>
               </Card>
@@ -365,14 +320,14 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 主要内容区域 */}
-      <div className="main-content-section">
+      <div className="dashboard-content">
         <Row gutter={[24, 24]}>
           {/* 学习进度 */}
           <Col xs={24} lg={12}>
             <Card 
               title="学习进度" 
-              variant="borderless" 
-              className="progress-card"
+              bordered={false} 
+              className="enhanced-progress-card"
               extra={<Button type="link" size="small">查看详情</Button>}
             >
               <div className="progress-grid">
@@ -383,10 +338,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <Progress 
                     percent={progress.vocabulary} 
-                    strokeColor="#1890ff" 
+                    strokeColor="var(--color-primary)" 
                     showInfo={false}
-                    size={8}
-                    trailColor="#f0f0f0"
+                    strokeWidth={8}
                   />
                 </div>
                 <div className="progress-item">
@@ -396,10 +350,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <Progress 
                     percent={progress.listening} 
-                    strokeColor="#52c41a" 
+                    strokeColor="var(--color-success)" 
                     showInfo={false}
-                    size={8}
-                    trailColor="#f0f0f0"
+                    strokeWidth={8}
                   />
                 </div>
                 <div className="progress-item">
@@ -409,10 +362,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <Progress 
                     percent={progress.speaking} 
-                    strokeColor="#722ed1" 
+                    strokeColor="var(--color-purple)" 
                     showInfo={false}
-                    size={8}
-                    trailColor="#f0f0f0"
+                    strokeWidth={8}
                   />
                 </div>
                 <div className="progress-item">
@@ -422,10 +374,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <Progress 
                     percent={progress.writing} 
-                    strokeColor="#fa8c16" 
+                    strokeColor="var(--color-orange)" 
                     showInfo={false}
-                    size={8}
-                    trailColor="#f0f0f0"
+                    strokeWidth={8}
                   />
                 </div>
               </div>
@@ -434,7 +385,7 @@ const Dashboard: React.FC = () => {
 
           {/* 最近活动 */}
           <Col xs={24} lg={12}>
-            <div className="activities-card">
+            <div className="enhanced-activities-card">
               <RecentActivities userId="system" limit={5} />
             </div>
           </Col>
@@ -442,15 +393,15 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 快速入口 */}
-      {/*<div className="quick-actions-section">
+      <div className="quick-actions">
         <Card 
           title="快速入口" 
-          variant="borderless" 
-          className="quick-actions-card"
+          bordered={false} 
+          className="enhanced-quick-actions-card"
           extra={<Button type="link" size="small">更多功能</Button>}
         >
-          <Row gutter={[16, 16]} className="quick-actions-grid">
-            <Col xs={12} sm={6} md={6} lg={6}>
+          <Row gutter={[16, 16]}>
+            <Col xs={12} sm={6}>
               <div className="quick-action-item" onClick={() => navigate('/vocabulary/word')}>
                 <div className="action-icon">
                   <BookOutlined />
@@ -461,7 +412,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </Col>
-            <Col xs={12} sm={6} md={6} lg={6}>
+            <Col xs={12} sm={6}>
               <div className="quick-action-item" onClick={() => navigate('/content/article')}>
                 <div className="action-icon">
                   <ReadOutlined />
@@ -472,7 +423,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </Col>
-            <Col xs={12} sm={6} md={6} lg={6}>
+            <Col xs={12} sm={6}>
               <div className="quick-action-item" onClick={() => navigate('/practice/dictation')}>
                 <div className="action-icon">
                   <SoundOutlined />
@@ -483,7 +434,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </Col>
-            <Col xs={12} sm={6} md={6} lg={6}>
+            <Col xs={12} sm={6}>
               <div className="quick-action-item" onClick={() => navigate('/practice/writing')}>
                 <div className="action-icon">
                   <EditOutlined />
@@ -496,7 +447,7 @@ const Dashboard: React.FC = () => {
             </Col>
           </Row>
         </Card>
-      </div>*/}
+      </div>
     </div>
   );
 };
