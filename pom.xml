@@ -34,6 +34,8 @@
         <spring-boot.version>2.7.14</spring-boot.version>
         <axon.version>4.7.4</axon.version>
         <mybatis.version>2.3.1</mybatis.version>
+        <mysql.version>8.0.33</mysql.version>
+</a
         <lombok.version>1.18.26</lombok.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
     </properties>

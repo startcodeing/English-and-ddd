@@ -1,0 +1,103 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+    basedir: ${java.io.tmpdir}/tomcat-english-learning
+    max-threads: 200
+
+spring:
+  application:
+    name: english-learning-platform
+    main:
+      allow-bean-definition-overriding: true
+  # 引入事件配置文件
+  profiles:
+    active: spring-event-handler
+  datasource:
+    # MySQL 数据库配置
+    url: jdbc:mysql://mysql:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: your_mysql_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Shanghai
+  mvc:
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+      location: ${java.io.tmpdir}/english-learning-uploads
+      file-size-threshold: 2MB
+
+# 文件存储配置
+file:
+  storage:
+    root: ./boot/uploads
+  upload:
+    dir: ./boot/uploads
+  access:
+    url: /files
+
+# Axon 框架配置
+axon:
+  axonserver:
+    enabled: false
+
+# Spring Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# MySQL 配置
+mysql:
+  console:
+    enabled: true
+  data:
+    url: jdbc:mysql://mysql:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com:
+      englishlearning: debug
+    org:
+      springframework:
+        web: info
+      data: info
+      jpa: info
+      boot: info
+      hibernate:
+        SQL: debug
+        type: debug
+        transaction:
+          debug
+        JDBC: debug
+        format_sql: false
+        use_sql_comments: true
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,215 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # Frontend Service (React + Nginx)
+  # ============================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: english-learning-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - english-learning-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=frontend"
+
+  # ============================================================
+  # Backend Service (Spring Boot)
+  # ============================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: english-learning-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Spring配置
+      - SPRING_PROFILES_ACTIVE=prod,mysql-event-handler
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME:-english_user}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-english_password}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=false
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=false
+      - SPRING_JPA_PROPERTIES_HIBERNATE_USE_SQL_COMMENTS=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_TIME_ZONE=Asia/Shanghai
+
+      # 文件存储配置
+      - FILE_STORAGE_ROOT=/app/uploads
+      - FILE_UPLOAD_DIR=/app/uploads
+      - FILE_ACCESS_URL=/files
+      - SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=10MB
+      - SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=10MB
+      - SPRING_SERVLET_MULTIPART_FILE_SIZE_THRESHOLD=2MB
+      - SPRING_SERVLET_MULTIPART_LOCATION=${JAVA.IO.TMPDIR}/english-learning-uploads
+
+      # Axon框架配置
+      - AXON_AXONSERVER_ENABLED=false
+      - AXON_SERIALIZER_GENERAL=xstream
+      - AXON_SERIALIZER_MESSAGES=jackson
+      - AXON_EVENTS_JACKSON=object
+      - AXON_EVENT_PROCESSING_MODE=track_processing_event_source
+
+      # 日志配置
+      - LOGGING_LEVEL_ROOT=INFO
+      - LOGGING_LEVEL_COM_ENGLISHLEARNING=DEBUG
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JPA=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_BOOT=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_HIBERNATE=ERROR
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_HIBERNATE_TYPE=DEBUG
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_HIBERNATE_TRANSACTION=DEBUG
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_HIBERNATE_JDBC=DEBUG
+      - LOGGING_PATTERN_CONSOLE="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    volumes:
+      - ./boot/uploads:/app/uploads
+      - ./data:/app/data
+    networks:
+      - english-learning-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=backend"
+
+  # ============================================================
+  # MySQL Database
+  # ============================================================
+  mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    container_name: english-learning-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      # MySQL配置
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-english_learning_platform}
+      - MYSQL_USER=${MYSQL_USER:-english_user}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-english_password}
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_unicode_ci
+
+      # MySQL性能配置
+      - MYSQL_INNODB_BUFFER_POOL_SIZE=256M
+      - MYSQL_INNODB_LOG_FILE_SIZE=256M
+      - MYSQL_INNODB_LOG_BUFFER_SIZE=8M
+      - MYSQL_INNODB_FLUSH_LOG_AT_TRX_COMMIT=1
+      - MYSQL_INNODB_FLUSH_LOG_AT_TIMEOUT=60
+      - MYSQL_INNODB_LOG_CHECKPOINT=0
+      - MYSQL_INNODB_MAX_CONNECTIONS=200
+      - MYSQL_INNODB_WAIT_TIMEOUT=50
+      - MYSQL_INNODB_THREAD_CACHE_SIZE=50
+      - MYSQL_INNODB_THREAD_CONCURRENCY=8
+      - MYSQL_INNODB_READ_IO_THREADS=8
+      - MYSQL_INNODB_WRITE_IO_THREADS=8
+      - MYSQL_INNODB_READ_BUFFER_POOL_SIZE=128M
+      - MYSQL_INNODB_WRITE_BUFFER_POOL_SIZE=128M
+      - MYSQL_INNODB_IO_CAPACITY=2000
+      - MYSQL_INNODB_FILE_PER_TABLE=1
+      - MYSQL_INNODB_TABLE_OPEN_CACHE=2000
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_logs:/var/log/mysql
+      - ./mysql/ddl.sql:/docker-entrypoint-initdb.d/1-init-ddl.sql
+      - ./mysql/dml.sql:/docker-entrypoint-initdb.d/2-init-dml.sql
+    networks:
+      - english-learning-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=mysql"
+
+  # ============================================================
+  # MySQL Admin (phpMyAdmin - Optional)
+  # ============================================================
+  mysql_admin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: english-learning-mysql-admin
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+      - PMA_UPLOAD_LIMIT=10M
+      - PMA_MAX_EXECUTION_TIME=30
+      - PMA_MAX_EXECUTION_TIME_QUERY=60
+      - UPLOAD_LIMIT=10M
+    depends_on:
+      - mysql
+    networks:
+      - english-learning-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=mysql_admin"
+
+# ============================================================
+# Docker Networks
+# ============================================================
+networks:
+  english-learning-network:
+    driver: bridge
+    name: english-learning-network
+
+# ============================================================
+# Docker Volumes
+# ============================================================
+volumes:
+  mysql_data:
+    driver: local
+    name: english-learning-mysql-data
+
+  mysql_logs:
+    driver: local
+    name: english-learning-mysql-logs
