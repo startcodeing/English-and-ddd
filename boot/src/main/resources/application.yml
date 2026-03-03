@@ -64,3 +64,30 @@ file:
 axon:
   axonserver:
     enabled: false
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:english-learning-platform-secret-key-change-in-production-environment}
+  access-token-expiration: 900000    # 15分钟 (毫秒)
+  refresh-token-expiration: 604800000 # 7天 (毫秒)
+
+# 验证码配置
+captcha:
+  enabled: true
+  length: 6
+
+# OAuth2配置（可选）
+# spring:
+#   security:
+#     oauth2:
+#       client:
+#         registration:
+#           google:
+#             client-id: ${GOOGLE_CLIENT_ID}
+#             client-secret: ${GOOGLE_CLIENT_SECRET}
+#             scope: email, profile
+#         provider:
+#           google:
+#             authorization-uri: https://accounts.google.com/o/oauth2/auth
+#             token-uri: https://oauth2.googleapis.com/token
+#             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo

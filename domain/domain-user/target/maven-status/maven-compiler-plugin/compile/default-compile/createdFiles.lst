@@ -1,0 +1,17 @@
+com\englishlearning\domain\user\model\valueobject\Password.class
+com\englishlearning\domain\user\repository\UserRepository.class
+com\englishlearning\domain\user\model\entity\Permission$PermissionBuilder.class
+com\englishlearning\domain\user\model\entity\Permission.class
+com\englishlearning\domain\user\model\entity\User$UserBuilder.class
+com\englishlearning\domain\user\utils\SnowflakeIdGenerator.class
+com\englishlearning\domain\user\model\enums\UserStatus.class
+com\englishlearning\domain\user\model\valueobject\UserId.class
+com\englishlearning\domain\user\event\UserRolesUpdatedEvent.class
+com\englishlearning\domain\user\model\valueobject\Email.class
+com\englishlearning\domain\user\event\UserPasswordChangedEvent.class
+com\englishlearning\domain\user\model\entity\Role$RoleBuilder.class
+com\englishlearning\domain\user\event\UserCreatedEvent.class
+com\englishlearning\domain\user\event\UserLoggedInEvent.class
+com\englishlearning\domain\user\model\entity\User.class
+com\englishlearning\domain\user\model\entity\Role.class
+com\englishlearning\domain\user\model\enums\UserRole.class

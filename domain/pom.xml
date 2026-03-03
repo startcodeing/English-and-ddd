@@ -17,6 +17,7 @@
         <module>domain-content</module>
         <module>domain-activity</module>
         <module>domain-practice</module>
+        <module>domain-user</module>
         <!-- 其他领域模块将在后续添加 -->
     </modules>
 
