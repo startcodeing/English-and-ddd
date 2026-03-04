@@ -35,9 +35,12 @@
         <axon.version>4.7.4</axon.version>
         <mybatis.version>2.3.1</mybatis.version>
         <mysql.version>8.0.33</mysql.version>
-</a
         <lombok.version>1.18.26</lombok.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
+        <spring-security.version>5.7.11</spring-security.version>
+        <jjwt.version>0.11.5</jjwt.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
     </properties>
 
     <dependencyManagement>
@@ -72,7 +75,12 @@
                 <artifactId>domain-practice</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>domain-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- 应用模块 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
@@ -90,7 +98,12 @@
                 <artifactId>application-practice</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>application-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- 基础设施模块 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
@@ -114,7 +127,12 @@
                 <artifactId>infrastructure-file</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>infrastructure-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- 接口模块 -->
             <dependency>
                 <groupId>com.englishlearning</groupId>
@@ -136,7 +154,12 @@
                 <artifactId>interfaces-practice</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.englishlearning</groupId>
+                <artifactId>interfaces-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- 第三方依赖管理 -->
             <dependency>
                 <groupId>org.axonframework</groupId>
@@ -163,6 +186,53 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- Spring Security -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!-- JWT (io.jsonwebtoken) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- Validation API -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+
+            <!-- Captcha (Kaptcha) -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+
+            <!-- OAuth2 Client -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-client</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

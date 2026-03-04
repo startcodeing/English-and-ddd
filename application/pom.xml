@@ -16,6 +16,7 @@
         <module>application-vocabulary</module>
         <module>application-content</module>
         <module>application-practice</module>
+        <module>application-user</module>
         <!-- 更多应用服务模块将在后续添加 -->
     </modules>
 

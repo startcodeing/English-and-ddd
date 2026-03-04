@@ -1,0 +1,14 @@
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\repository\UserRepository.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\valueobject\UserId.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\enums\UserStatus.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\valueobject\Password.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\entity\Permission.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\entity\Role.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\entity\User.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\enums\UserRole.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\event\UserPasswordChangedEvent.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\event\UserCreatedEvent.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\event\UserRolesUpdatedEvent.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\event\UserLoggedInEvent.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\utils\SnowflakeIdGenerator.java
+D:\Workspace\codeBase\Java\English-and-ddd\English-Learning-Platform\domain\domain-user\src\main\java\com\englishlearning\domain\user\model\valueobject\Email.java
