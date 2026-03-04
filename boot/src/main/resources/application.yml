@@ -1,93 +1,31 @@
-server:
-  port: 8080
-  context-path: /
-  tomcat:
-    basedir: ${java.io.tmpdir}/tomcat-english-learning
-    max-threads: 200
-
 spring:
-  application:
-    name: english-learning-platform
-  main:
-    allow-bean-definition-overriding: true
-  # 引入事件配置文件
   profiles:
-    active: spring-event-handler
+    active: mysql-event-handler
   datasource:
-    #内存数据库，服务停止数据会丢失
-    #url: jdbc:h2:mem:englishdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-    url: jdbc:h2:file:./data/englishLearnPlatform.db
+    url: jdbc:mysql://172.28.118.198:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: arya
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+      show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Shanghai
+
   h2:
     console:
-      enabled: true
-      path: /h2-console
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-      enabled: true
-      location: ${java.io.tmpdir}/english-learning-uploads
-      file-size-threshold: 2MB
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
-logging:
-  level:
-    com.englishlearning: debug
-    org.springframework: warn
-    org.springframework.data.jpa.repository.config: debug
-    org.springframework.context.annotation: debug
-    com.englishlearning.infrastructure.db.repository.impl: debug
-    com.englishlearning.application.content.service: debug
-
-# 文件存储配置
-file:
-  upload-dir: uploads
-  access-url: /files
-  max-file-size: 10485760 # 10MB
-
-axon:
-  axonserver:
-    enabled: false
-
-# JWT配置
-jwt:
-  secret: ${JWT_SECRET:english-learning-platform-secret-key-change-in-production-environment}
-  access-token-expiration: 900000    # 15分钟 (毫秒)
-  refresh-token-expiration: 604800000 # 7天 (毫秒)
-
-# 验证码配置
-captcha:
-  enabled: true
-  length: 6
-
-# OAuth2配置（可选）
-# spring:
-#   security:
-#     oauth2:
-#       client:
-#         registration:
-#           google:
-#             client-id: ${GOOGLE_CLIENT_ID}
-#             client-secret: ${GOOGLE_CLIENT_SECRET}
-#             scope: email, profile
-#         provider:
-#           google:
-#             authorization-uri: https://accounts.google.com/o/oauth2/auth
-#             token-uri: https://oauth2.googleapis.com/token
-#             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+      enabled: false

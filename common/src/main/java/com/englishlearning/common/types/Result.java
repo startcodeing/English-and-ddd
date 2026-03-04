@@ -53,4 +53,12 @@ public class Result<T> {
     public static <T> Result<T> failure(String message, String errorCode) {
         return new Result<>(false, message, null, errorCode);
     }
+
+    public static <T> Result<T> error(String message) {
+        return failure(message);
+    }
+
+    public static <T> Result<T> error(String message, String errorCode) {
+        return failure(message, errorCode);
+    }
 } 

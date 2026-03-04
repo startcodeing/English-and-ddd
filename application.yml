@@ -15,32 +15,23 @@ spring:
   profiles:
     active: spring-event-handler
   datasource:
-    # MySQL 数据库配置
-    url: jdbc:mysql://localhost:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: your_mysql_password
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 600000
-      max-lifetime: 1800000
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
+    # H2 数据库配置（开发环境）
+    url: jdbc:h2:file:./data/englishLearnPlatform.db
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      show-sql: false
+      show-sql: true
       properties:
         hibernate:
-          dialect: org.hibernate.dialect.MySQLDialect
-          format_sql: false
-          use_sql_comments: true
-          jdbc:
-            time_zone: Asia/Shanghai
+          format_sql: true
   mvc:
     throw-exception-if-no-handler-found: true
   servlet:
@@ -59,13 +50,6 @@ file:
     dir: ./boot/uploads
   access:
     url: /files
-
-# MySQL 配置
-mysql:
-  console:
-    enabled: true
-  data:
-    url: jdbc:mysql://localhost:3306/english_learning_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 
 # Axon 框架配置
 axon:
@@ -105,7 +89,6 @@ logging:
       data: info
       jpa: info
       security: info
-    org:
       hibernate:
         SQL: debug
         type: debug

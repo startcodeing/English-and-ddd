@@ -77,7 +77,7 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
+    @Column(name = "role_name")
     @Builder.Default
     private Set<UserRole> roles = new HashSet<>();
 
